@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Profil Portofolio Riko Londong - Software Engineer & Web Developer. Dirancang dengan Apple Human Interface Guidelines.">
+  <title>Riko Londong &bull; Portfolio</title>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Apple Navigation Bar (Translucent Frosted Glass) -->
+  <header class="apple-nav">
+    <div class="nav-content">
+      <div class="nav-leading">
+        <span class="apple-logo-badge" aria-hidden="true">
+          <svg viewBox="0 0 170 170" width="16" height="16" fill="currentColor">
+            <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.04-7.69-7.83-11.96-14.38-6.19-9.5-10.9-20.2-14.13-32.1-3.23-11.9-4.85-23.2-4.85-33.9 0-14.36 3.63-26.37 10.89-36.03 7.26-9.66 16.5-14.61 27.72-14.86 4.36 0 9.27 1.13 14.74 3.39 5.46 2.27 9.38 3.45 11.75 3.55 1.96 0 6.01-1.32 12.16-3.95 6.15-2.63 11.51-3.77 16.07-3.41 12.42.98 22.25 5.76 29.49 14.34-10.89 6.64-16.22 15.78-16.01 27.42.21 9.25 3.86 17.06 10.94 23.43 7.08 6.37 15.46 10.03 25.13 10.99-2.18 6.52-4.91 13.43-8.18 20.73zM119.22 33.15c0-7.39 2.66-14.42 7.99-21.09 5.33-6.66 11.99-11.19 19.98-13.58.11 1.09.16 2.06.16 2.93 0 7.28-2.82 14.41-8.46 21.39-5.64 6.98-12.35 11.39-20.13 13.23-.33-.97-.54-1.93-.54-2.88z"/>
+          </svg>
+        </span>
+        <span class="nav-title">Riko Londong</span>
+      </div>
+
+      <div class="nav-trailing">
+        <button id="themeToggleBtn" class="apple-icon-btn" aria-label="Ganti Tema" title="Mode Tampilan">
+          <!-- SF Symbol: moon.fill / sun.max.fill -->
+          <svg class="sf-icon icon-moon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M12.3 2a10 10 0 0 0-.19 20 10 10 0 0 0 8.89-5.43 1 1 0 0 0-1.07-1.44 7.5 7.5 0 0 1-9.09-9.09 1 1 0 0 0-1.44-1.07A9.87 9.87 0 0 0 12.3 2z"/>
+          </svg>
+          <svg class="sf-icon icon-sun" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <button id="shareProfileBtn" class="apple-icon-btn" aria-label="Bagikan Profil" title="Salin Tautan">
+          <!-- SF Symbol: square.and.arrow.up -->
+          <svg class="sf-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Viewport -->
+  <main class="page-container">
+    <div class="apple-layout">
+
+      <!-- LEFT SIDEBAR: Inset Grouped Profile Card -->
+      <aside class="sidebar-column">
+        <section class="apple-card inset-grouped-card profile-master-card">
+          
+          <!-- Avatar Squircle / Circle with subtle border -->
+          <div class="avatar-wrapper">
+            <div class="apple-squircle-avatar">
+              <img 
+                id="profileAvatarImg" 
+                src="assets/riko.jpg" 
+                alt="Foto Profil Riko Londong"
+                class="avatar-photo"
+                loading="eager"
+              >
+            </div>
+            <button id="changePhotoBtn" class="apple-avatar-badge" aria-label="Ganti Foto Profil" title="Ganti Foto">
+              <!-- SF Symbol: camera.fill -->
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M4 7h3l2-3h6l2 3h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zm8 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zm0-2a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+              </svg>
+            </button>
+            <input type="file" id="photoFileInput" accept="image/*" class="visually-hidden">
+          </div>
+
+          <!-- Identity Details -->
+          <div class="profile-header-text">
+            <div class="name-row">
+              <h1 class="apple-large-title" id="profileName">Riko Londong</h1>
+              <!-- SF Symbol: checkmark.seal.fill -->
+              <span class="apple-verified-seal" title="Terverifikasi">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.69 3.1 5.5l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82L8.6 22.5l3.4-1.47 3.4 1.46 1.89-3.19 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z"/>
+                </svg>
+              </span>
+            </div>
+
+            <p class="apple-subheadline" id="profileRole">Software Engineer & Web Developer</p>
+            
+            <p class="apple-caption location-text" id="profileLocation">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="inline-icon">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+              </svg>
+              <span id="locationText">Jakarta, Indonesia</span>
+            </p>
+
+            <!-- Apple Capsule Status Indicator -->
+            <div class="apple-capsule-status">
+              <span class="pulsing-green-dot"></span>
+              <span>Available for Projects</span>
+            </div>
+          </div>
+
+          <!-- Inset List Group (Contact & Email) -->
+          <div class="apple-inset-list">
+            <a href="mailto:riko.londong1997@gmail.com" class="apple-list-row" id="emailRowLink">
+              <div class="row-icon-bubble bubble-blue">
+                <!-- SF Symbol: envelope.fill -->
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+              </div>
+              <div class="row-content">
+                <span class="row-label">Email</span>
+                <span class="row-value text-ellipsis" id="profileEmail">riko.londong1997@gmail.com</span>
+              </div>
+              <svg class="chevron-right" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </a>
+
+            <div class="apple-list-row">
+              <div class="row-icon-bubble bubble-indigo">
+                <!-- SF Symbol: hammer.fill -->
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6-4.9 4.9-1.4-1.4a1 1 0 0 0-1.4 0l-5.3 5.3a1 1 0 0 0 0 1.4l2.1 2.1a1 1 0 0 0 1.4 0l5.3-5.3a1 1 0 0 0 0-1.4l-1.4-1.4 4.9-4.9 1.6 1.6a1 1 0 0 0 1.4 0l3-3a1 1 0 0 0 0-1.4l-5.3-5.3a1 1 0 0 0-1.6.7z"/>
+                </svg>
+              </div>
+              <div class="row-content">
+                <span class="row-label">Focus</span>
+                <span class="row-value" id="profileSpecialty">Full Stack & Frontend Systems</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Apple Action Buttons -->
+          <div class="button-stack">
+            <button id="openContactModalBtn" class="apple-btn apple-btn-primary w-100">
+              <!-- SF Symbol: paperplane.fill -->
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+              <span>Hubungi Saya</span>
+            </button>
+            <button id="editProfileBtn" class="apple-btn apple-btn-secondary w-100">
+              <!-- SF Symbol: square.and.pencil -->
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+              <span>Edit Profil</span>
+            </button>
+          </div>
+
+          <!-- Social Shortcuts -->
+          <div class="apple-social-row" aria-label="Media Sosial">
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="apple-social-pill" title="GitHub" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="apple-social-pill" title="LinkedIn" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="apple-social-pill" title="Twitter / X" aria-label="X Twitter">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="apple-social-pill" title="Instagram" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.79-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </a>
+          </div>
+
+        </section>
+      </aside>
+
+      <!-- RIGHT COLUMN: Segmented Control & Detail Sections -->
+      <section class="detail-column">
+        
+        <!-- Apple UISegmentedControl -->
+        <nav class="apple-segmented-control" role="tablist" aria-label="Navigasi Bagian">
+          <button class="segment-btn active" role="tab" aria-selected="true" data-target="tab-about" id="segmentAbout">
+            <span>Ringkasan</span>
+          </button>
+          <button class="segment-btn" role="tab" aria-selected="false" data-target="tab-skills" id="segmentSkills">
+            <span>Keahlian</span>
+          </button>
+          <button class="segment-btn" role="tab" aria-selected="false" data-target="tab-projects" id="segmentProjects">
+            <span>Proyek</span>
+          </button>
+          <button class="segment-btn" role="tab" aria-selected="false" data-target="tab-contact" id="segmentContact">
+            <span>Pesan</span>
+          </button>
+        </nav>
+
+        <!-- PANEL 1: Ringkasan (About) -->
+        <div class="apple-tab-panel active" id="tab-about" role="tabpanel" aria-labelledby="segmentAbout">
+          <article class="apple-card inset-grouped-card">
+            <h2 class="apple-title-2">Tentang Saya</h2>
+            <p class="apple-body" id="profileBio">
+              Halo! Saya Riko Londong, seorang software engineer yang berfokus pada pembangunan antarmuka web dan aplikasi modern dengan performa tinggi, arsitektur bersih, dan pengalaman pengguna yang mulus. Mengutamakan presisi desain, ketahanan sistem, dan integrasi API yang andal.
+            </p>
+          </article>
+
+          <!-- Apple Feature Rows -->
+          <div class="apple-card inset-grouped-card feature-group">
+            <div class="feature-row">
+              <div class="row-icon-bubble bubble-teal">
+                <!-- SF Symbol: macwindow.on.rectangle -->
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                  <line x1="2" y1="8" x2="22" y2="8"/>
+                  <line x1="6" y1="5.5" x2="6.01" y2="5.5"/>
+                  <line x1="9" y1="5.5" x2="9.01" y2="5.5"/>
+                </svg>
+              </div>
+              <div class="feature-info">
+                <h3 class="feature-title">Human Interface Design</h3>
+                <p class="feature-desc">Tipografi SF yang presisi, material translucent, dan hierarki visual yang intuitif.</p>
+              </div>
+            </div>
+
+            <div class="apple-divider"></div>
+
+            <div class="feature-row">
+              <div class="row-icon-bubble bubble-orange">
+                <!-- SF Symbol: bolt.fill -->
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.9 17.66 11 21 11 21z"/>
+                </svg>
+              </div>
+              <div class="feature-info">
+                <h3 class="feature-title">Performa Cepat & Responsif</h3>
+                <p class="feature-desc">Responsivitas fluid di Safari, iOS, iPadOS, macOS, dan semua perangkat mobile.</p>
+              </div>
+            </div>
+
+            <div class="apple-divider"></div>
+
+            <div class="feature-row">
+              <div class="row-icon-bubble bubble-green">
+                <!-- SF Symbol: checkmark.shield.fill -->
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                </svg>
+              </div>
+              <div class="feature-info">
+                <h3 class="feature-title">Aksesibilitas & Kode Bersih</h3>
+                <p class="feature-desc">Dukungan VoiceOver, semantic markup, dan kontras warna yang nyaman di mata.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 2: Keahlian (Skills) -->
+        <div class="apple-tab-panel" id="tab-skills" role="tabpanel" aria-labelledby="segmentSkills">
+          <div class="apple-card inset-grouped-card">
+            <h2 class="apple-title-2">Keahlian & Teknologi</h2>
+            <p class="apple-subheadline">Kemampuan teknis yang teruji dalam ekosistem modern:</p>
+
+            <div class="skills-block">
+              <h3 class="skills-category-title">Frontend Engineering</h3>
+              <div class="apple-tag-container">
+                <span class="apple-tag">HTML5 Semantic</span>
+                <span class="apple-tag">Modern Vanilla CSS</span>
+                <span class="apple-tag">JavaScript (ES6+)</span>
+                <span class="apple-tag">Apple Human Interface (HIG)</span>
+                <span class="apple-tag">Responsive Layouts</span>
+                <span class="apple-tag">UI/UX Animation</span>
+              </div>
+            </div>
+
+            <div class="apple-divider"></div>
+
+            <div class="skills-block">
+              <h3 class="skills-category-title">Alat & Lingkungan Kerja</h3>
+              <div class="apple-tag-container">
+                <span class="apple-tag">Git & GitHub</span>
+                <span class="apple-tag">Node.js Runtime</span>
+                <span class="apple-tag">RESTful APIs</span>
+                <span class="apple-tag">Safari & Web Inspector</span>
+                <span class="apple-tag">Figma & UI Prototyping</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL 3: Proyek (Projects) -->
+        <div class="apple-tab-panel" id="tab-projects" role="tabpanel" aria-labelledby="segmentProjects">
+          <div class="projects-stack">
+            
+            <article class="apple-card inset-grouped-card project-item">
+              <div class="project-top-row">
+                <span class="project-pill-badge">Day 1 &bull; 100 Days</span>
+                <span class="apple-caption">Oktober 2026</span>
+              </div>
+              <h3 class="project-heading">Personal Profile Page (Apple HIG)</h3>
+              <p class="apple-body text-secondary">
+                Halaman portofolio dan kartu identitas pengembang yang diimplementasikan dengan prinsip Apple Human Interface Guidelines: San Francisco typography, segmented control, material translucent, dan palet warna iOS.
+              </p>
+              <div class="apple-tag-container mt-2">
+                <span class="apple-tag">Apple HIG</span>
+                <span class="apple-tag">Vanilla CSS</span>
+                <span class="apple-tag">JavaScript</span>
+              </div>
+            </article>
+
+            <article class="apple-card inset-grouped-card project-item">
+              <div class="project-top-row">
+                <span class="project-pill-badge">System Component</span>
+                <span class="apple-caption">Featured</span>
+              </div>
+              <h3 class="project-heading">Dynamic Glassmorphism & UI Kit</h3>
+              <p class="apple-body text-secondary">
+                Eksplorasi komponen UI bergaya iOS & macOS: Inset grouped collections, Apple action sheets, segmented pickers, dan spring animation curve.
+              </p>
+              <div class="apple-tag-container mt-2">
+                <span class="apple-tag">Design System</span>
+                <span class="apple-tag">Vibrancy</span>
+                <span class="apple-tag">UI/UX</span>
+              </div>
+            </article>
+
+          </div>
+        </div>
+
+        <!-- PANEL 4: Pesan (Contact Form) -->
+        <div class="apple-tab-panel" id="tab-contact" role="tabpanel" aria-labelledby="segmentContact">
+          <div class="apple-card inset-grouped-card">
+            <h2 class="apple-title-2">Kirim Pesan</h2>
+            <p class="apple-subheadline">Hubungi Riko Londong secara langsung melalui formulir di bawah ini:</p>
+
+            <form id="directContactForm" class="apple-form">
+              <div class="apple-field-group">
+                <label for="inputSenderName" class="apple-field-label">Nama</label>
+                <input type="text" id="inputSenderName" class="apple-input" placeholder="Nama Anda" required>
+              </div>
+
+              <div class="apple-field-group">
+                <label for="inputSenderEmail" class="apple-field-label">Email</label>
+                <input type="email" id="inputSenderEmail" class="apple-input" placeholder="nama@email.com" required>
+              </div>
+
+              <div class="apple-field-group">
+                <label for="inputSenderMessage" class="apple-field-label">Pesan</label>
+                <textarea id="inputSenderMessage" class="apple-input apple-textarea" rows="4" placeholder="Tuliskan pesan atau keperluan Anda..." required></textarea>
+              </div>
+
+              <button type="submit" class="apple-btn apple-btn-primary align-self-start">
+                <!-- SF Symbol: paperplane.fill -->
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+                <span>Kirim Pesan</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Apple Sheet Modal: Edit Profil -->
+  <div class="apple-sheet-backdrop" id="editProfileSheet" aria-hidden="true">
+    <div class="apple-sheet" role="dialog" aria-labelledby="sheetTitle">
+      <div class="sheet-grabber" aria-hidden="true"></div>
+      
+      <div class="sheet-header">
+        <h2 id="sheetTitle" class="sheet-title">Edit Profil</h2>
+        <button id="closeSheetBtn" class="apple-close-btn" aria-label="Tutup Sheet">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="editForm" class="sheet-body">
+        <div class="apple-field-group">
+          <label for="editNameInput" class="apple-field-label">Nama Lengkap</label>
+          <input type="text" id="editNameInput" class="apple-input" required maxlength="50">
+        </div>
+
+        <div class="apple-field-group">
+          <label for="editRoleInput" class="apple-field-label">Peran / Role</label>
+          <input type="text" id="editRoleInput" class="apple-input" required maxlength="60">
+        </div>
+
+        <div class="apple-field-group">
+          <label for="editLocationInput" class="apple-field-label">Lokasi</label>
+          <input type="text" id="editLocationInput" class="apple-input" required maxlength="50">
+        </div>
+
+        <div class="apple-field-group">
+          <label for="editBioInput" class="apple-field-label">Deskripsi Diri</label>
+          <textarea id="editBioInput" class="apple-input apple-textarea" rows="4" required maxlength="400"></textarea>
+          <span class="char-count" id="bioCharCounter">0/400</span>
+        </div>
+
+        <div class="sheet-footer">
+          <button type="button" id="cancelSheetBtn" class="apple-btn apple-btn-secondary">Batal</button>
+          <button type="submit" class="apple-btn apple-btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Apple Dynamic Island Style Capsule Notification -->
+  <div id="dynamicIslandNotification" class="apple-dynamic-island-banner" role="status" aria-live="polite">
+    <div class="island-icon-wrapper">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <span class="island-text" id="islandText">Tautan profil berhasil disalin</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
