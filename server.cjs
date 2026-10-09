@@ -26,7 +26,10 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/2_BUSINESS CARD/') || decodedUrl.startsWith('/2/')) {
+  if (decodedUrl.startsWith('/3_LANDING PAGE WEBSITE/') || decodedUrl.startsWith('/3/')) {
+    projectDir = '3_LANDING PAGE WEBSITE';
+    relativePath = decodedUrl.replace(/^\/(3_LANDING PAGE WEBSITE|3)\/?/, '');
+  } else if (decodedUrl.startsWith('/2_BUSINESS CARD/') || decodedUrl.startsWith('/2/')) {
     projectDir = '2_BUSINESS CARD';
     relativePath = decodedUrl.replace(/^\/(2_BUSINESS CARD|2)\/?/, '');
   } else if (decodedUrl.startsWith('/1_MY PROFILE PAGE/') || decodedUrl.startsWith('/1/')) {
@@ -59,4 +62,5 @@ server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
   console.log(`- Project 1: http://localhost:${PORT}/1/`);
   console.log(`- Project 2: http://localhost:${PORT}/2/`);
+  console.log(`- Project 3: http://localhost:${PORT}/3/`);
 });
