@@ -1,4 +1,4 @@
-﻿const http = require('http');
+const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
@@ -14,7 +14,9 @@ const MIME_TYPES = {
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
-  '.vcf': 'text/vcard'
+  '.vcf': 'text/vcard',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2'
 };
 
 const server = http.createServer((req, res) => {
@@ -26,7 +28,13 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/3_LANDING PAGE WEBSITE/') || decodedUrl.startsWith('/3/')) {
+  if (decodedUrl.startsWith('/4_INDO FIREWATCHER/') || decodedUrl.startsWith('/4/')) {
+    projectDir = path.join('4_INDO FIREWATCHER', 'dist');
+    relativePath = decodedUrl.replace(/^\/(4_INDO FIREWATCHER|4)\/?/, '');
+  } else if (decodedUrl.startsWith('/assets/')) {
+    projectDir = path.join('4_INDO FIREWATCHER', 'dist');
+    relativePath = decodedUrl;
+  } else if (decodedUrl.startsWith('/3_LANDING PAGE WEBSITE/') || decodedUrl.startsWith('/3/')) {
     projectDir = '3_LANDING PAGE WEBSITE';
     relativePath = decodedUrl.replace(/^\/(3_LANDING PAGE WEBSITE|3)\/?/, '');
   } else if (decodedUrl.startsWith('/2_BUSINESS CARD/') || decodedUrl.startsWith('/2/')) {
@@ -63,4 +71,5 @@ server.listen(PORT, () => {
   console.log(`- Project 1: http://localhost:${PORT}/1/`);
   console.log(`- Project 2: http://localhost:${PORT}/2/`);
   console.log(`- Project 3: http://localhost:${PORT}/3/`);
+  console.log(`- Project 4: http://localhost:${PORT}/4/`);
 });

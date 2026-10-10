@@ -11,3 +11,9 @@ npm-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
