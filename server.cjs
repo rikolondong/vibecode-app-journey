@@ -28,7 +28,10 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/4_INDO FIREWATCHER/') || decodedUrl.startsWith('/4/')) {
+  if (decodedUrl.startsWith('/5_ENDLESS HIGHWAY/') || decodedUrl.startsWith('/5/')) {
+    projectDir = '5_ENDLESS HIGHWAY';
+    relativePath = decodedUrl.replace(/^\/(5_ENDLESS HIGHWAY|5)\/?/, '');
+  } else if (decodedUrl.startsWith('/4_INDO FIREWATCHER/') || decodedUrl.startsWith('/4/')) {
     projectDir = path.join('4_INDO FIREWATCHER', 'dist');
     relativePath = decodedUrl.replace(/^\/(4_INDO FIREWATCHER|4)\/?/, '');
   } else if (decodedUrl.startsWith('/assets/')) {
@@ -72,4 +75,5 @@ server.listen(PORT, () => {
   console.log(`- Project 2: http://localhost:${PORT}/2/`);
   console.log(`- Project 3: http://localhost:${PORT}/3/`);
   console.log(`- Project 4: http://localhost:${PORT}/4/`);
+  console.log(`- Project 5: http://localhost:${PORT}/5/`);
 });

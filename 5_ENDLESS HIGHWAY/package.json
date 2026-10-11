@@ -1,0 +1,30 @@
+{
+  "name": "jalan-tol-kelam",
+  "version": "1.0.0",
+  "description": "Game 3D Mengemudi Jalan Tol Malam Hari Berkabut (Endless Midnight Highway)",
+  "main": "desktop.js",
+  "scripts": {
+    "start": "node server.js",
+    "desktop": "electron desktop.js",
+    "game": "electron desktop.js"
+  },
+  "keywords": [
+    "threejs",
+    "game",
+    "3d",
+    "highway",
+    "driving",
+    "night",
+    "fog",
+    "electron",
+    "windows"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.182.0"
+  },
+  "devDependencies": {
+    "electron": "^28.3.3"
+  }
+}

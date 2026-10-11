@@ -12,6 +12,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 2 | [**2_BUSINESS CARD**](./2_BUSINESS%20CARD) | Digital Business Card & Kartu Biodata Diri interaktif dengan estetika Neumorphism (Soft UI), fitur vCard, dan Copy to Clipboard. | ✅ Selesai |
 | 3 | [**3_LANDING PAGE WEBSITE**](./3_LANDING%20PAGE%20WEBSITE) | Landing Page Perusahaan Agribisnis Sawit Berkelanjutan (PT Nusa Sawit Agro Tbk) dengan desain Enterprise Humanis & Natural. | ✅ Selesai |
 | 4 | [**4_INDO FIREWATCHER**](./4_INDO%20FIREWATCHER) | Sistem Web GIS Pemantauan Titik Panas (Hotspot) Karhutla Indonesia berbasis Satelit NASA FIRMS (VIIRS/MODIS) & Cuaca Open-Meteo. | ✅ Selesai |
+| 5 | [**5_ENDLESS HIGHWAY**](./5_ENDLESS%20HIGHWAY) | Game 3D Mengemudi Jalan Tol Malam Hari Berkabut (*Endless Midnight Highway*) dengan Three.js, audio prosedural, dan fisika realistis. | ✅ Selesai |
 
 ---
 
@@ -62,6 +63,22 @@ Aplikasi Web GIS & Dashboard Analitik Geospasial untuk pemantauan kebakaran huta
 - **Tech Stack**: React 18, TypeScript, Vite, Tailwind CSS, Leaflet & React-Leaflet, Lucide React, Node.js HTTP Proxy.
 
 👉 **[Buka Dokumentasi & Kode Proyek 4](./4_INDO%20FIREWATCHER)**
+
+---
+
+## 🚗 Ringkasan Proyek 5: JALAN TOL KELAM (Endless Midnight Highway 3D)
+
+Game simulasi mengemudi 3D tak berujung (*endless driving*) dengan nuansa sunyi malam hari, kabut atmosferik, dan pencahayaan realistis:
+- **Design System & Visual**: Tampilan jalan tol tak berujung dengan aspal basah bertekstur specular/normal map, reflektor pembatas jalan (mata kucing/guardrail), tiang lampu sodium uap amber (2200K), serta pencahayaan lampu mobil proyektor xenon yang membelah kabut malam.
+- **Fisika & Powertrain**:
+  - Transmisi otomatis 5-percepatan dengan kurva torsi realistis dan panel speedometer/tachometer aktif.
+  - Stabilitas kemudi dinamis berbasis kecepatan (*speed-sensitive steering*), body roll saat menikung, dan ayunan suspensi saat melintasi sambungan beton jalan tol tiap 30 meter.
+  - Tiga pilihan sudut pandang kamera: Kabin Pengemudi (*First-Person Right-Hand Drive*), Belakang Mobil (*Chase Cam* anti-jitter), dan Kap Mesin (*Hood View*).
+- **Audio Prosedural 100% Prosedural (Web Audio API)**: Sintesis deru mesin multi-osilator, road tire noise, deru aerodinamika angin, klakson ganda, dan suara benturan fisik tanpa berkas audio eksternal.
+- **Platform**: Web Desktop/Mobile touch controls serta peluncur Windows native (Electron desktop launcher).
+- **Tech Stack**: Three.js, Modern Vanilla JavaScript (ES6+ Modules), Web Audio API, CSS3 Glassmorphism, Electron (Windows Desktop).
+
+👉 **[Buka Dokumentasi & Kode Proyek 5](./5_ENDLESS%20HIGHWAY)**
 
 ---
 
