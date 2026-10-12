@@ -15,6 +15,7 @@ const MIME_TYPES = {
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
   '.vcf': 'text/vcard',
+  '.mp3': 'audio/mpeg',
   '.woff': 'font/woff',
   '.woff2': 'font/woff2'
 };
@@ -28,7 +29,10 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/5_ENDLESS HIGHWAY/') || decodedUrl.startsWith('/5/')) {
+  if (decodedUrl.startsWith('/6_SIMULATOR PERLINTASAN KERETA/') || decodedUrl.startsWith('/6/')) {
+    projectDir = '6_SIMULATOR PERLINTASAN KERETA';
+    relativePath = decodedUrl.replace(/^\/(6_SIMULATOR PERLINTASAN KERETA|6)\/?/, '');
+  } else if (decodedUrl.startsWith('/5_ENDLESS HIGHWAY/') || decodedUrl.startsWith('/5/')) {
     projectDir = '5_ENDLESS HIGHWAY';
     relativePath = decodedUrl.replace(/^\/(5_ENDLESS HIGHWAY|5)\/?/, '');
   } else if (decodedUrl.startsWith('/4_INDO FIREWATCHER/') || decodedUrl.startsWith('/4/')) {
@@ -76,4 +80,5 @@ server.listen(PORT, () => {
   console.log(`- Project 3: http://localhost:${PORT}/3/`);
   console.log(`- Project 4: http://localhost:${PORT}/4/`);
   console.log(`- Project 5: http://localhost:${PORT}/5/`);
+  console.log(`- Project 6: http://localhost:${PORT}/6/`);
 });

@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PJL Nusantara - Simulator Palang Kereta Api Indonesia</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #11141a;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+    #game-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: #2b3924;
+    }
+
+    /* UI Overlay */
+    .hud-top {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .hud-card {
+      background: rgba(18, 22, 30, 0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 12px 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      pointer-events: auto;
+    }
+    .hud-title {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #f39c12;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .hud-value {
+      font-size: 22px;
+      font-weight: 800;
+      font-family: 'Courier New', Courier, monospace;
+      color: #ecf0f1;
+    }
+    .hud-sub {
+      font-size: 12px;
+      color: #bdc3c7;
+      margin-top: 2px;
+    }
+
+    /* Radio / Warta KA Box */
+    .radio-box {
+      max-width: 380px;
+      background: rgba(15, 28, 20, 0.92);
+      border: 1px solid #2ecc71;
+      border-left: 5px solid #2ecc71;
+    }
+    .radio-msg {
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+      color: #2ecc71;
+      line-height: 1.4;
+      min-height: 38px;
+    }
+
+    /* Warning banner */
+    #warning-banner {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(192, 57, 43, 0.95);
+      border: 2px solid #e74c3c;
+      border-radius: 30px;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 0 25px rgba(231, 76, 60, 0.8);
+      animation: pulseAlert 0.8s infinite alternate;
+      z-index: 10;
+      display: none;
+    }
+    @keyframes pulseAlert {
+      from { transform: translateX(-50%) scale(0.96); opacity: 0.85; }
+      to { transform: translateX(-50%) scale(1.04); opacity: 1; }
+    }
+
+    /* Bottom Control Bar */
+    .hud-bottom {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 16px;
+      z-index: 10;
+    }
+    .btn-control {
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 800;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+      transition: all 0.15s ease;
+      min-width: 150px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .btn-control span {
+      font-size: 11px;
+      font-weight: 400;
+      opacity: 0.8;
+      margin-top: 3px;
+    }
+    .btn-gate {
+      background: linear-gradient(135deg, #e67e22, #d35400);
+      color: #fff;
+    }
+    .btn-gate.closed {
+      background: linear-gradient(135deg, #c0392b, #962d22);
+    }
+    .btn-gate:active { transform: translateY(2px); }
+    .btn-siren {
+      background: linear-gradient(135deg, #f1c40f, #f39c12);
+      color: #111;
+    }
+    .btn-horn {
+      background: linear-gradient(135deg, #3498db, #2980b9);
+      color: #fff;
+    }
+
+    /* Modal / Popups */
+    .overlay-modal {
+      position: absolute;
+      inset: 0;
+      background: rgba(7, 10, 15, 0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    .modal-card {
+      background: #1c2331;
+      border: 2px solid #f39c12;
+      border-radius: 12px;
+      padding: 32px 40px;
+      max-width: 520px;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+    }
+    .modal-card h1 {
+      font-size: 28px;
+      color: #f1c40f;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .modal-card p {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .guide-box {
+      background: #131922;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: left;
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+    .guide-box ul {
+      margin-left: 20px;
+      margin-top: 6px;
+    }
+    .guide-box li {
+      margin-bottom: 5px;
+    }
+    .btn-start {
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 14px 40px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+      transition: transform 0.15s;
+    }
+    .btn-start:hover { transform: scale(1.05); }
+
+    /* CCTV / Camera toggle badge */
+    .cam-badge {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.7);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #00ffcc;
+      border: 1px solid rgba(0,255,204,0.3);
+      font-family: monospace;
+      letter-spacing: 1px;
+      pointer-events: none;
+    }
+    .pulse-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #e74c3c;
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: blinkRed 1s infinite;
+    }
+    @keyframes blinkRed {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+  </style>
+  <!-- Three.js (3D Isometric Rendering) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- Top HUD -->
+    <div class="hud-top">
+      <div class="hud-card">
+        <div class="hud-title">POS JAGA PJL 142 CIROYOM</div>
+        <div class="hud-value" id="hud-score">SKOR: 0</div>
+        <div class="hud-sub">Kendaraan Selamat: <span id="hud-passed">0</span></div>
+      </div>
+
+      <div class="cam-badge">
+        <span class="pulse-dot"></span>CCTV PJL REAL-TIME (ISOMETRIC 3D)
+      </div>
+
+      <div class="hud-card radio-box">
+        <div class="hud-title">WARTA KA (PPKA DISPATCHER)</div>
+        <div class="radio-msg" id="radio-text">Menunggu info keberangkatan KA dari stasiun terdekat...</div>
+        <div class="hud-sub" style="color: #64748b; font-family: monospace;" id="timer-eta">ETA KA: - detik</div>
+      </div>
+    </div>
+
+    <!-- Alert Banner -->
+    <div id="warning-banner">
+      <span style="font-size: 24px;">🚨</span>
+      <div>
+        <div style="font-weight: 800; font-size: 16px; color: #fff;">PERINGATAN: KERETA API MENDEKAT!</div>
+        <div style="font-size: 12px; color: #ffcccc;">SEGERA TURUNKAN PALANG & BUNYIKAN SIRINE!</div>
+      </div>
+    </div>
+
+    <!-- Bottom Controls -->
+    <div class="hud-bottom">
+      <button class="btn-control btn-gate" id="btn-toggle-gate">
+        <span id="gate-action-text">TURUNKAN PALANG</span>
+        <span>[Spasi / Enter]</span>
+      </button>
+
+      <button class="btn-control btn-siren" id="btn-toggle-siren">
+        <span id="siren-status-text">SIRINE: NONAKTIF</span>
+        <span>[Tekan 'S']</span>
+      </button>
+
+      <button class="btn-control btn-horn" id="btn-whistle">
+        <span>PRIWITAN SEMBOYAN</span>
+        <span>[Tekan 'W' - Peringati Pelanggar]</span>
+      </button>
+    </div>
+
+    <!-- Start / Tutorial Modal -->
+    <div class="overlay-modal" id="modal-start">
+      <div class="modal-card">
+        <h1>🇮🇩 PJL NUSANTARA 3D</h1>
+        <p>Selamat bertugas sebagai Petugas Penjaga Perlintasan Kereta Api (PJL). Amankan ribuan nyawa pengendara dari bahaya lintasan rel!</p>
+        
+        <div class="guide-box">
+          <strong>Tugas Anda:</strong>
+          <ul>
+            <li>Perhatikan pesan warta radio PPKA & jarak kedatangan Kereta Api (KA Argo Bromo, KA Logawa, dll).</li>
+            <li>Nyalakan <strong>Sirine</strong> ('Nung-Nung-Nung') sebelum palang ditutup.</li>
+            <li>Tutup <strong>Palang Pintu</strong> tepat waktu agar kendaraan berhenti sebelum kereta melintas.</li>
+            <li>Waspadai pemotor yang suka menerobos (<em>nyerobot</em>) palang! Gunakan <strong>Priwitan</strong> jika ada yang membandel.</li>
+            <li>Buka kembali palang setelah semboyan ekor kereta (Semboyan 21) melewati perlintasan.</li>
+          </ul>
+        </div>
+
+        <button class="btn-start" id="btn-play">MULAI TUGAS (DINAS)</button>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="overlay-modal" id="modal-gameover" style="display: none;">
+      <div class="modal-card" style="border-color: #e74c3c;">
+        <h1 style="color: #e74c3c;">TABRAKAN TERJADI!</h1>
+        <p id="gameover-reason">Sebuah kendaraan tertabrak kereta api karena palang terlambat ditutup atau diterobos.</p>
+        
+        <div class="guide-box" style="text-align: center;">
+          <div style="font-size: 14px; color: #94a3b8;">Total Pengendara Selamat</div>
+          <div style="font-size: 32px; font-weight: 800; color: #2ecc71;" id="final-passed">0</div>
+          <div style="font-size: 14px; color: #94a3b8; margin-top: 8px;">Skor Disiplin PJL</div>
+          <div style="font-size: 28px; font-weight: 800; color: #f1c40f;" id="final-score">0</div>
+        </div>
+
+        <button class="btn-start" style="background: linear-gradient(135deg, #e74c3c, #c0392b);" id="btn-restart">ULANGI DINAS</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* =========================================================================
+       AUDIO SYSTEM (File suara_palang.mp3 + Web Audio API)
+       ========================================================================= */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.sirenActive = false;
+        this.sirenTimer = null;
+        
+        // Audio Element untuk file audio palang
+        this.palangAudio = new Audio('suara_palang.mp3');
+        this.palangAudio.loop = true;
+        this.palangAudio.preload = 'auto';
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      // Suara Sirine / Palang Perlintasan Kereta Api (Menggunakan suara_palang.mp3)
+      startSiren() {
+        if (this.sirenActive) return;
+        this.init();
+        this.sirenActive = true;
+
+        try {
+          this.palangAudio.currentTime = 0;
+          const playPromise = this.palangAudio.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(err => {
+              console.warn("Audio play blocked or file error, using fallback synth:", err);
+              this.startSirenFallback();
+            });
+          }
+        } catch (e) {
+          this.startSirenFallback();
+        }
+      }
+
+      // Fallback synthesizer jika audio file belum siap atau diblokir
+      startSirenFallback() {
+        let toggle = false;
+        const bellDing = () => {
+          if (!this.sirenActive) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(toggle ? 784 : 700, this.ctx.currentTime);
+
+          gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.35);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.4);
+
+          toggle = !toggle;
+          this.sirenTimer = setTimeout(bellDing, 420);
+        };
+        bellDing();
+      }
+
+      stopSiren() {
+        this.sirenActive = false;
+        if (this.sirenTimer) clearTimeout(this.sirenTimer);
+        try {
+          this.palangAudio.pause();
+          this.palangAudio.currentTime = 0;
+        } catch (e) {}
+      }
+
+      // Semboyan 35 (Klakson Lokomotif CC206 / CC201 GE Transportation khas KAI)
+      playSemboyan35() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const chords = [311.13, 370.0, 470.0, 622.25]; // Khas nada klakson Nathan K3LA lokomotif KAI
+        
+        chords.forEach(freq => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, now);
+
+          // Efek tiupan klakson panjang bertahap
+          gain.gain.setValueAtTime(0.01, now);
+          gain.gain.linearRampToValueAtTime(0.12, now + 0.2);
+          gain.gain.setValueAtTime(0.12, now + 1.6);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 2.3);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 2.4);
+        });
+      }
+
+      // Priwitan Penjaga Palang PJL
+      playWhistle() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(2600, now);
+        osc.frequency.linearRampToValueAtTime(2900, now + 0.08);
+        osc.frequency.linearRampToValueAtTime(2600, now + 0.16);
+
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.linearRampToValueAtTime(0.25, now + 0.25);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.38);
+      }
+
+      // Suara Palang Bergerak (motor servo gear)
+      playGateMotor() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(140, now);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.linearRampToValueAtTime(0.001, now + 1.2);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 1.3);
+      }
+
+      // Dentuman Tabrakan
+      playCrash() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const bufferSize = this.ctx.sampleRate * 1.5;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(600, now);
+        filter.frequency.exponentialRampToValueAtTime(80, now + 1.2);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.6, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 1.4);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start(now);
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    /* =========================================================================
+       THREE.JS 3D ISOMETRIC ENGINE SETUP
+       ========================================================================= */
+    const container = document.getElementById('game-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x3a4b35); // Rumput hijau tropis Indonesia
+    scene.fog = new THREE.FogExp2(0x3a4b35, 0.007);
+
+    // Isometric Orthographic Camera
+    const aspect = window.innerWidth / window.innerHeight;
+    const d = 48; // View frustum scale
+    const camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);
+    
+    // Isometric angle standard
+    camera.position.set(50, 50, 50);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.appendChild(renderer.domElement);
+
+    // Resize handler
+    window.addEventListener('resize', () => {
+      const asp = window.innerWidth / window.innerHeight;
+      camera.left = -d * asp;
+      camera.right = d * asp;
+      camera.top = d;
+      camera.bottom = -d;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    /* =========================================================================
+       LIGHTING (Matahari Tropis Indonesia Cerah)
+       ========================================================================= */
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x445544, 0.7);
+    scene.add(hemiLight);
+
+    const dirLight = new THREE.DirectionalLight(0xfffaed, 0.9);
+    dirLight.position.set(40, 70, 30);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.camera.left = -60;
+    dirLight.shadow.camera.right = 60;
+    dirLight.shadow.camera.top = 60;
+    dirLight.shadow.camera.bottom = -60;
+    dirLight.shadow.camera.near = 10;
+    dirLight.shadow.camera.far = 160;
+    scene.add(dirLight);
+
+    /* =========================================================================
+       WORLD BUILDER (Rel Ganda, Jalan Raya Aspal, Pos PJL, Pohon Pisang, Trotoar)
+       ========================================================================= */
+    // 1. Tanah Rumput
+    const groundGeo = new THREE.PlaneGeometry(240, 240);
+    const groundMat = new THREE.MeshLambertMaterial({ color: 0x3d5236 });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // 2. Jalur Rel Kereta Api (Membentang sumbu X dari kiri-bawah ke kanan-atas)
+    // Bantalan Balas Batu Kerikil
+    const ballastGeo = new THREE.BoxGeometry(200, 0.4, 10);
+    const ballastMat = new THREE.MeshLambertMaterial({ color: 0x6e6e6e });
+    const ballast = new THREE.Mesh(ballastGeo, ballastMat);
+    ballast.position.set(0, 0.2, 0);
+    ballast.receiveShadow = true;
+    scene.add(ballast);
+
+    // Bantalan Kayu/Beton (Sleepers)
+    const sleeperMat = new THREE.MeshLambertMaterial({ color: 0x3d2817 });
+    for (let x = -95; x <= 95; x += 1.8) {
+      const sleeper = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.45, 9.4), sleeperMat);
+      sleeper.position.set(x, 0.25, 0);
+      sleeper.castShadow = true;
+      sleeper.receiveShadow = true;
+      scene.add(sleeper);
+    }
+
+    // Batang Rel Besi Baja (Dua Rel: Jalur Hilir & Jalur Hulu)
+    const railMat = new THREE.MeshStandardMaterial({ color: 0xb0bec5, metalness: 0.8, roughness: 0.3 });
+    // Rel Jalur 1 (Z: -2.2 & -0.8)
+    [-2.6, -1.0, 1.0, 2.6].forEach(zPos => {
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(200, 0.5, 0.25), railMat);
+      rail.position.set(0, 0.5, zPos);
+      rail.castShadow = true;
+      scene.add(rail);
+    });
+
+    // 3. Jalan Raya Aspal (Membentang sumbu Z dari Z-negatif ke Z-positif)
+    const roadGeo = new THREE.BoxGeometry(14, 0.3, 200);
+    const roadMat = new THREE.MeshLambertMaterial({ color: 0x22262c });
+    const road = new THREE.Mesh(roadGeo, roadMat);
+    road.position.set(0, 0.15, 0);
+    road.receiveShadow = true;
+    scene.add(road);
+
+    // Marka Jalan Putih & Kuning Khas Indonesia
+    const stripeMat = new THREE.MeshBasicMaterial({ color: 0xf1c40f });
+    for (let z = -90; z <= 90; z += 5) {
+      if (Math.abs(z) > 6) { // Di tengah rel tidak ada marka garis
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.32, 2.5), stripeMat);
+        stripe.position.set(0, 0.17, z);
+        scene.add(stripe);
+      }
+    }
+
+    // Plat Aspal Perlintasan Karet / Beton di tengah rel
+    const crossingPlate = new THREE.Mesh(new THREE.BoxGeometry(14, 0.48, 8.5), new THREE.MeshLambertMaterial({ color: 0x333b42 }));
+    crossingPlate.position.set(0, 0.25, 0);
+    crossingPlate.receiveShadow = true;
+    scene.add(crossingPlate);
+
+    // 4. Bangunan POS PJL (Pos Jaga Khas KAI: Dinding Putih-Oranye / Biru, Atap Pelana Genteng)
+    const postGroup = new THREE.Group();
+    // Dinding Pos
+    const postWall = new THREE.Mesh(new THREE.BoxGeometry(6, 4, 5), new THREE.MeshLambertMaterial({ color: 0xf8fafc }));
+    postWall.position.set(0, 2, 0);
+    postWall.castShadow = true;
+    postWall.receiveShadow = true;
+    postGroup.add(postWall);
+
+    // Lis Bawah Oranye KAI
+    const postStripe = new THREE.Mesh(new THREE.BoxGeometry(6.1, 0.7, 5.1), new THREE.MeshLambertMaterial({ color: 0xe67e22 }));
+    postStripe.position.set(0, 0.4, 0);
+    postGroup.add(postStripe);
+
+    // Atap Genteng Coklat Merah
+    const roofGeo = new THREE.ConeGeometry(5.2, 2, 4);
+    const roofMat = new THREE.MeshLambertMaterial({ color: 0x962d22 });
+    const roof = new THREE.Mesh(roofGeo, roofMat);
+    roof.position.set(0, 4.8, 0);
+    roof.rotation.y = Math.PI / 4;
+    roof.castShadow = true;
+    postGroup.add(roof);
+
+    // Kaca Jendela Observasi Rel
+    const windowMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.1, metalness: 0.6 });
+    const postWin = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.4, 0.1), windowMat);
+    postWin.position.set(0, 2.3, -2.52);
+    postGroup.add(postWin);
+
+    // Tiang Bendera / Pengeras Suara Toa di Pos
+    const toaPole = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 7, 8), new THREE.MeshLambertMaterial({ color: 0x94a3b8 }));
+    toaPole.position.set(-3.5, 3.5, -2);
+    postGroup.add(toaPole);
+
+    const toaHorn = new THREE.Mesh(new THREE.ConeGeometry(0.5, 0.9, 8), new THREE.MeshLambertMaterial({ color: 0xe2e8f0 }));
+    toaHorn.position.set(-3.5, 6.7, -2);
+    toaHorn.rotation.x = Math.PI / 2;
+    postGroup.add(toaHorn);
+
+    // Posisikan Pos PJL di pojok barat-laut persimpangan rel
+    postGroup.position.set(-11, 0, -8);
+    scene.add(postGroup);
+
+    // 5. Rambu Silang Kereta Api (St. Andrew's Cross) + Lampu Sirine Merah KAI
+    function createSignPost(x, z, rotY) {
+      const group = new THREE.Group();
+      // Tiang belang hitam-putih
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 5, 8), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+      pole.position.set(0, 2.5, 0);
+      pole.castShadow = true;
+      group.add(pole);
+
+      // Silang Peringatan
+      const crossMat = new THREE.MeshLambertMaterial({ color: 0xf1c40f });
+      const c1 = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.35, 0.1), crossMat);
+      c1.position.set(0, 4.2, 0);
+      c1.rotation.z = Math.PI / 4;
+      group.add(c1);
+
+      const c2 = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.35, 0.1), crossMat);
+      c2.position.set(0, 4.2, 0);
+      c2.rotation.z = -Math.PI / 4;
+      group.add(c2);
+
+      // Lampu Sirine Merah Kembar (Blinkers)
+      const redLightMat = new THREE.MeshStandardMaterial({ color: 0x990000, emissive: 0x220000 });
+      const lampL = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), redLightMat);
+      lampL.position.set(-0.6, 3.4, 0.1);
+      group.add(lampL);
+
+      const lampR = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), redLightMat);
+      lampR.position.set(0.6, 3.4, 0.1);
+      group.add(lampR);
+
+      group.position.set(x, 0, z);
+      group.rotation.y = rotY;
+      scene.add(group);
+      return { group, lampL, lampR, redLightMat };
+    }
+
+    const signNorth = createSignPost(-8.5, -6.5, 0);
+    const signSouth = createSignPost(8.5, 6.5, Math.PI);
+
+    // 6. Palang Pintu Perlintasan (North & South Gate)
+    // Palang dengan tekstur belang merah-putih
+    function createBarrierGate(x, z, isNorth) {
+      const group = new THREE.Group();
+
+      // Kotak Motor Hidrolik / Penggerak (Oranye KAI)
+      const baseMotor = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.2, 1.4), new THREE.MeshLambertMaterial({ color: 0xd35400 }));
+      baseMotor.position.set(0, 1.1, 0);
+      baseMotor.castShadow = true;
+      group.add(baseMotor);
+
+      // Lengan Palang Berputar (Pivot)
+      const pivot = new THREE.Group();
+      pivot.position.set(0, 1.8, 0);
+
+      // Batang Palang Panjang Menutup Jalur Jalan (Panjang 13 unit)
+      const armLength = 13.5;
+      const armGroup = new THREE.Group();
+
+      // Buat segmen belang merah putih
+      const segCount = 9;
+      const segLen = armLength / segCount;
+      for (let i = 0; i < segCount; i++) {
+        const segMat = new THREE.MeshLambertMaterial({ color: i % 2 === 0 ? 0xc0392b : 0xf8fafc });
+        const seg = new THREE.Mesh(new THREE.BoxGeometry(segLen, 0.25, 0.2), segMat);
+        seg.position.x = (i * segLen) + (segLen / 2);
+        seg.castShadow = true;
+        armGroup.add(seg);
+      }
+
+      // Lampu LED kecil merah di ujung palang
+      const ledTip = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+      ledTip.position.set(armLength - 0.2, 0.2, 0);
+      armGroup.add(ledTip);
+
+      // Arahkan batang
+      if (isNorth) {
+        armGroup.rotation.y = 0; // Membentang sepanjang sumbu X menyeberangi jalan
+      } else {
+        armGroup.rotation.y = Math.PI;
+      }
+
+      pivot.add(armGroup);
+      group.add(pivot);
+
+      group.position.set(x, 0, z);
+      scene.add(group);
+
+      return {
+        group,
+        pivot,
+        armGroup,
+        isNorth,
+        angle: 0,       // 0: Terbuka tegak ke atas, 1: Tertutup mendatar
+        targetAngle: 0  // 0 (Open), 1 (Closed)
+      };
+    }
+
+    const gateNorth = createBarrierGate(-7.5, -5.5, true);
+    const gateSouth = createBarrierGate(7.5, 5.5, false);
+
+    // Posisi awal palang terbuka (tegak lurus ke atas ~ 75 derajat)
+    gateNorth.pivot.rotation.z = Math.PI * 0.42;
+    gateSouth.pivot.rotation.z = -Math.PI * 0.42;
+
+    // 7. Lingkungan Sekitar (Pohon Palem/Pisang, Warung Klontong Khas Pantura)
+    function createTree(x, z) {
+      const treeGroup = new THREE.Group();
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.5, 4, 7), new THREE.MeshLambertMaterial({ color: 0x4a2e13 }));
+      trunk.position.y = 2;
+      trunk.castShadow = true;
+      treeGroup.add(trunk);
+
+      const leafMat = new THREE.MeshLambertMaterial({ color: 0x27ae60 });
+      for (let i = 0; i < 3; i++) {
+        const foliage = new THREE.Mesh(new THREE.ConeGeometry(2.5 - i * 0.5, 2.5, 7), leafMat);
+        foliage.position.y = 3.5 + i * 1.3;
+        foliage.castShadow = true;
+        treeGroup.add(foliage);
+      }
+      treeGroup.position.set(x, 0, z);
+      scene.add(treeGroup);
+    }
+
+    // Pohon-pohon di pinggir rel
+    [-30, -22, -16, 18, 25, 34].forEach(x => {
+      createTree(x, -14);
+      createTree(x, 14);
+    });
+
+    // Warung Madura / Kopi di pinggir jalan
+    function createWarung(x, z) {
+      const wGroup = new THREE.Group();
+      const bldg = new THREE.Mesh(new THREE.BoxGeometry(5, 3, 4), new THREE.MeshLambertMaterial({ color: 0x3b82f6 }));
+      bldg.position.y = 1.5;
+      bldg.castShadow = true;
+      wGroup.add(bldg);
+
+      // Spanduk warung
+      const banner = new THREE.Mesh(new THREE.BoxGeometry(4, 0.8, 0.1), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
+      banner.position.set(0, 2.2, 2.05);
+      wGroup.add(banner);
+
+      // Kanopi terpal
+      const canopy = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.1, 1.8), new THREE.MeshLambertMaterial({ color: 0xef4444 }));
+      canopy.position.set(0, 2.5, 2.7);
+      canopy.rotation.x = 0.2;
+      wGroup.add(canopy);
+
+      wGroup.position.set(x, 0, z);
+      scene.add(wGroup);
+    }
+    createWarung(12, -11);
+
+    /* =========================================================================
+       GAME STATE & LOGIC VARIABLES
+       ========================================================================= */
+    const GAME = {
+      score: 0,
+      vehiclesPassed: 0,
+      gateClosed: false,
+      sirenOn: false,
+      gateProgress: 0, // 0 (fully open) to 1 (fully closed)
+      isGameOver: false,
+      trainActive: false,
+      trainObj: null,
+      trainSpeed: 52, // Units per second
+      trainX: -130,
+      trainWarning: false,
+      trainName: 'KA 1 Argo Bromo Anggrek',
+      trainDirection: 1, // 1: Kiri ke Kanan, -1: Kanan ke Kiri
+      trainType: 'CC206',
+      etaTimer: 0,
+      nextTrainCountdown: 8.0, // Waktu kedatangan KA pertama
+      trafficSpawnTimer: 0,
+      blinkToggle: false,
+      blinkTimer: 0
+    };
+
+    const VEHICLES = []; // Active cars, bikes, angkot on the road
+    const TRAIN_CARS = [];
+
+    /* =========================================================================
+       MODEL 3D: LOKOMOTIF CC 206 / CC 201 KHAS PT KERETA API INDONESIA
+       ========================================================================= */
+    function buildTrainMesh(trainName, direction) {
+      const trainGroup = new THREE.Group();
+
+      // 1. Lokomotif CC 206 (Hidung ganda, Corak Livery Putih, Garis Biru & Oranye KAI)
+      const locoGroup = new THREE.Group();
+
+      // Bodi Utama Lokomotif
+      const locoBody = new THREE.Mesh(
+        new THREE.BoxGeometry(16, 4.4, 3.4),
+        new THREE.MeshLambertMaterial({ color: 0xf1f5f9 })
+      );
+      locoBody.position.y = 3.2;
+      locoBody.castShadow = true;
+      locoGroup.add(locoBody);
+
+      // Garis Striping Biru & Oranye KAI
+      const stripeBlue = new THREE.Mesh(
+        new THREE.BoxGeometry(16.05, 0.6, 3.45),
+        new THREE.MeshLambertMaterial({ color: 0x1d4ed8 })
+      );
+      stripeBlue.position.y = 2.4;
+      locoGroup.add(stripeBlue);
+
+      const stripeOrange = new THREE.Mesh(
+        new THREE.BoxGeometry(16.05, 0.35, 3.45),
+        new THREE.MeshLambertMaterial({ color: 0xe67e22 })
+      );
+      stripeOrange.position.y = 1.95;
+      locoGroup.add(stripeOrange);
+
+      // Kabin Masinis (Kaca Depan & Samping)
+      const cabinWinMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.1 });
+      const winFront = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.2, 2.6), cabinWinMat);
+      winFront.position.set(8.02, 3.8, 0); // Kaca depan muka hidung
+      locoGroup.add(winFront);
+
+      const winBack = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.2, 2.6), cabinWinMat);
+      winBack.position.set(-8.02, 3.8, 0); // Kaca belakang muka hidung
+      locoGroup.add(winBack);
+
+      // Lampu Sorot Semboyan Utama (Headlight LED Terang)
+      const lampMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.4, 12, 12),
+        new THREE.MeshBasicMaterial({ color: 0xfffee0 })
+      );
+      lampMesh.position.set(8.1, 4.6, 0);
+      locoGroup.add(lampMesh);
+
+      // Sorot Cahaya Spotlight Lokomotif
+      const spotLight = new THREE.SpotLight(0xfffee0, 3, 50, Math.PI / 7, 0.4);
+      spotLight.position.set(8.5, 4.6, 0);
+      spotLight.target.position.set(30, 0, 0);
+      locoGroup.add(spotLight);
+      locoGroup.add(spotLight.target);
+
+      // Roda Bogie Lokomotif (3 pasang tiap bogie = C-C)
+      const bogieMat = new THREE.MeshLambertMaterial({ color: 0x111827 });
+      const bogieFront = new THREE.Mesh(new THREE.BoxGeometry(5.2, 1.2, 3.1), bogieMat);
+      bogieFront.position.set(4.5, 1.1, 0);
+      locoGroup.add(bogieFront);
+
+      const bogieRear = new THREE.Mesh(new THREE.BoxGeometry(5.2, 1.2, 3.1), bogieMat);
+      bogieRear.position.set(-4.5, 1.1, 0);
+      locoGroup.add(bogieRear);
+
+      // AC Unit di Atap Lokomotif
+      const acUnit = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.6, 2.2), new THREE.MeshLambertMaterial({ color: 0x94a3b8 }));
+      acUnit.position.set(0, 5.6, 0);
+      locoGroup.add(acUnit);
+
+      trainGroup.add(locoGroup);
+
+      // 2. Gerbong Penumpang Stainless Steel K1 Eksekutif KAI (3 Gerbong)
+      for (let g = 1; g <= 3; g++) {
+        const coachGroup = new THREE.Group();
+        const cX = -(g * 19);
+
+        // Bodi Stainless Steel Metallic
+        const coachBody = new THREE.Mesh(
+          new THREE.BoxGeometry(17.5, 4.2, 3.3),
+          new THREE.MeshStandardMaterial({ color: 0xd1d5db, metalness: 0.6, roughness: 0.3 })
+        );
+        coachBody.position.y = 3.2;
+        coachBody.castShadow = true;
+        coachGroup.add(coachBody);
+
+        // Jendela Panjang Gerbong KAI Eksekutif (Kaca Hitam Riben)
+        const winBand = new THREE.Mesh(
+          new THREE.BoxGeometry(15.5, 1.0, 3.35),
+          new THREE.MeshBasicMaterial({ color: 0x1e293b })
+        );
+        winBand.position.y = 3.6;
+        coachGroup.add(winBand);
+
+        // Striping Livery Orange-Biru di Samping
+        const cStripe = new THREE.Mesh(
+          new THREE.BoxGeometry(17.55, 0.35, 3.36),
+          new THREE.MeshLambertMaterial({ color: 0xe67e22 })
+        );
+        cStripe.position.y = 2.1;
+        coachGroup.add(cStripe);
+
+        // Bogie Gerbong
+        const cBogie1 = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.1, 3.0), bogieMat);
+        cBogie1.position.set(5.5, 1.0, 0);
+        coachGroup.add(cBogie1);
+
+        const cBogie2 = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.1, 3.0), bogieMat);
+        cBogie2.position.set(-5.5, 1.0, 0);
+        coachGroup.add(cBogie2);
+
+        // Sambungan Antar Kereta (Bordess / Gangway karet hitam)
+        const gangway = new THREE.Mesh(new THREE.BoxGeometry(1.6, 3.5, 2.2), new THREE.MeshLambertMaterial({ color: 0x0f172a }));
+        gangway.position.set(9.0, 3.0, 0);
+        coachGroup.add(gangway);
+
+        // Lampu Merah Semboyan 21 (Akhir Rangkaian) di Gerbong Paling Belakang
+        if (g === 3) {
+          const semb21 = new THREE.Mesh(new THREE.SphereGeometry(0.28, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+          semb21.position.set(-8.8, 3.6, 0.9);
+          coachGroup.add(semb21);
+          const semb21L = new THREE.Mesh(new THREE.SphereGeometry(0.28, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+          semb21L.position.set(-8.8, 3.6, -0.9);
+          coachGroup.add(semb21L);
+        }
+
+        coachGroup.position.x = cX;
+        trainGroup.add(coachGroup);
+      }
+
+      // Orientasi arah kereta
+      if (direction === -1) {
+        trainGroup.rotation.y = Math.PI;
+      }
+
+      trainGroup.position.set(direction === 1 ? -120 : 120, 0, direction === 1 ? -1.8 : 1.8);
+      scene.add(trainGroup);
+      return trainGroup;
+    }
+
+    /* =========================================================================
+       MODEL KENDARAAN LALU LINTAS INDONESIA:
+       - Motor Bebek / Matic (Sering nyelonong)
+       - Angkot Hijau / Kuning Khas Indonesia
+       - Mobil Avanza / Minibus
+       - Truk Pasir / Truk Galon
+       ========================================================================= */
+    function spawnVehicle() {
+      // Tentukan arah jalan: Dari Selatan ke Utara (Z positif ke Z negatif) atau sebaliknya
+      // Jalur kiri jalan raya Indonesia:
+      // Arah Ke Utara (Z bergerak turun): X = -3.2
+      // Arah Ke Selatan (Z bergerak naik): X = 3.2
+      const goNorth = Math.random() > 0.5;
+      const laneX = goNorth ? -3.4 : 3.4;
+      const startZ = goNorth ? 90 : -90;
+      const speedBase = 16 + Math.random() * 8; // Kecepatan normal km/s unit
+      const speed = goNorth ? -speedBase : speedBase;
+
+      // Tipe kendaraan
+      const r = Math.random();
+      let type = 'motor';
+      if (r < 0.45) type = 'motor';       // 45% Pemotor (Ngebut & nekat)
+      else if (r < 0.70) type = 'angkot'; // 25% Angkot
+      else if (r < 0.90) type = 'mobil';  // 20% Mobil Keluarga
+      else type = 'truk';                 // 10% Truk
+
+      const group = new THREE.Group();
+      let length = 2;
+      let width = 1;
+      let isStubborn = (type === 'motor' && Math.random() < 0.35); // 35% kemungkinan motor nekat nyerobot
+
+      if (type === 'motor') {
+        length = 2.0; width = 0.9;
+        // Bodi Motor
+        const bikeBody = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.8, 1.8), new THREE.MeshLambertMaterial({ color: 0xe11d48 }));
+        bikeBody.position.y = 0.7;
+        bikeBody.castShadow = true;
+        group.add(bikeBody);
+
+        // Helm & Pengendara
+        const riderHead = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), new THREE.MeshLambertMaterial({ color: 0x38bdf8 }));
+        riderHead.position.set(0, 1.6, -0.1);
+        group.add(riderHead);
+
+        const riderBody = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.8, 0.6), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+        riderBody.position.set(0, 1.1, -0.1);
+        group.add(riderBody);
+
+        // Lampu depan
+        const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.12, 6, 6), new THREE.MeshBasicMaterial({ color: 0xfef08a }));
+        lamp.position.set(0, 0.8, goNorth ? -0.95 : 0.95);
+        group.add(lamp);
+
+      } else if (type === 'angkot') {
+        length = 5.0; width = 2.4;
+        // Bodi Angkot Hijau Lumut / Oranye
+        const angkotColor = Math.random() > 0.5 ? 0x16a34a : 0xf97316;
+        const angkotBody = new THREE.Mesh(new THREE.BoxGeometry(2.3, 2.0, 4.6), new THREE.MeshLambertMaterial({ color: angkotColor }));
+        angkotBody.position.y = 1.3;
+        angkotBody.castShadow = true;
+        group.add(angkotBody);
+
+        // Kaca Angkot
+        const win = new THREE.Mesh(new THREE.BoxGeometry(2.35, 0.7, 4.4), new THREE.MeshLambertMaterial({ color: 0x0f172a }));
+        win.position.y = 1.7;
+        group.add(win);
+
+        // Pintu Terbuka Khas Angkot
+        const doorCut = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1.5, 1.2), new THREE.MeshBasicMaterial({ color: 0x052e16 }));
+        doorCut.position.set(1.15, 1.1, 0.5);
+        group.add(doorCut);
+
+      } else if (type === 'mobil') {
+        length = 4.8; width = 2.3;
+        // Mobil MPV Avanza Putih / Hitam / Silver
+        const colors = [0xffffff, 0x1e293b, 0x94a3b8];
+        const carMat = new THREE.MeshLambertMaterial({ color: colors[Math.floor(Math.random() * colors.length)] });
+        const carBody = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.6, 4.5), carMat);
+        carBody.position.y = 1.1;
+        carBody.castShadow = true;
+        group.add(carBody);
+
+        const carTop = new THREE.Mesh(new THREE.BoxGeometry(2.0, 1.0, 2.6), carMat);
+        carTop.position.set(0, 2.1, -0.2);
+        group.add(carTop);
+
+      } else if (type === 'truk') {
+        length = 7.5; width = 2.6;
+        // Kepala Truk Kuning Canter
+        const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.5, 2.6, 2.4), new THREE.MeshLambertMaterial({ color: 0xeab308 }));
+        cabin.position.set(0, 1.6, goNorth ? -2.2 : 2.2);
+        cabin.castShadow = true;
+        group.add(cabin);
+
+        // Bak Truk Kayu
+        const bak = new THREE.Mesh(new THREE.BoxGeometry(2.5, 2.0, 4.8), new THREE.MeshLambertMaterial({ color: 0xb45309 }));
+        bak.position.set(0, 1.4, goNorth ? 1.2 : -1.2);
+        bak.castShadow = true;
+        group.add(bak);
+      }
+
+      // Orientasi hadap kendaraan
+      if (goNorth) {
+        group.rotation.y = Math.PI;
+      }
+
+      group.position.set(laneX + (type === 'motor' ? (Math.random() * 1.2 - 0.6) : 0), 0, startZ);
+      scene.add(group);
+
+      VEHICLES.push({
+        group,
+        type,
+        goNorth,
+        laneX,
+        speed,
+        length,
+        width,
+        isStubborn, // Mau nerobos kalau palang belum tertutup rapat
+        stopped: false,
+        warned: false // Sudah ditiup peluit?
+      });
+    }
+
+    /* =========================================================================
+       TRAIN DISPATCHER (WARTA KA PPKA)
+       ========================================================================= */
+    const TRAIN_NAMES = [
+      'KA 1 Argo Bromo Anggrek (Gambir - Surabaya Pasarturi)',
+      'KA 7001 Lodaya (Bandung - Solo Balapan)',
+      'KA 298 Pasundan (Kiaracondong - Surabaya Gubeng)',
+      'KA 142 Senja Utama Solo',
+      'KA 2618 Angkutan Barang Petikemas KAI Logistik',
+      'KA 17 Argo Cheribon',
+      'KA 248 Progo (Pasar Senen - Lempuyangan)'
+    ];
+
+    function scheduleNewTrain() {
+      GAME.trainActive = true;
+      GAME.trainDirection = Math.random() > 0.5 ? 1 : -1;
+      GAME.trainName = TRAIN_NAMES[Math.floor(Math.random() * TRAIN_NAMES.length)];
+      GAME.trainX = GAME.trainDirection === 1 ? -140 : 140;
+      GAME.trainSpeed = 48 + Math.random() * 16;
+      GAME.trainWarning = false;
+
+      // Hitung perkiraan waktu sampai di persimpangan (X = 0)
+      const distance = Math.abs(GAME.trainX);
+      GAME.etaTimer = distance / GAME.trainSpeed;
+
+      // Update Radio Warta KA UI
+      document.getElementById('radio-text').innerHTML = 
+        `📢 <strong>WARTA KA DITERIMA:</strong><br>${GAME.trainName} bersiap melintasi PJL 142! Kecepatan ${Math.round(GAME.trainSpeed * 2.5)} km/j.`;
+
+      // Buat Mesh 3D Kereta
+      if (GAME.trainObj) {
+        scene.remove(GAME.trainObj);
+      }
+      GAME.trainObj = buildTrainMesh(GAME.trainName, GAME.trainDirection);
+    }
+
+    /* =========================================================================
+       INPUT CONTROLS & INTERACTIONS
+       ========================================================================= */
+    const btnToggleGate = document.getElementById('btn-toggle-gate');
+    const gateActionText = document.getElementById('gate-action-text');
+    const btnToggleSiren = document.getElementById('btn-toggle-siren');
+    const sirenStatusText = document.getElementById('siren-status-text');
+    const btnWhistle = document.getElementById('btn-whistle');
+
+    function toggleGate() {
+      if (GAME.isGameOver) return;
+      GAME.gateClosed = !GAME.gateClosed;
+      sound.playGateMotor();
+
+      if (GAME.gateClosed) {
+        btnToggleGate.classList.add('closed');
+        gateActionText.textContent = "BUKA PALANG";
+        // Otomatis aktifkan suara sirine/palang jika belum menyala
+        if (!GAME.sirenOn) {
+          toggleSiren();
+        }
+      } else {
+        btnToggleGate.classList.remove('closed');
+        gateActionText.textContent = "TURUNKAN PALANG";
+        // Otomatis matikan suara sirine/palang saat palang dibuka
+        if (GAME.sirenOn) {
+          toggleSiren();
+        }
+      }
+    }
+
+    function toggleSiren() {
+      if (GAME.isGameOver) return;
+      GAME.sirenOn = !GAME.sirenOn;
+      if (GAME.sirenOn) {
+        sound.startSiren();
+        sirenStatusText.textContent = "SIRINE: AKTIF 🔔";
+        btnToggleSiren.style.filter = "brightness(1.3)";
+      } else {
+        sound.stopSiren();
+        sirenStatusText.textContent = "SIRINE: NONAKTIF";
+        btnToggleSiren.style.filter = "none";
+      }
+    }
+
+    function blowWhistle() {
+      if (GAME.isGameOver) return;
+      sound.playWhistle();
+
+      // Efek peluit: Memaksa motor penerobos yang bandel untuk mendadak berhenti sebelum rel!
+      VEHICLES.forEach(v => {
+        if (v.isStubborn && !v.warned) {
+          const distToTrack = Math.abs(v.group.position.z);
+          if (distToTrack < 18 && distToTrack > 5) {
+            v.isStubborn = false;
+            v.warned = true;
+            // Pop text atau reaksi kaget
+            console.log("Pengendara motor ditertibkan oleh peluit PJL!");
+          }
+        }
+      });
+    }
+
+    btnToggleGate.addEventListener('click', toggleGate);
+    btnToggleSiren.addEventListener('click', toggleSiren);
+    btnWhistle.addEventListener('click', blowWhistle);
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.key === 'Enter') {
+        e.preventDefault();
+        toggleGate();
+      } else if (e.key === 's' || e.key === 'S') {
+        toggleSiren();
+      } else if (e.key === 'w' || e.key === 'W') {
+        blowWhistle();
+      }
+    });
+
+    // Start Game Button
+    document.getElementById('btn-play').addEventListener('click', () => {
+      document.getElementById('modal-start').style.display = 'none';
+      sound.init();
+    });
+
+    // Restart Game Button
+    document.getElementById('btn-restart').addEventListener('click', () => {
+      location.reload();
+    });
+
+    /* =========================================================================
+       GAME OVER HANDLER
+       ========================================================================= */
+    function triggerGameOver(reason) {
+      if (GAME.isGameOver) return;
+      GAME.isGameOver = true;
+      sound.stopSiren();
+      sound.playCrash();
+
+      document.getElementById('gameover-reason').textContent = reason;
+      document.getElementById('final-passed').textContent = GAME.vehiclesPassed;
+      document.getElementById('final-score').textContent = GAME.score;
+      document.getElementById('modal-gameover').style.display = 'flex';
+    }
+
+    /* =========================================================================
+       MAIN GAME LOOP (PHYSICS, ANIMATION & RULES)
+       ========================================================================= */
+    let lastTime = performance.now();
+
+    function gameLoop(now) {
+      requestAnimationFrame(gameLoop);
+      const dt = Math.min((now - lastTime) / 1000, 0.1); // Delta time capped
+      lastTime = now;
+
+      if (GAME.isGameOver) {
+        renderer.render(scene, camera);
+        return;
+      }
+
+      // --- 1. ANIMASI PALANG PERLINTASAN ---
+      const gateSpeed = 1.4 * dt; // Kecepatan turun/naik palang
+      if (GAME.gateClosed) {
+        GAME.gateProgress = Math.min(1.0, GAME.gateProgress + gateSpeed);
+      } else {
+        GAME.gateProgress = Math.max(0.0, GAME.gateProgress - gateSpeed);
+      }
+
+      // Hitung sudut rotasi pivot (0 rad = tertutup horizontal, 1.2 rad = terbuka ke atas)
+      const maxAngle = Math.PI * 0.42;
+      const currentAngle = (1.0 - GAME.gateProgress) * maxAngle;
+      gateNorth.pivot.rotation.z = currentAngle;
+      gateSouth.pivot.rotation.z = -currentAngle;
+
+      // Lampu Kedip Sirine Perlintasan
+      GAME.blinkTimer += dt;
+      if (GAME.blinkTimer > 0.45) {
+        GAME.blinkTimer = 0;
+        GAME.blinkToggle = !GAME.blinkToggle;
+
+        const isBlinking = GAME.sirenOn || GAME.trainWarning;
+        const col1 = isBlinking && GAME.blinkToggle ? 0xff0000 : 0x440000;
+        const col2 = isBlinking && !GAME.blinkToggle ? 0xff0000 : 0x440000;
+
+        signNorth.lampL.material.color.setHex(col1);
+        signNorth.lampR.material.color.setHex(col2);
+        signSouth.lampL.material.color.setHex(col1);
+        signSouth.lampR.material.color.setHex(col2);
+      }
+
+      // --- 2. TRAFFIC / KENDARAAN JALAN RAYA ---
+      GAME.trafficSpawnTimer += dt;
+      if (GAME.trafficSpawnTimer > (1.2 + Math.random() * 1.5)) {
+        GAME.trafficSpawnTimer = 0;
+        if (VEHICLES.length < 18) {
+          spawnVehicle();
+        }
+      }
+
+      // Batas palang pintu perlintasan di sumbu Z
+      // Palang Utara berada di Z = -5.5 (menahan kendaraan arah ke selatan yang datang dari Z negatif)
+      // Palang Selatan berada di Z = 5.5 (menahan kendaraan arah ke utara yang datang dari Z positif)
+      const stopLineNorth = -7.2;
+      const stopLineSouth = 7.2;
+
+      for (let i = VEHICLES.length - 1; i >= 0; i--) {
+        const v = VEHICLES[i];
+        let canMove = true;
+        const curZ = v.group.position.z;
+
+        // Cek Palang & Antrean
+        if (v.goNorth) {
+          // Bergerak dari +Z ke -Z (ke arah rel)
+          const isApproachingTrack = curZ > stopLineSouth && curZ < (stopLineSouth + 12);
+
+          // Jika palang tertutup (atau sedang turun > 30%)
+          if (isApproachingTrack && GAME.gateProgress > 0.3) {
+            // Kecuali motor nekat yang masih jauh dan palang belum rapat
+            if (!v.isStubborn || GAME.gateProgress > 0.85) {
+              if (curZ <= stopLineSouth + 1.2) {
+                canMove = false;
+              }
+            }
+          }
+
+          // Cek antrean mobil di depannya agar tidak saling bertumpukan
+          for (let j = 0; j < VEHICLES.length; j++) {
+            if (i !== j && VEHICLES[j].goNorth) {
+              const other = VEHICLES[j];
+              const distZ = curZ - other.group.position.z;
+              if (distZ > 0 && distZ < (v.length + other.length + 1.2)) {
+                if (!other.canMove || distZ < (v.length + 1.0)) {
+                  canMove = false;
+                  break;
+                }
+              }
+            }
+          }
+        } else {
+          // Bergerak dari -Z ke +Z (ke arah rel dari utara)
+          const isApproachingTrack = curZ < stopLineNorth && curZ > (stopLineNorth - 12);
+
+          if (isApproachingTrack && GAME.gateProgress > 0.3) {
+            if (!v.isStubborn || GAME.gateProgress > 0.85) {
+              if (curZ >= stopLineNorth - 1.2) {
+                canMove = false;
+              }
+            }
+          }
+
+          for (let j = 0; j < VEHICLES.length; j++) {
+            if (i !== j && !VEHICLES[j].goNorth) {
+              const other = VEHICLES[j];
+              const distZ = other.group.position.z - curZ;
+              if (distZ > 0 && distZ < (v.length + other.length + 1.2)) {
+                if (!other.canMove || distZ < (v.length + 1.0)) {
+                  canMove = false;
+                  break;
+                }
+              }
+            }
+          }
+        }
+
+        v.canMove = canMove;
+        if (canMove) {
+          v.group.position.z += v.speed * dt;
+        }
+
+        // Skor reward jika kendaraan berhasil menyeberang rel dengan selamat
+        if (!v.hasScored) {
+          if ((v.goNorth && curZ < -10) || (!v.goNorth && curZ > 10)) {
+            v.hasScored = true;
+            GAME.vehiclesPassed++;
+            GAME.score += 15;
+            document.getElementById('hud-passed').textContent = GAME.vehiclesPassed;
+            document.getElementById('hud-score').textContent = `SKOR: ${GAME.score}`;
+          }
+        }
+
+        // Hapus kendaraan jika sudah jauh keluar layar
+        if (curZ < -110 || curZ > 110) {
+          scene.remove(v.group);
+          VEHICLES.splice(i, 1);
+        }
+      }
+
+      // --- 3. JADWAL & PERGERAKAN KERETA API ---
+      if (!GAME.trainActive) {
+        GAME.nextTrainCountdown -= dt;
+        if (GAME.nextTrainCountdown <= 0) {
+          scheduleNewTrain();
+        }
+      } else {
+        // Kereta sedang dinas/berjalan
+        const trainMove = GAME.trainSpeed * dt * GAME.trainDirection;
+        GAME.trainX += trainMove;
+        GAME.trainObj.position.x = GAME.trainX;
+
+        // Hitung jarak muka lokomotif ke perlintasan (X = 0)
+        const distToCrossing = Math.abs(GAME.trainX);
+        const eta = Math.max(0, Math.round(distToCrossing / GAME.trainSpeed));
+        document.getElementById('timer-eta').textContent = `ETA KA: ${eta} detik (Jarak: ${Math.round(distToCrossing)}m)`;
+
+        // Peringatan otomatis banner jika kereta makin dekat (< 5.5 detik)
+        const warningBanner = document.getElementById('warning-banner');
+        if (distToCrossing < (GAME.trainSpeed * 5.5) && distToCrossing > 5) {
+          if (!GAME.trainWarning) {
+            GAME.trainWarning = true;
+            sound.playSemboyan35(); // Klakson Lokomotif KAI
+            warningBanner.style.display = 'flex';
+          }
+        }
+
+        // Semboyan 35 tambahan saat lokomotif pas sebelum melintas
+        if (distToCrossing < 25 && distToCrossing > 20 && !GAME.blownHornAtCrossing) {
+          GAME.blownHornAtCrossing = true;
+          sound.playSemboyan35();
+        }
+
+        // --- 4. DETEKSI TABRAKAN (COLLISION DETECTION) ---
+        // Wilayah rel berbahaya: X antara -12 dan +12, Z antara -4.5 dan +4.5
+        // Kereta mencakup lokomotif + 3 gerbong (panjang total ~ 75 unit)
+        const trainMinX = GAME.trainDirection === 1 ? (GAME.trainX - 75) : (GAME.trainX - 12);
+        const trainMaxX = GAME.trainDirection === 1 ? (GAME.trainX + 12) : (GAME.trainX + 75);
+
+        // Cek apakah kereta sedang memotong jalan raya (X di sekitar -8 s/d 8)
+        if (trainMaxX >= -7 && trainMinX <= 7) {
+          // Periksa setiap kendaraan di perlintasan rel
+          VEHICLES.forEach(v => {
+            const vZ = v.group.position.z;
+            const vX = v.group.position.x;
+            // Jika ada kendaraan yang berada di atas rel saat kereta lewat!
+            if (Math.abs(vZ) < 4.2 && Math.abs(vX) < 7.5) {
+              triggerGameOver(`Tabrakan maut! ${v.type.toUpperCase()} tertabrak ${GAME.trainName} di atas rel karena palang terlambat ditutup.`);
+            }
+          });
+        }
+
+        // Kereta selesai melintas dan keluar layar
+        const isFinished = (GAME.trainDirection === 1 && GAME.trainX > 160) || (GAME.trainDirection === -1 && GAME.trainX < -160);
+        if (isFinished) {
+          scene.remove(GAME.trainObj);
+          GAME.trainActive = false;
+          GAME.trainWarning = false;
+          GAME.blownHornAtCrossing = false;
+          warningBanner.style.display = 'none';
+          document.getElementById('timer-eta').textContent = 'ETA KA: Aman';
+          document.getElementById('radio-text').innerHTML = 
+            `✅ Semboyan 21 (ekor kereta) telah melintas aman. Buka palang jika jalur telah bersih!`;
+          
+          // Bonus disiplin jika palang tertutup tepat saat kereta lewat
+          if (GAME.gateClosed) {
+            GAME.score += 50;
+            document.getElementById('hud-score').textContent = `SKOR: ${GAME.score}`;
+          }
+
+          // Atur jeda untuk KA berikutnya (10 - 18 detik)
+          GAME.nextTrainCountdown = 12 + Math.random() * 8;
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    // Jalankan Game Loop
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>

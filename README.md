@@ -13,6 +13,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 3 | [**3_LANDING PAGE WEBSITE**](./3_LANDING%20PAGE%20WEBSITE) | Landing Page Perusahaan Agribisnis Sawit Berkelanjutan (PT Nusa Sawit Agro Tbk) dengan desain Enterprise Humanis & Natural. | ✅ Selesai |
 | 4 | [**4_INDO FIREWATCHER**](./4_INDO%20FIREWATCHER) | Sistem Web GIS Pemantauan Titik Panas (Hotspot) Karhutla Indonesia berbasis Satelit NASA FIRMS (VIIRS/MODIS) & Cuaca Open-Meteo. | ✅ Selesai |
 | 5 | [**5_ENDLESS HIGHWAY**](./5_ENDLESS%20HIGHWAY) | Game 3D Mengemudi Jalan Tol Malam Hari Berkabut (*Endless Midnight Highway*) dengan Three.js, audio prosedural, dan fisika realistis. | ✅ Selesai |
+| 6 | [**6_SIMULATOR PERLINTASAN KERETA**](./6_SIMULATOR%20PERLINTASAN%20KERETA) | Simulator 3D Pos Penjaga Perlintasan Kereta Api Indonesia (PJL) dengan Three.js, AI lalu lintas kendaraan, dan audio sirine otentik. | ✅ Selesai |
 
 ---
 
@@ -79,6 +80,25 @@ Game simulasi mengemudi 3D tak berujung (*endless driving*) dengan nuansa sunyi 
 - **Tech Stack**: Three.js, Modern Vanilla JavaScript (ES6+ Modules), Web Audio API, CSS3 Glassmorphism, Electron (Windows Desktop).
 
 👉 **[Buka Dokumentasi & Kode Proyek 5](./5_ENDLESS%20HIGHWAY)**
+
+---
+
+## 🚂 Ringkasan Proyek 6: PJL Nusantara (Simulator Palang Kereta Api Indonesia)
+
+Simulator interaktif penjaga pos perlintasan sebidang kereta api (**PJL**) di Indonesia dengan grafis 3D isometrik:
+- **Design System & Visual 3D**: Pemodelan 3D Three.js isometrik dengan lokomotif CC206 khas KAI, gerbong eksekutif stainless steel dan kargo kontainer (petikemas), rel ganda (*double track*) beralas batu kricak/ballast, pos jaga PJL, lampu strobo merah kembar berkedip bergantian, serta animasi buka-tutup palang pintu otomatis dan manual.
+- **AI Lalu Lintas Kendaraan (Smart Traffic System)**: Simulasi kendaraan khas jalanan Indonesia (sepeda motor bebek/matic, mobil Avanza/Innova, Angkot lokal, dan truk boks/engkel) yang memiliki logika antrean berjarak aman dan berhenti tertib di belakang garis marka stop saat palang pintu ditutup.
+- **Audio Otentik (Hybrid Audio Engine)**:
+  - Sirine genta perlintasan kereta asli Indonesia (`suara_palang.mp3`).
+  - Sintesis klakson lokomotif Semboyan 35 (*Nathan AirChime K3LA* 4-nada akord) via Web Audio API.
+  - Efek suara gemuruh roda di sambungan rel dan desis rem angin pneumatik.
+- **Panel Kontrol Operator & Warta KA**:
+  - Tombol kontrol manual palang pintu, sirine peringatan, dan semboyan 35.
+  - Layar radio komunikasi warta kedatangan KA (nama KA, rute perjalanan, kecepatan, dan waktu tiba/ETA).
+  - Sistem deteksi peringatan darurat tabrakan (*collision alert*) saat ada penerobos rel.
+- **Tech Stack**: Three.js, Web Audio API, Vanilla JavaScript (ES6+), CSS3 Glassmorphism HUD.
+
+👉 **[Buka Dokumentasi & Kode Proyek 6](./6_SIMULATOR%20PERLINTASAN%20KERETA)**
 
 ---
 
