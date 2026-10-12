@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ekspedisi Puncak Nusantara - Idle Game Mendaki Gunung Indonesia</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%22><text y=%2226%22 font-size=%2224%22>⛰️</text></svg>">
+</head>
+<body>
+
+  <div id="game-app">
+
+    <!-- Top Header -->
+    <header class="game-header">
+      <div class="mountain-title-area">
+        <h1 id="mountain-name">Gunung Prau</h1>
+        <div class="mountain-sub" id="mountain-region">Dieng, Jawa Tengah • Jalur Patakbanteng</div>
+      </div>
+      <div class="header-controls">
+        <button class="btn btn-xs btn-secondary" id="btn-audio" title="Suara Efek (SFX)" onclick="toggleAudioSFX()">🔊 SFX</button>
+        <button class="btn btn-xs btn-secondary" id="btn-music" title="Musik Akustik Alam" onclick="toggleAudioMusic()">🎵 Musik</button>
+        <button class="btn btn-xs btn-secondary" title="Bantuan & Petunjuk" onclick="openHelpModal()">❓</button>
+      </div>
+    </header>
+
+    <!-- Parallax Canvas Container -->
+    <div class="canvas-wrapper">
+      <!-- HUD Overlay -->
+      <div class="canvas-hud-top">
+        <div class="hud-pill altimeter">
+          <span>⛰️</span>
+          <span id="current-elevation">2.050 mdpl</span>
+          <span style="opacity: 0.6; font-size: 0.7rem;">/ <span id="target-elevation">2.565 mdpl</span></span>
+        </div>
+        <div class="hud-pill currency-pill">
+          <span>💰</span>
+          <span id="val-rupiah">Rp 5.000</span>
+          <span style="font-size: 0.7rem; color: #86efac;" id="val-rps">+Rp 5/dtk</span>
+        </div>
+        <div class="hud-pill edelweiss-pill">
+          <span>🌸</span>
+          <span id="val-edelweiss">0</span>
+        </div>
+      </div>
+
+      <canvas id="parallaxCanvas"></canvas>
+    </div>
+
+    <!-- Random Event Banner -->
+    <div id="event-banner"></div>
+
+    <!-- Mountain Distance Progress Bar -->
+    <div class="trail-progress-container">
+      <div class="progress-header">
+        <span>📍 Jalur Pendakian</span>
+        <span id="progress-distance-text">0 / 4.500 m (0.0%)</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <!-- Stamina Bar -->
+    <div class="stamina-container">
+      <div class="stamina-label">⚡ Tenaga:</div>
+      <div class="stamina-bar-bg">
+        <div class="stamina-bar-fill" id="stamina-fill"></div>
+      </div>
+      <div class="stamina-text" id="stamina-text">100 / 100</div>
+    </div>
+
+    <!-- Quick Action Bar -->
+    <div class="action-bar">
+      <button class="tap-big-btn" id="btn-tap" onclick="game.handleTap()">
+        <span>🥾 Langkah Mantap!</span>
+        <span class="combo-badge" id="combo-badge" style="display: none;">Combo x1.0! 🔥</span>
+      </button>
+      <button class="btn btn-secondary" id="btn-rest" onclick="game.toggleRest()">
+        ⛺ Buka Tenda (Istirahat)
+      </button>
+      <button class="btn btn-accent" id="btn-photo" title="Ambil Foto Pemandangan" onclick="game.takeScenicPhoto()">
+        📸 Foto
+      </button>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('gear')">🎒 Perlengkapan</button>
+      <button class="tab-btn" onclick="switchTab('party')">👥 Tim & Porter</button>
+      <button class="tab-btn" onclick="switchTab('consumables')">🍜 Bekal</button>
+      <button class="tab-btn" onclick="switchTab('mountains')">🗺️ Peta Gunung</button>
+      <button class="tab-btn" onclick="switchTab('stats')">🏆 Statistik</button>
+    </nav>
+
+    <!-- Tab Panes Content -->
+    <div class="tabs-content">
+      <!-- 1. Gear Tab -->
+      <div class="tab-pane active" id="pane-gear">
+        <div id="tab-gear-content"></div>
+      </div>
+
+      <!-- 2. Party Tab -->
+      <div class="tab-pane" id="pane-party">
+        <div id="tab-party-content"></div>
+      </div>
+
+      <!-- 3. Consumables Tab -->
+      <div class="tab-pane" id="pane-consumables">
+        <div id="tab-consumables-content"></div>
+      </div>
+
+      <!-- 4. Mountains Tab -->
+      <div class="tab-pane" id="pane-mountains">
+        <div id="tab-mountains-content"></div>
+      </div>
+
+      <!-- 5. Stats Tab -->
+      <div class="tab-pane" id="pane-stats">
+        <div style="background: rgba(30, 41, 59, 0.88); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 16px;">
+          <h3 style="color: #fef08a; margin-bottom: 12px;">📊 Rekor Ekspedisi Pendaki</h3>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">Kecepatan Langkah Saat Ini: <strong id="val-speed" style="color: #38bdf8;">1.2 m/dtk</strong></p>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">Total Jarak Ditempuh: <strong id="stat-distance" style="color: #4ade80;">0 m</strong></p>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">Total Langkah/Tap Manual: <strong id="stat-taps" style="color: #fbbf24;">0 kali</strong></p>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">Total Rupiah Didapat: <strong id="stat-rupiah" style="color: #a7f3d0;">Rp 0</strong></p>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">Puncak Berhasil Ditaklukkan: <strong id="stat-summits" style="color: #f472b6;">0 puncak</strong></p>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 16px;">Foto Panorama Diabadikan: <strong id="stat-photos" style="color: #93c5fd;">0 foto</strong></p>
+
+          <hr style="border: none; border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 12px 0;">
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-secondary btn-sm" onclick="game.saveGame(); game.showToast('💾 Progres pendakian berhasil disimpan!');">💾 Simpan Manual</button>
+            <button class="btn btn-secondary btn-sm" style="color: #f87171;" onclick="game.resetGame()">⚠️ Reset Game</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="game-toast"></div>
+
+  <!-- Checkpoint Modal -->
+  <div class="modal-overlay" id="modal-checkpoint">
+    <div class="modal-box">
+      <div class="modal-icon">⛺</div>
+      <h3 id="modal-cp-title">Tiba di Pos!</h3>
+      <div class="modal-elevation" id="modal-cp-elevation">2.150 mdpl</div>
+      <p id="modal-cp-desc">Istirahat sejenak sambil menikmati sejuknya alam.</p>
+      <div class="modal-reward" id="modal-cp-reward">+Rp 5.000</div>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button class="btn btn-primary" onclick="game.closeModalCheckpoint()">Lanjut Berjalan 🥾</button>
+        <button class="btn btn-secondary" onclick="game.closeModalCheckpoint(); game.toggleRest(true);">Buka Tenda Di Sini ⛺</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summit Conquered Modal -->
+  <div class="modal-overlay" id="modal-summit">
+    <div class="modal-box">
+      <div class="modal-icon">🇮🇩</div>
+      <h3 id="modal-summit-title">PUNCAK TERTINGGI DITAKLUKKAN!</h3>
+      <div class="modal-elevation" id="modal-summit-height">3.676 mdpl</div>
+      <p>Kibarkan bendera Merah Putih di puncak tertinggi! Pemandangan samudra awan dan mentari terbit menyambut kemenanganmu!</p>
+      <div class="modal-reward" id="modal-summit-edelweiss">+2 🌸 Bunga Edelweis Emas</div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn btn-accent" onclick="game.closeModalSummit(); game.prestigeReincarnate();">
+          🌸 Turun & Mulai Ekspedisi Baru (Prestige Multiplier!)
+        </button>
+        <button class="btn btn-secondary" onclick="game.closeModalSummit(); switchTab('mountains');">
+          🗺️ Pilih Gunung Lain di Nusantara
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help & Lore Modal -->
+  <div class="modal-overlay" id="modal-help">
+    <div class="modal-box">
+      <div class="modal-icon">⛰️</div>
+      <h3>Panduan Ekspedisi Gunung</h3>
+      <div style="text-align: left; font-size: 0.83rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 16px;">
+        <p>• <strong>Idle Auto-Walk</strong>: Pendaki otomatis melangkah maju mendaki gunung.</p>
+        <p>• <strong>Tombol "Langkah Mantap" / Spasi</strong>: Tap untuk mempercepat langkah dan mengaktifkan <em>Combo Multiplier</em> hingga 2.5x!</p>
+        <p>• <strong>Tenaga & Stamina</strong>: Tenaga berkurang saat berjalan. Jika habis (Lelah), langkah melambat. Pulihkan tenaga dengan <em>Buka Tenda</em> atau seduh <em>Kopi & Mie Instan</em>!</p>
+        <p>• <strong>Tim & Porter</strong>: Rekrut Porter lokal, Ranger, dan Fotografer untuk mendongkrak kecepatan & passive income.</p>
+        <p>• <strong>Edelweis Emas (Prestige)</strong>: Setiap mencapai puncak gunung, dapatkan bunga Edelweis abadi yang memberikan bonus permanen!</p>
+      </div>
+      <button class="btn btn-primary" onclick="closeHelpModal()">Mengerti, Ayo Mendaki!</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/mountains.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/parallax.js"></script>
+  <script src="js/game.js"></script>
+
+  <script>
+    // Initialize Game & Parallax Engines
+    let game;
+    let parallax;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      parallax = new MountainParallax('parallaxCanvas');
+      game = new HikingGame();
+      game.initEngine(parallax);
+
+      // Canvas click forwards to Tap
+      document.getElementById('parallaxCanvas').addEventListener('click', () => {
+        game.handleTap();
+      });
+
+      // Keyboard Spacebar forwards to Tap
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+          e.preventDefault();
+          game.handleTap();
+        }
+      });
+
+      // Game Animation Frame Loop
+      let lastTime = performance.now();
+      function gameLoop(timestamp) {
+        const delta = Math.min(100, timestamp - lastTime);
+        lastTime = timestamp;
+
+        game.update(delta);
+
+        // Update stats tab live
+        const statDist = document.getElementById('stat-distance');
+        if (statDist) statDist.textContent = `${Math.round(game.stats.totalDistanceTraversed).toLocaleString('id-ID')} meter`;
+        const statTaps = document.getElementById('stat-taps');
+        if (statTaps) statTaps.textContent = `${game.stats.totalTaps.toLocaleString('id-ID')} kali`;
+        const statRp = document.getElementById('stat-rupiah');
+        if (statRp) statRp.textContent = `Rp ${Math.round(game.stats.totalRupiahEarned).toLocaleString('id-ID')}`;
+        const statSum = document.getElementById('stat-summits');
+        if (statSum) statSum.textContent = `${game.stats.summitsReached} puncak`;
+        const statPho = document.getElementById('stat-photos');
+        if (statPho) statPho.textContent = `${game.stats.photosTaken} foto`;
+
+        requestAnimationFrame(gameLoop);
+      }
+      requestAnimationFrame(gameLoop);
+    });
+
+    // Tab Switching Function
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+      const targetPane = document.getElementById('pane-' + tabId);
+      if (targetPane) targetPane.classList.add('active');
+
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      if (game) game.updateUI();
+    }
+
+    // Audio Controls
+    function toggleAudioSFX() {
+      const isMuted = mountainAudio.toggleMute();
+      const btn = document.getElementById('btn-audio');
+      btn.textContent = isMuted ? '🔇 Mute' : '🔊 SFX';
+      btn.classList.toggle('btn-accent', !isMuted);
+    }
+
+    function toggleAudioMusic() {
+      const isEnabled = mountainAudio.toggleMusic();
+      const btn = document.getElementById('btn-music');
+      btn.textContent = isEnabled ? '🎵 Musik' : '🔈 Musik Off';
+      btn.classList.toggle('btn-accent', isEnabled);
+    }
+
+    function openHelpModal() {
+      document.getElementById('modal-help').classList.add('active');
+    }
+
+    function closeHelpModal() {
+      document.getElementById('modal-help').classList.remove('active');
+    }
+  </script>
+</body>
+</html>

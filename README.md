@@ -14,6 +14,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 4 | [**4_INDO FIREWATCHER**](./4_INDO%20FIREWATCHER) | Sistem Web GIS Pemantauan Titik Panas (Hotspot) Karhutla Indonesia berbasis Satelit NASA FIRMS (VIIRS/MODIS) & Cuaca Open-Meteo. | ✅ Selesai |
 | 5 | [**5_ENDLESS HIGHWAY**](./5_ENDLESS%20HIGHWAY) | Game 3D Mengemudi Jalan Tol Malam Hari Berkabut (*Endless Midnight Highway*) dengan Three.js, audio prosedural, dan fisika realistis. | ✅ Selesai |
 | 6 | [**6_SIMULATOR PERLINTASAN KERETA**](./6_SIMULATOR%20PERLINTASAN%20KERETA) | Simulator 3D Pos Penjaga Perlintasan Kereta Api Indonesia (PJL) dengan Three.js, AI lalu lintas kendaraan, dan audio sirine otentik. | ✅ Selesai |
+| 7 | [**7_IDLE HIKING GAME**](./7_IDLE%20HIKING%20GAME) | Game Idle Mendaki Gunung Indonesia (*Ekspedisi Puncak Nusantara*) dengan 2D Multi-Layer Parallax Engine dan Web Audio API. | ✅ Selesai |
 
 ---
 
@@ -99,6 +100,33 @@ Simulator interaktif penjaga pos perlintasan sebidang kereta api (**PJL**) di In
 - **Tech Stack**: Three.js, Web Audio API, Vanilla JavaScript (ES6+), CSS3 Glassmorphism HUD.
 
 👉 **[Buka Dokumentasi & Kode Proyek 6](./6_SIMULATOR%20PERLINTASAN%20KERETA)**
+
+---
+
+## ⛰️ Ringkasan Proyek 7: Ekspedisi Puncak Nusantara (Indonesian Mountain Hiking Idle Game)
+
+Game Idle bertema pendakian gunung-gunung tersohor di Indonesia dengan gaya visual **2D Side-Scrolling** dan **Multi-Layer Dynamic Parallax Scrolling Engine**:
+- **Multi-Layer Parallax & Siklus Alam**:
+  - Siklus waktu dinamis (Subuh / Golden Sunrise, Siang Terik, Senja Lembayung, Malam Bertabur Bintang).
+  - 6 Lapisan kedalaman: Langit, awan berarak, siluet gunung api vulkanik jauh, hutan cemara pinus, lereng savana bunga edelweis bergoyang, dan jalan setapak berbatu.
+  - Sistem partikel cuaca (kabut dingin tebal, hujan rintik gunung, kelopak bunga & dedaunan melayang).
+- **6 Gunung Legendaris Indonesia**:
+  - Gunung Prau (2.565 mdpl - Dieng, Jateng)
+  - Gunung Bromo (2.329 mdpl - Tengger, Jatim)
+  - Gunung Merapi (2.930 mdpl - Boyolali / Sleman, DIY-Jateng)
+  - Gunung Semeru (3.676 mdpl - Lumajang / Malang, Jatim)
+  - Gunung Rinjani (3.726 mdpl - Lombok, NTB)
+  - Gunung Kerinci (3.805 mdpl - Jambi / Sumbar)
+- **Mekanik Gameplay & Idle Progression**:
+  - *Auto-Walk & Active Tap*: Melangkah ritmis dengan combo multiplier hingga 2.5x.
+  - *Mode Tenda (Campfire & Rest)*: Pasang tenda dome & api unggun hangat untuk memulihkan stamina pendaki.
+  - *Manajemen Logistik & Tim*: Rekrut porter lokal Pak Slamet, ranger taman nasional, sahabat medsos, fotografer, serta beli perlengkapan carrier 60L hingga kompor nesting.
+  - *Prestige Edelweis Emas*: Bonus multiplier abadi saat menuntaskan ekspedisi puncak dan mengibarkan bendera Merah Putih.
+- **Procedural Web Audio API Engine**:
+  - Suara langkah kaki di kerikil, ketukan trekking pole logam, desau angin sepoi-sepoi, kicau burung tropis, dan alunan melodi petikan instrumen akustik santai (*chill ambient*).
+- **Tech Stack**: HTML5 Canvas, CSS3 Modern Glassmorphism HUD, Vanilla JavaScript (ES6+), Web Audio API Prosedural.
+
+👉 **[Buka Dokumentasi & Kode Proyek 7](./7_IDLE%20HIKING%20GAME)**
 
 ---
 
