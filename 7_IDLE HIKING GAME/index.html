@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Ekspedisi Puncak Nusantara - Idle Game Mendaki Gunung Indonesia</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%22><text y=%2226%22 font-size=%2224%22>⛰️</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><text y=%2226%22 font-size=%2224%22>⛰️</text></svg>">
 </head>
 <body>
 
   <div id="game-app">
 
-    <!-- Top Header -->
+    <!-- Top Header (Papan Nama Pos Taman Nasional) -->
     <header class="game-header">
       <div class="mountain-title-area">
         <h1 id="mountain-name">Gunung Prau</h1>
@@ -44,20 +44,24 @@
         </div>
       </div>
 
+      <!-- Active Buffs Chips HUD -->
+      <div id="active-buffs-hud" class="buffs-hud" style="display: none;"></div>
+
       <canvas id="parallaxCanvas"></canvas>
     </div>
 
     <!-- Random Event Banner -->
     <div id="event-banner"></div>
 
-    <!-- Mountain Distance Progress Bar -->
+    <!-- Mountain Distance Progress Bar with Milestones -->
     <div class="trail-progress-container">
       <div class="progress-header">
-        <span>📍 Jalur Pendakian</span>
+        <span class="trail-header-label">📍 Jalur Pendakian</span>
         <span id="progress-distance-text">0 / 4.500 m (0.0%)</span>
       </div>
       <div class="progress-bar-bg">
         <div class="progress-bar-fill" id="progress-bar-fill"></div>
+        <div class="progress-milestones" id="progress-milestones"></div>
       </div>
     </div>
 
@@ -204,10 +208,14 @@
     window.addEventListener('DOMContentLoaded', () => {
       parallax = new MountainParallax('parallaxCanvas');
       game = new HikingGame();
+      window.parallax = parallax;
+      window.game = game;
       game.initEngine(parallax);
 
-      // Canvas click forwards to Tap
-      document.getElementById('parallaxCanvas').addEventListener('click', () => {
+      // Canvas click & touch forwards to Tap
+      const canvasEl = document.getElementById('parallaxCanvas');
+      canvasEl.addEventListener('pointerdown', (e) => {
+        mountainAudio.ensureContext();
         game.handleTap();
       });
 
@@ -215,6 +223,7 @@
       window.addEventListener('keydown', (e) => {
         if (e.code === 'Space' && e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
           e.preventDefault();
+          mountainAudio.ensureContext();
           game.handleTap();
         }
       });
@@ -252,7 +261,7 @@
       const targetPane = document.getElementById('pane-' + tabId);
       if (targetPane) targetPane.classList.add('active');
 
-      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
       if (activeBtn) activeBtn.classList.add('active');
 
       if (game) game.updateUI();

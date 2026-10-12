@@ -13,6 +13,7 @@ class HikingGame {
     this.unlockedMountains = ['prau'];
     this.distance = 0; // in meters for current mountain
     this.peakConquered = {}; // mountainId: times conquered
+    this.hasReachedCurrentSummit = false;
 
     // Active hiking & combo
     this.tapCombo = 0;
@@ -28,7 +29,8 @@ class HikingGame {
     this.activeBuffs = {
       coffee: 0, // seconds left
       chocolate: 0,
-      jalak: 0
+      jalak: 0,
+      herbal: 0
     };
 
     // Gear Upgrades
@@ -79,6 +81,7 @@ class HikingGame {
 
     // Load saved data
     this.loadGame();
+    window.game = this;
   }
 
   initEngine(parallaxInstance) {
@@ -95,6 +98,9 @@ class HikingGame {
     if (this.isResting) return 0;
 
     const m = this.getCurrentMountain();
+    // Stop ground movement when standing at the summit crest
+    if (this.distance >= m.totalDistance) return 0;
+
     let speed = 1.2; // Base speed: 1.2 m/s
 
     // Gear shoes bonus
@@ -260,7 +266,12 @@ class HikingGame {
     mountainAudio.playTap();
 
     const m = this.getCurrentMountain();
-    if (this.distance >= m.totalDistance) return;
+    if (this.distance >= m.totalDistance) {
+      const award = (this.currentMountainIndex + 1) * 2;
+      this.showModalSummit(m, award);
+      this.showToast('🏆 Puncak telah ditaklukkan! Ambil foto panorama atau lakukan Prestige!');
+      return;
+    }
 
     if (this.isResting) {
       // Tap while resting gently wakes up
@@ -285,13 +296,14 @@ class HikingGame {
     this.spirit += 1;
     this.stats.totalRupiahEarned += tapReward;
 
-    // Visual feedback
+    // Visual feedback on sloped trail
     if (this.parallax) {
       this.parallax.spawnFloatingText(`+${tapPower}m!`, null, null, '#38bdf8');
       if (Math.random() < 0.4) {
         this.parallax.spawnFloatingText(`+Rp ${tapReward.toLocaleString('id-ID')}`, null, null, '#4ade80');
       }
-      this.parallax.addStepDust(this.parallax.width * 0.32, this.parallax.height - 48);
+      const tapX = this.parallax.width * 0.38;
+      this.parallax.addStepDust(tapX, this.parallax.getTrailY(tapX));
     }
 
     this.updateUI();
@@ -329,8 +341,9 @@ class HikingGame {
 
   checkSummitReached() {
     const m = this.getCurrentMountain();
-    if (!this.peakConquered[m.id]) {
-      this.peakConquered[m.id] = 1;
+    if (!this.hasReachedCurrentSummit) {
+      this.hasReachedCurrentSummit = true;
+      this.peakConquered[m.id] = (this.peakConquered[m.id] || 0) + 1;
       this.stats.summitsReached++;
       mountainAudio.playFanfare();
       const edelweissAward = (this.currentMountainIndex + 1) * 2;
@@ -442,7 +455,7 @@ class HikingGame {
     this.distance = 0;
     this.lastCheckpointReachedIndex = -1;
     this.isResting = false;
-    delete this.peakConquered[target.id];
+    this.hasReachedCurrentSummit = false;
 
     if (this.parallax) {
       this.parallax.setMountain(target);
@@ -469,9 +482,9 @@ class HikingGame {
     // Reset current mountain distance & base currencies but keep permanent Edelweiss & unlocks
     this.distance = 0;
     this.lastCheckpointReachedIndex = -1;
+    this.hasReachedCurrentSummit = false;
     this.stamina = this.maxStamina;
     this.rupiah = 10000;
-    delete this.peakConquered[m.id];
 
     mountainAudio.playFanfare();
     this.showToast(`Ekspedisi selesai! Memperoleh +${bonusEdelweiss} 🌸 Edelweis Emas!`);
@@ -599,7 +612,7 @@ class HikingGame {
       }
     }
 
-    // Toggle rest button label
+    // Toggle rest button label & styling
     const restBtn = document.getElementById('btn-rest');
     if (restBtn) {
       const restText = this.isResting ? '🥾 Lanjut Mendaki' : '⛺ Buka Tenda (Istirahat)';
@@ -608,6 +621,61 @@ class HikingGame {
         restBtn.className = this.isResting ? 'btn btn-accent pulse' : 'btn btn-secondary';
       }
     }
+
+    // Main Tap Button state when at summit vs climbing
+    const tapBtn = document.getElementById('btn-tap');
+    if (tapBtn) {
+      if (this.distance >= m.totalDistance) {
+        tapBtn.innerHTML = '<span>🏆 Rayakan Puncak! (Prestige)</span>';
+        tapBtn.classList.add('btn-summit-glow');
+      } else {
+        tapBtn.innerHTML = `<span>🥾 Langkah Mantap!</span><span class="combo-badge" id="combo-badge" style="${this.tapCombo > 2 ? 'display: inline-block;' : 'display: none;'}">Combo x${this.comboMultiplier.toFixed(1)}! 🔥</span>`;
+        tapBtn.classList.remove('btn-summit-glow');
+      }
+    }
+
+    // Active Buffs HUD indicators
+    const buffsContainer = document.getElementById('active-buffs-hud');
+    if (buffsContainer) {
+      const activeList = [];
+      if (this.activeBuffs.coffee > 0) activeList.push(`☕ Kopi (${Math.ceil(this.activeBuffs.coffee)}s)`);
+      if (this.activeBuffs.chocolate > 0) activeList.push(`🍫 Cokelat (${Math.ceil(this.activeBuffs.chocolate)}s)`);
+      if (this.activeBuffs.jalak > 0) activeList.push(`🕊️ Jalak (${Math.ceil(this.activeBuffs.jalak)}s)`);
+      if (this.activeBuffs.herbal > 0) activeList.push(`🌿 Madu (${Math.ceil(this.activeBuffs.herbal)}s)`);
+
+      if (activeList.length > 0) {
+        buffsContainer.style.display = 'flex';
+        buffsContainer.innerHTML = activeList.map(b => `<span class="buff-chip">${b}</span>`).join('');
+      } else {
+        buffsContainer.style.display = 'none';
+        buffsContainer.innerHTML = '';
+      }
+    }
+
+    // Trail Milestones on progress bar
+    const milestonesEl = document.getElementById('progress-milestones');
+    if (milestonesEl && (!milestonesEl.dataset.mountain || milestonesEl.dataset.mountain !== m.id)) {
+      milestonesEl.dataset.mountain = m.id;
+      let mHtml = '';
+      m.checkpoints.forEach((cp, idx) => {
+        const pct = Math.min(100, (cp.distance / m.totalDistance) * 100);
+        const isPeak = (idx === m.checkpoints.length - 1);
+        mHtml += `<div class="milestone-dot ${isPeak ? 'peak-dot' : ''}" style="left: ${pct}%;" title="${cp.name} (${cp.elevation} mdpl)"></div>`;
+      });
+      milestonesEl.innerHTML = mHtml;
+    }
+
+    // Live Stats tab sync
+    const statDist = document.getElementById('stat-distance');
+    if (statDist) statDist.textContent = `${Math.round(this.stats.totalDistanceTraversed).toLocaleString('id-ID')} meter`;
+    const statTaps = document.getElementById('stat-taps');
+    if (statTaps) statTaps.textContent = `${this.stats.totalTaps.toLocaleString('id-ID')} kali`;
+    const statRp = document.getElementById('stat-rupiah');
+    if (statRp) statRp.textContent = `Rp ${Math.round(this.stats.totalRupiahEarned).toLocaleString('id-ID')}`;
+    const statSum = document.getElementById('stat-summits');
+    if (statSum) statSum.textContent = `${this.stats.summitsReached} puncak`;
+    const statPho = document.getElementById('stat-photos');
+    if (statPho) statPho.textContent = `${this.stats.photosTaken} foto`;
   }
 
   updateUI() {

@@ -42,6 +42,8 @@ class MountainParallax {
     // Current mountain info
     this.currentMountain = MOUNTAIN_DATA[0];
 
+    this.summitFactor = 0; // 0 = climbing uphill slope, 1 = summit plateau
+
     // Seeded random mountains & terrain
     this.initTerrainData();
     this.initWeatherParticles();
@@ -52,10 +54,47 @@ class MountainParallax {
 
   resize() {
     const rect = this.canvas.parentElement.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     this.width = rect.width || 800;
-    this.height = Math.min(480, Math.max(340, rect.width * 0.48));
-    this.canvas.width = this.width;
-    this.canvas.height = this.height;
+    this.height = Math.min(480, Math.max(340, this.width * 0.48));
+    this.canvas.width = Math.round(this.width * dpr);
+    this.canvas.height = Math.round(this.height * dpr);
+    this.canvas.style.width = this.width + 'px';
+    this.canvas.style.height = this.height + 'px';
+    if (this.ctx.resetTransform) {
+      this.ctx.resetTransform();
+    } else {
+      this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
+    this.ctx.scale(dpr, dpr);
+  }
+
+  // --- TRAIL ELEVATION & INCLINE GEOMETRY ---
+  // During climb: steep mountain trail rising uphill from left to right (area tanah tidak landai)
+  // At summit: wide, gentle summit plateau / crest high above sea of clouds (permukaan landai di puncak)
+  getTrailY(x) {
+    const incline = Math.min(115, Math.max(80, this.height * 0.28));
+    const climbBaseY = this.height - 40;
+
+    // Natural mountain trail rocky bumps & slope undulations
+    const bump = Math.sin((x + this.scrollX * 0.8) * 0.018) * 5.5
+               + Math.sin((x + this.scrollX * 1.4) * 0.045) * 2.5;
+    const climbY = climbBaseY - (x / this.width) * incline + bump;
+
+    // Summit: expansive, gentle summit crest / plateau
+    const summitBaseY = this.height - 82;
+    const summitBump = Math.sin(x * 0.009) * 3 + Math.sin(x * 0.025) * 1.5;
+    const summitY = summitBaseY + summitBump;
+
+    // Smooth blend between climb slope and summit plateau
+    return climbY * (1 - this.summitFactor) + summitY * this.summitFactor;
+  }
+
+  getTrailSlope(x) {
+    const dx = 14;
+    const y1 = this.getTrailY(x - dx);
+    const y2 = this.getTrailY(x + dx);
+    return Math.atan2(y2 - y1, dx * 2);
   }
 
   initWeatherParticles() {
@@ -135,6 +174,10 @@ class MountainParallax {
   update(speedMps, deltaMs) {
     const deltaSec = deltaMs / 1000;
 
+    // Smooth transition between climb slope and summit plateau
+    const targetSummit = this.isSummit ? 1.0 : 0.0;
+    this.summitFactor += (targetSummit - this.summitFactor) * Math.min(1, deltaSec * 3.5);
+
     // Time cycle progression
     this.timeOfDay = (this.timeOfDay + this.timeSpeed * deltaSec * 10) % 1.0;
 
@@ -146,22 +189,25 @@ class MountainParallax {
       this.weather = weathers[Math.floor(Math.random() * weathers.length)];
     }
 
-    // Scroll motion when walking
-    if (!this.isResting && speedMps > 0) {
-      const pixelMovement = speedMps * deltaSec * 28; // visual scale
+    // Scroll motion when walking (stop ground scroll at summit so summit features stay anchored)
+    const effectiveSpeed = this.isSummit ? 0 : speedMps;
+    if (!this.isResting && effectiveSpeed > 0) {
+      const pixelMovement = effectiveSpeed * deltaSec * 28; // visual scale
       this.scrollX += pixelMovement;
-      this.worldDistance += speedMps * deltaSec;
-      this.walkCycle += speedMps * deltaSec * 5.2;
+      this.worldDistance += effectiveSpeed * deltaSec;
+      this.walkCycle += effectiveSpeed * deltaSec * 5.2;
 
-      // Add footstep particles occasionally
-      if (Math.sin(this.walkCycle) > 0.85 && Math.random() < 0.4) {
-        this.addStepDust(this.width * 0.25, this.height - 48);
+      // Add footstep particles on the sloped ground
+      if (Math.sin(this.walkCycle) > 0.85 && Math.random() < 0.45) {
+        const stepX = this.width * 0.38;
+        const stepY = this.getTrailY(stepX);
+        this.addStepDust(stepX, stepY);
         if (typeof mountainAudio !== 'undefined') {
           mountainAudio.playStep();
           if (Math.random() < 0.3) mountainAudio.playPole();
         }
       }
-    } else if (this.isResting) {
+    } else if (this.isResting || this.isSummit) {
       this.walkCycle = 0;
     }
 
@@ -220,10 +266,12 @@ class MountainParallax {
   }
 
   spawnFloatingText(text, x, y, color = '#fbbf24') {
+    const defaultX = this.width * 0.38 + (Math.random() * 30 - 15);
+    const defaultY = this.getTrailY(defaultX) - 55;
     this.floatingTexts.push({
       text: text,
-      x: x || (this.width * 0.28 + (Math.random() * 40 - 20)),
-      y: y || (this.height - 110),
+      x: x || defaultX,
+      y: y || defaultY,
       alpha: 1.0,
       color: color
     });
@@ -247,16 +295,19 @@ class MountainParallax {
     // 4. Parallax Layer 1: Distant Volcano Silhouette Peaks (Speed 0.05)
     this.renderFarPeaks(ctx);
 
-    // 5. Parallax Layer 2: Mid-Distance Pine Forests & Ridges (Speed 0.15)
+    // 5. Samudra Awan Puncak (Sea of Clouds beneath summit)
+    this.renderSeaOfClouds(ctx);
+
+    // 6. Parallax Layer 2: Mid-Distance Pine Forests & Ridges (Speed 0.15)
     this.renderMidHills(ctx);
 
-    // 6. Parallax Layer 3: Closer Savanna & Hills with Edelweiss (Speed 0.4)
+    // 7. Parallax Layer 3: Closer Savanna & Hills with Edelweiss (Speed 0.4)
     this.renderNearHills(ctx);
 
-    // 7. Parallax Layer 4: Foreground Hiking Trail Path (Speed 1.0)
+    // 8. Parallax Layer 4: Foreground Hiking Trail Path (Speed 1.0)
     this.renderTrail(ctx);
 
-    // 8. Hiking Party / Campsite / Summit
+    // 9. Hiking Party / Campsite / Summit
     if (this.isSummit) {
       this.renderSummitCelebration(ctx);
     } else if (this.isResting) {
@@ -265,7 +316,7 @@ class MountainParallax {
       this.renderHikingParty(ctx, partyMembers);
     }
 
-    // 9. Weather Particles & Atmospheric Mist
+    // 10. Weather Particles & Atmospheric Mist
     this.renderWeather(ctx);
 
     // 10. Step Particles
@@ -449,6 +500,64 @@ class MountainParallax {
     ctx.restore();
   }
 
+  // --- SAMUDRA DI ATAS AWAN (Sea of Clouds beneath summit) ---
+  renderSeaOfClouds(ctx) {
+    if (this.summitFactor <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, this.summitFactor * 1.25);
+
+    const seaY = this.height - 110;
+    const t = this.timeOfDay;
+
+    // Sea of clouds gradient
+    const cloudGrad = ctx.createLinearGradient(0, seaY - 50, 0, this.height);
+    if (t >= 0.2 && t <= 0.35) {
+      // Golden Sunrise sea of clouds
+      cloudGrad.addColorStop(0, 'rgba(254, 240, 138, 0.95)');
+      cloudGrad.addColorStop(0.3, 'rgba(254, 215, 170, 0.9)');
+      cloudGrad.addColorStop(0.7, 'rgba(203, 213, 225, 0.85)');
+      cloudGrad.addColorStop(1, 'rgba(148, 163, 184, 0.8)');
+    } else if (t > 0.35 && t < 0.7) {
+      // Daylight bright white ocean of clouds
+      cloudGrad.addColorStop(0, 'rgba(255, 255, 255, 0.98)');
+      cloudGrad.addColorStop(0.35, 'rgba(241, 245, 249, 0.92)');
+      cloudGrad.addColorStop(0.75, 'rgba(203, 213, 225, 0.85)');
+      cloudGrad.addColorStop(1, 'rgba(148, 163, 184, 0.75)');
+    } else if (t >= 0.7 && t <= 0.8) {
+      // Sunset orange-pink sea of clouds
+      cloudGrad.addColorStop(0, 'rgba(253, 186, 116, 0.95)');
+      cloudGrad.addColorStop(0.4, 'rgba(244, 114, 182, 0.88)');
+      cloudGrad.addColorStop(1, 'rgba(100, 116, 139, 0.8)');
+    } else {
+      // Midnight moonlit cloud sea
+      cloudGrad.addColorStop(0, 'rgba(51, 65, 85, 0.9)');
+      cloudGrad.addColorStop(0.5, 'rgba(30, 41, 59, 0.85)');
+      cloudGrad.addColorStop(1, 'rgba(15, 23, 42, 0.8)');
+    }
+
+    ctx.fillStyle = cloudGrad;
+
+    // Draw 3 flowing billowing cloud waves
+    const timeNow = Date.now() * 0.0007;
+    for (let layer = 0; layer < 3; layer++) {
+      const layerY = seaY + layer * 22;
+      const speed = (layer + 1) * 0.45;
+      ctx.beginPath();
+      ctx.moveTo(-50, this.height);
+      const step = 40;
+      for (let x = -50; x <= this.width + 60; x += step) {
+        const wave = Math.sin((x * 0.016) + timeNow * speed + layer * 1.5) * 15
+                   + Math.cos((x * 0.032) - timeNow * (speed * 0.7)) * 9;
+        ctx.lineTo(x, layerY + wave);
+      }
+      ctx.lineTo(this.width + 50, this.height);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
   renderMidHills(ctx) {
     ctx.save();
     const speed = 0.18;
@@ -466,12 +575,15 @@ class MountainParallax {
 
     const stepW = 90;
     const startX = -offset - 200;
+    const climbIncline = (1 - this.summitFactor) * 35;
+
     for (let x = startX; x < this.width + 250; x += stepW) {
       const idx = Math.floor((x + offset + 200) / stepW);
       const h = 75 + Math.sin(idx * 1.5) * 35;
       const midX = x + stepW * 0.5;
+      const slopeAdjust = climbIncline * (1 - (x / this.width));
 
-      ctx.quadraticCurveTo(midX, baseY - h, x + stepW, baseY - 20);
+      ctx.quadraticCurveTo(midX, baseY - h - slopeAdjust, x + stepW, baseY - 20 - slopeAdjust);
     }
     ctx.lineTo(this.width + 100, this.height);
     ctx.closePath();
@@ -482,7 +594,8 @@ class MountainParallax {
     for (let x = startX; x < this.width + 250; x += 32) {
       const idx = Math.floor((x + offset + 200) / stepW);
       const h = 65 + Math.sin(idx * 1.5) * 30;
-      const ty = baseY - h + 15;
+      const slopeAdjust = climbIncline * (1 - (x / this.width));
+      const ty = baseY - h - slopeAdjust + 15;
       this.drawPineTree(ctx, x, ty, 16);
     }
 
@@ -515,10 +628,13 @@ class MountainParallax {
 
     const stepW = 80;
     const startX = -offset - 200;
+    const climbIncline = (1 - this.summitFactor) * 55;
+
     for (let x = startX; x < this.width + 200; x += stepW) {
       const idx = Math.floor((x + offset + 200) / stepW);
       const h = 45 + Math.sin(idx * 2.2) * 22;
-      ctx.quadraticCurveTo(x + stepW * 0.5, baseY - h, x + stepW, baseY);
+      const slopeAdjust = climbIncline * (1 - (x / this.width));
+      ctx.quadraticCurveTo(x + stepW * 0.5, baseY - h - slopeAdjust, x + stepW, baseY - slopeAdjust);
     }
     ctx.lineTo(this.width + 100, this.height);
     ctx.closePath();
@@ -528,7 +644,8 @@ class MountainParallax {
     for (let x = startX; x < this.width + 200; x += 55) {
       const idx = Math.floor((x + offset + 200) / stepW);
       const h = 35 + Math.sin(idx * 2.2) * 18;
-      this.drawEdelweissClump(ctx, x, baseY - h + 6);
+      const slopeAdjust = climbIncline * (1 - (x / this.width));
+      this.drawEdelweissClump(ctx, x, baseY - h - slopeAdjust + 6);
     }
 
     ctx.restore();
@@ -564,85 +681,216 @@ class MountainParallax {
 
   renderTrail(ctx) {
     ctx.save();
-    const trailY = this.height - 45;
 
-    // Trail base ground
-    const groundGrad = ctx.createLinearGradient(0, trailY, 0, this.height);
-    groundGrad.addColorStop(0, '#8c6b4f'); // Mountain dirt brown
-    groundGrad.addColorStop(0.2, '#6b4f35');
-    groundGrad.addColorStop(1, '#3d2b1f');
+    // Mountain ground polygon following getTrailY(x)
+    ctx.beginPath();
+    ctx.moveTo(-20, this.height + 20);
+    const step = 8;
+    for (let x = -20; x <= this.width + 20; x += step) {
+      ctx.lineTo(x, this.getTrailY(x));
+    }
+    ctx.lineTo(this.width + 20, this.height + 20);
+    ctx.closePath();
+
+    // Natural soil & rock gradient
+    const avgY = this.height - 80;
+    const groundGrad = ctx.createLinearGradient(0, avgY - 40, 0, this.height);
+
+    const mId = this.currentMountain?.id;
+    const isVolcanic = (mId === 'bromo' || mId === 'merapi');
+
+    if (isVolcanic) {
+      groundGrad.addColorStop(0, '#5a4e48'); // Volcanic ash & sand
+      groundGrad.addColorStop(0.18, '#3d342f');
+      groundGrad.addColorStop(0.6, '#26201c');
+      groundGrad.addColorStop(1, '#151210');
+    } else {
+      groundGrad.addColorStop(0, '#785338'); // Rich mountain earth
+      groundGrad.addColorStop(0.18, '#593c24');
+      groundGrad.addColorStop(0.6, '#3a2615');
+      groundGrad.addColorStop(1, '#20140a');
+    }
     ctx.fillStyle = groundGrad;
-    ctx.fillRect(0, trailY, this.width, 45);
+    ctx.fill();
 
-    // Trail edge grass & stones
-    const offset = (this.scrollX) % 120;
-    ctx.fillStyle = '#557a46';
-    for (let x = -offset; x < this.width + 40; x += 18) {
-      ctx.beginPath();
-      ctx.moveTo(x, trailY);
-      ctx.lineTo(x + 4, trailY - 6 - Math.abs(x % 5));
-      ctx.lineTo(x + 8, trailY);
-      ctx.fill();
+    // Ground strata outline
+    ctx.strokeStyle = isVolcanic ? 'rgba(40, 35, 30, 0.4)' : 'rgba(50, 30, 15, 0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Trail surface decorations (steps, grass tufts, rocks, markers, edelweiss)
+    this.renderTrailSurfaceDecorations(ctx);
+
+    ctx.restore();
+  }
+
+  renderTrailSurfaceDecorations(ctx) {
+    const isClimbing = (this.summitFactor < 0.7);
+
+    // 1. Trail steps (anak tangga kayu penahan tanah khas pendakian Indonesia)
+    if (isClimbing) {
+      const stepInterval = 140;
+      const stepOffset = (this.scrollX) % stepInterval;
+      for (let sx = this.width - stepOffset; sx > -80; sx -= stepInterval) {
+        const sy = this.getTrailY(sx);
+        const sSlope = this.getTrailSlope(sx);
+
+        ctx.save();
+        ctx.translate(sx, sy);
+        ctx.rotate(sSlope);
+
+        // Wooden trail log step
+        ctx.fillStyle = '#452814';
+        ctx.fillRect(-12, -4, 24, 7);
+        // Peg stakes on sides
+        ctx.fillStyle = '#63391b';
+        ctx.fillRect(-14, -8, 4, 14);
+        ctx.fillRect(10, -8, 4, 14);
+        // Earth behind step
+        ctx.fillStyle = '#855b38';
+        ctx.fillRect(-10, -3, 20, 2);
+
+        ctx.restore();
+      }
     }
 
-    // Rocky dirt texture on the path
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-    for (let x = -offset; x < this.width + 60; x += 35) {
-      const pebbleY = trailY + 12 + Math.abs((x * 7) % 24);
-      const radius = 2.0 + Math.abs(x % 3);
-      ctx.beginPath();
-      ctx.arc(x, pebbleY, Math.max(1, radius), 0, Math.PI * 2);
-      ctx.fill();
+    // 2. Alpine grass tufts & mountain pebbles along the trail
+    const tuftInterval = 28;
+    const tuftOffset = (this.scrollX) % tuftInterval;
+    for (let gx = -tuftOffset; gx < this.width + 40; gx += tuftInterval) {
+      const gy = this.getTrailY(gx);
+      const isRock = (Math.abs(gx * 7) % 5 === 0);
+
+      if (isRock) {
+        // Mountain rock / pebble embedded
+        ctx.fillStyle = '#78716c';
+        ctx.beginPath();
+        ctx.arc(gx, gy + 4, 3 + (Math.abs(gx) % 3), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#a8a29e';
+        ctx.beginPath();
+        ctx.arc(gx - 1, gy + 2, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // Alpine grass tuft
+        ctx.fillStyle = (this.summitFactor > 0.5) ? '#e2e8f0' : '#4d7838'; // edelweiss tint near summit
+        ctx.beginPath();
+        ctx.moveTo(gx, gy + 2);
+        ctx.lineTo(gx + 3, gy - 6 - (Math.abs(gx) % 4));
+        ctx.lineTo(gx + 6, gy + 2);
+        ctx.fill();
+      }
     }
 
-    // Wooden Trail Markers / Kilometre Posts scrolling by
-    const markerInterval = 450;
-    const markerOffset = (this.scrollX) % markerInterval;
-    for (let mx = this.width - markerOffset; mx > -100; mx -= markerInterval) {
-      this.drawTrailMarker(ctx, mx, trailY);
+    // 3. Wooden Trail Markers / Kilometre Posts scrolling by
+    if (isClimbing) {
+      const markerInterval = 420;
+      const markerOffset = (this.scrollX) % markerInterval;
+      for (let mx = this.width - markerOffset; mx > -100; mx -= markerInterval) {
+        const my = this.getTrailY(mx);
+        const mSlope = this.getTrailSlope(mx);
+        this.drawTrailMarker(ctx, mx, my, mSlope);
+      }
+    }
+
+    // 4. Summit decorations (cairns, edelweiss flowers)
+    if (this.summitFactor > 0.3) {
+      this.drawSummitFloraAndCairns(ctx);
+    }
+  }
+
+  drawTrailMarker(ctx, x, y, slope = 0) {
+    ctx.save();
+    ctx.translate(x, y);
+    // Wooden post planted vertically
+    ctx.fillStyle = '#5c3317';
+    ctx.fillRect(-4, -40, 8, 42);
+
+    // Signboard
+    ctx.fillStyle = '#fef3c7';
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1.5;
+    ctx.fillRect(-26, -52, 52, 22);
+    ctx.strokeRect(-26, -52, 52, 22);
+
+    // Text on sign
+    ctx.fillStyle = '#78350f';
+    ctx.font = 'bold 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('JALUR ▲', 0, -38);
+    ctx.restore();
+  }
+
+  drawSummitFloraAndCairns(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, this.summitFactor);
+
+    // Summit cairn (tumpukan batu daki penanda puncak)
+    const cairnX = this.width * 0.22;
+    const cairnY = this.getTrailY(cairnX);
+    this.drawStoneCairn(ctx, cairnX, cairnY);
+
+    // Clumps of white Edelweiss blooming across the summit plateau
+    for (let ex = 40; ex < this.width - 40; ex += 65) {
+      if (Math.abs(ex - this.width * 0.46) > 85) {
+        const ey = this.getTrailY(ex);
+        this.drawEdelweissClump(ctx, ex, ey - 2);
+      }
     }
 
     ctx.restore();
   }
 
-  drawTrailMarker(ctx, x, y) {
-    ctx.save();
-    // Wooden post
-    ctx.fillStyle = '#78350f';
-    ctx.fillRect(x, y - 36, 8, 36);
-
-    // Signboard
-    ctx.fillStyle = '#fef3c7';
-    ctx.strokeStyle = '#92400e';
-    ctx.lineWidth = 1.5;
-    ctx.fillRect(x - 22, y - 48, 52, 20);
-    ctx.strokeRect(x - 22, y - 48, 52, 20);
-
-    // Text on sign
-    ctx.fillStyle = '#78350f';
-    ctx.font = 'bold 9px monospace';
-    ctx.fillText('JALUR ▲', x - 18, y - 35);
-    ctx.restore();
+  drawStoneCairn(ctx, x, y) {
+    const stones = [
+      { w: 22, h: 8, yOff: -4, col: '#78716c' },
+      { w: 17, h: 7, yOff: -11, col: '#8b847e' },
+      { w: 12, h: 6, yOff: -17, col: '#a8a29e' },
+      { w: 7,  h: 5, yOff: -22, col: '#d6d3d1' }
+    ];
+    stones.forEach(s => {
+      ctx.fillStyle = s.col;
+      ctx.beginPath();
+      ctx.roundRect(x - s.w / 2, y + s.yOff, s.w, s.h, 3);
+      ctx.fill();
+    });
   }
 
   // --- HIKING CHARACTERS RENDERING ---
 
   renderHikingParty(ctx, partyMembers) {
     ctx.save();
-    const trailY = this.height - 45;
 
     // Leader / Main Hiker position
-    const mainX = this.width * 0.32;
-    this.drawHiker(ctx, mainX, trailY, this.walkCycle, 'main');
+    const mainX = this.width * 0.38;
+    const mainY = this.getTrailY(mainX);
+    const mainSlope = this.getTrailSlope(mainX);
 
-    // Party companions trailing behind
-    let spacing = 48;
+    // Draw main hiker leaning and walking up the sloped trail
+    ctx.save();
+    ctx.translate(mainX, mainY);
+    ctx.rotate(mainSlope);
+    const climbLean = (1 - this.summitFactor) * -0.08;
+    ctx.rotate(climbLean);
+    this.drawHiker(ctx, 0, 0, this.walkCycle, 'main');
+    ctx.restore();
+
+    // Party companions trailing behind and LOWER down on the mountain slope
+    let spacing = 52;
     partyMembers.forEach((member, idx) => {
       if (member.count > 0) {
         const compX = mainX - (idx + 1) * spacing;
-        if (compX > 20) {
+        if (compX > 15) {
+          const compY = this.getTrailY(compX);
+          const compSlope = this.getTrailSlope(compX);
           const compCycle = this.walkCycle + (idx + 1) * 0.9;
-          this.drawCompanion(ctx, compX, trailY, compCycle, member.type);
+
+          ctx.save();
+          ctx.translate(compX, compY);
+          ctx.rotate(compSlope);
+          ctx.rotate(climbLean);
+          this.drawCompanion(ctx, 0, 0, compCycle, member.type);
+          ctx.restore();
         }
       }
     });
@@ -846,22 +1094,28 @@ class MountainParallax {
 
   renderCampSite(ctx, partyMembers) {
     ctx.save();
-    const trailY = this.height - 45;
     const campX = this.width * 0.38;
+    const campY = this.getTrailY(campX);
+
+    // Carved campsite terrace (tanah datar di pos istirahat lereng/puncak)
+    ctx.fillStyle = '#54361e';
+    ctx.beginPath();
+    ctx.roundRect(campX - 70, campY - 5, 175, 12, 4);
+    ctx.fill();
 
     // Tenda Dome Kuning-Oranye
     ctx.fillStyle = '#f59e0b';
     ctx.beginPath();
-    ctx.moveTo(campX - 60, trailY);
-    ctx.quadraticCurveTo(campX - 15, trailY - 60, campX + 30, trailY);
+    ctx.moveTo(campX - 60, campY);
+    ctx.quadraticCurveTo(campX - 15, campY - 58, campX + 30, campY);
     ctx.closePath();
     ctx.fill();
 
     // Pintu tenda terbuka
     ctx.fillStyle = '#1e293b';
     ctx.beginPath();
-    ctx.moveTo(campX - 35, trailY);
-    ctx.quadraticCurveTo(campX - 15, trailY - 45, campX + 5, trailY);
+    ctx.moveTo(campX - 35, campY);
+    ctx.quadraticCurveTo(campX - 15, campY - 42, campX + 5, campY);
     ctx.closePath();
     ctx.fill();
 
@@ -869,43 +1123,43 @@ class MountainParallax {
     ctx.strokeStyle = '#ef4444';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(campX - 60, trailY);
-    ctx.quadraticCurveTo(campX - 15, trailY - 60, campX + 30, trailY);
+    ctx.moveTo(campX - 60, campY);
+    ctx.quadraticCurveTo(campX - 15, campY - 58, campX + 30, campY);
     ctx.stroke();
 
     // Api Unggun (Campfire)
     const fireX = campX + 75;
     // Batu melingkar
-    ctx.fillStyle = '#64748b';
+    ctx.fillStyle = '#78716c';
     for (let r = 0; r < 5; r++) {
       ctx.beginPath();
-      ctx.arc(fireX - 14 + r * 7, trailY - 3, 4, 0, Math.PI * 2);
+      ctx.arc(fireX - 14 + r * 7, campY - 3, 4, 0, Math.PI * 2);
       ctx.fill();
     }
     // Kayu bakar
-    ctx.fillStyle = '#78350f';
-    ctx.fillRect(fireX - 12, trailY - 7, 24, 5);
+    ctx.fillStyle = '#5c3317';
+    ctx.fillRect(fireX - 12, campY - 7, 24, 5);
 
-    // Lidah api bergerak
-    const flameH = 14 + Math.sin(Date.now() * 0.02) * 5;
+    // Lidah api dinamis
+    const flameH = 15 + Math.sin(Date.now() * 0.02) * 5;
     ctx.fillStyle = '#f97316';
     ctx.beginPath();
-    ctx.moveTo(fireX - 8, trailY - 6);
-    ctx.lineTo(fireX, trailY - 6 - flameH);
-    ctx.lineTo(fireX + 8, trailY - 6);
+    ctx.moveTo(fireX - 8, campY - 6);
+    ctx.lineTo(fireX, campY - 6 - flameH);
+    ctx.lineTo(fireX + 8, campY - 6);
     ctx.fill();
     // Inti api kuning
     ctx.fillStyle = '#fef08a';
     ctx.beginPath();
-    ctx.moveTo(fireX - 4, trailY - 6);
-    ctx.lineTo(fireX, trailY - 6 - flameH * 0.6);
-    ctx.lineTo(fireX + 4, trailY - 6);
+    ctx.moveTo(fireX - 4, campY - 6);
+    ctx.lineTo(fireX, campY - 6 - flameH * 0.6);
+    ctx.lineTo(fireX + 4, campY - 6);
     ctx.fill();
 
     // Asap api unggun mengepul
     ctx.fillStyle = 'rgba(203, 213, 225, 0.35)';
     for (let s = 0; s < 3; s++) {
-      const smokeY = trailY - 20 - s * 16 - ((Date.now() * 0.03) % 20);
+      const smokeY = campY - 20 - s * 16 - ((Date.now() * 0.03) % 20);
       const smokeX = fireX + Math.sin(smokeY * 0.08) * 8;
       ctx.beginPath();
       ctx.arc(smokeX, smokeY, 6 + s * 4, 0, Math.PI * 2);
@@ -915,85 +1169,107 @@ class MountainParallax {
     // Pendaki duduk santai minum kopi
     const sitX = fireX + 42;
     ctx.fillStyle = '#ea580c';
-    ctx.fillRect(sitX - 7, trailY - 20, 14, 16);
+    ctx.fillRect(sitX - 7, campY - 20, 14, 16);
     // Kaki bersila
     ctx.fillStyle = '#1e293b';
-    ctx.fillRect(sitX - 12, trailY - 7, 22, 7);
+    ctx.fillRect(sitX - 12, campY - 7, 22, 7);
     // Kepala
     ctx.fillStyle = '#fed7aa';
     ctx.beginPath();
-    ctx.arc(sitX, trailY - 26, 7, 0, Math.PI * 2);
+    ctx.arc(sitX, campY - 26, 7, 0, Math.PI * 2);
     ctx.fill();
     ctx.fillStyle = '#eab308';
-    ctx.fillRect(sitX - 6, trailY - 32, 12, 6);
+    ctx.fillRect(sitX - 6, campY - 32, 12, 6);
     // Cangkir enamel kopi mengepul
     ctx.fillStyle = '#0284c7';
-    ctx.fillRect(sitX - 12, trailY - 14, 6, 7);
+    ctx.fillRect(sitX - 12, campY - 14, 6, 7);
     // Uap kopi
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(sitX - 9, trailY - 16);
-    ctx.quadraticCurveTo(sitX - 7, trailY - 22, sitX - 10, trailY - 26);
+    ctx.moveTo(sitX - 9, campY - 16);
+    ctx.quadraticCurveTo(sitX - 7, campY - 22, sitX - 10, campY - 26);
     ctx.stroke();
 
     // Nesting / Kompor gas portable
     ctx.fillStyle = '#94a3b8';
-    ctx.fillRect(fireX - 30, trailY - 12, 12, 10);
+    ctx.fillRect(fireX - 28, campY - 12, 12, 10);
     ctx.fillStyle = '#ef4444';
-    ctx.fillRect(fireX - 32, trailY - 2, 16, 3);
+    ctx.fillRect(fireX - 30, campY - 2, 16, 3);
 
     ctx.restore();
   }
 
-  // --- SUMMIT CELEBRATION ---
+  // --- SUMMIT CELEBRATION (Puncak Gunung Indonesia) ---
 
   renderSummitCelebration(ctx) {
     ctx.save();
-    const trailY = this.height - 45;
-    const sumX = this.width * 0.45;
+    const sumX = this.width * 0.46;
+    const sumY = this.getTrailY(sumX);
 
-    // Tugu Puncak / Triangulasi
+    // 1. Tugu Triangulasi Puncak (Pilar Beton Bertingkat Khas Indonesia)
     ctx.fillStyle = '#f8fafc';
-    ctx.fillRect(sumX - 8, trailY - 60, 16, 60);
-    ctx.fillStyle = '#0284c7';
-    ctx.font = 'bold 9px monospace';
-    ctx.fillText('PUNCAK', sumX - 18, trailY - 65);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 1;
+    ctx.fillRect(sumX - 14, sumY - 72, 28, 72);
+    ctx.strokeRect(sumX - 14, sumY - 72, 28, 72);
 
-    // Tiang Bendera Merah Putih
-    ctx.fillStyle = '#64748b';
-    ctx.fillRect(sumX + 40, trailY - 95, 4, 95);
+    // Ujung Piramida Tugu
+    ctx.beginPath();
+    ctx.moveTo(sumX - 14, sumY - 72);
+    ctx.lineTo(sumX, sumY - 84);
+    ctx.lineTo(sumX + 14, sumY - 72);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
 
-    // Bendera Merah Putih berkibar
-    const flagWave = Math.sin(Date.now() * 0.008) * 4;
+    // Plat Nama Puncak
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 8px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('PUNCAK', sumX, sumY - 48);
+    const elev = this.currentMountain?.elevation || 2565;
+    ctx.font = 'bold 7px monospace';
+    ctx.fillText(`${elev} MDPL`, sumX, sumY - 36);
+
+    // 2. Tiang Bendera Merah Putih
+    const flagPoleX = sumX + 38;
+    ctx.fillStyle = '#78350f'; // Tiang kayu/bambu
+    ctx.fillRect(flagPoleX, sumY - 110, 4, 110);
+
+    // Bendera Merah Putih berkibar megah di atas awan
+    const flagWave = Math.sin(Date.now() * 0.007) * 5;
     // Merah
     ctx.fillStyle = '#dc2626';
     ctx.beginPath();
-    ctx.moveTo(sumX + 44, trailY - 95);
-    ctx.quadraticCurveTo(sumX + 65, trailY - 95 + flagWave, sumX + 85, trailY - 95);
-    ctx.lineTo(sumX + 85, trailY - 80);
-    ctx.quadraticCurveTo(sumX + 65, trailY - 80 + flagWave, sumX + 44, trailY - 80);
+    ctx.moveTo(flagPoleX + 4, sumY - 110);
+    ctx.quadraticCurveTo(flagPoleX + 24, sumY - 110 + flagWave, flagPoleX + 46, sumY - 110);
+    ctx.lineTo(flagPoleX + 46, sumY - 94);
+    ctx.quadraticCurveTo(flagPoleX + 24, sumY - 94 + flagWave, flagPoleX + 4, sumY - 94);
     ctx.closePath();
     ctx.fill();
 
     // Putih
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.moveTo(sumX + 44, trailY - 80);
-    ctx.quadraticCurveTo(sumX + 65, trailY - 80 + flagWave, sumX + 85, trailY - 80);
-    ctx.lineTo(sumX + 85, trailY - 65);
-    ctx.quadraticCurveTo(sumX + 65, trailY - 65 + flagWave, sumX + 44, trailY - 65);
+    ctx.moveTo(flagPoleX + 4, sumY - 94);
+    ctx.quadraticCurveTo(flagPoleX + 24, sumY - 94 + flagWave, flagPoleX + 46, sumY - 94);
+    ctx.lineTo(flagPoleX + 46, sumY - 78);
+    ctx.quadraticCurveTo(flagPoleX + 24, sumY - 78 + flagWave, flagPoleX + 4, sumY - 78);
     ctx.closePath();
     ctx.fill();
 
-    // Pendaki bersorak kedua tangan ke atas!
-    this.drawCheeringHiker(ctx, sumX + 16, trailY);
+    // 3. Pendaki Utama bersorak di puncak mengangkat tangan
+    this.drawCheeringHiker(ctx, sumX - 35, sumY);
 
-    // Confetti bertaburan
-    for (let c = 0; c < 25; c++) {
-      const confX = (sumX - 80 + (c * 17 + Date.now() * 0.05) % 200);
-      const confY = (trailY - 140 + (c * 23 + Date.now() * 0.08) % 130);
-      ctx.fillStyle = ['#f43f5e', '#fbbf24', '#38bdf8', '#4ade80', '#c084fc'][c % 5];
+    // 4. Companion Porter / Ranger ikut bersorak
+    this.drawCheeringCompanions(ctx, sumX + 68, sumY);
+
+    // 5. Confetti & Golden Sparkles di langit puncak
+    for (let c = 0; c < 30; c++) {
+      const confX = (sumX - 120 + (c * 19 + Date.now() * 0.04) % 260);
+      const confY = (sumY - 160 + (c * 23 + Date.now() * 0.06) % 150);
+      ctx.fillStyle = ['#f43f5e', '#fbbf24', '#38bdf8', '#4ade80', '#e879f9', '#ffffff'][c % 6];
       ctx.fillRect(confX, confY, 4, 4);
     }
 
@@ -1002,16 +1278,16 @@ class MountainParallax {
 
   drawCheeringHiker(ctx, x, y) {
     ctx.save();
-    // Torso
+    // Torso jaket oranye
     ctx.fillStyle = '#ea580c';
     ctx.fillRect(x - 7, y - 36, 14, 22);
 
-    // Celana
+    // Celana gunung
     ctx.fillStyle = '#1e293b';
     ctx.fillRect(x - 6, y - 16, 5, 16);
     ctx.fillRect(x + 1, y - 16, 5, 16);
 
-    // Kepala
+    // Kepala & kupluk
     ctx.fillStyle = '#fed7aa';
     ctx.beginPath();
     ctx.arc(x, y - 43, 7.5, 0, Math.PI * 2);
@@ -1029,6 +1305,47 @@ class MountainParallax {
     ctx.lineTo(x + 16, y - 52);
     ctx.stroke();
 
+    // Bendera kecil Merah Putih di tangan kiri
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(x - 28, y - 58, 12, 5);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x - 28, y - 53, 12, 5);
+
+    ctx.restore();
+  }
+
+  drawCheeringCompanions(ctx, x, y) {
+    ctx.save();
+    // Porter smiling with thumbs up
+    ctx.fillStyle = '#0284c7';
+    ctx.fillRect(x - 6, y - 24, 12, 18);
+    ctx.fillStyle = '#fed7aa';
+    ctx.beginPath();
+    ctx.arc(x, y - 30, 6, 0, Math.PI * 2);
+    ctx.fill();
+    // Caping bambu
+    ctx.fillStyle = '#d97706';
+    ctx.beginPath();
+    ctx.moveTo(x - 10, y - 32);
+    ctx.lineTo(x, y - 41);
+    ctx.lineTo(x + 10, y - 32);
+    ctx.closePath();
+    ctx.fill();
+    // Celana
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(x - 5, y - 6, 4, 6);
+    ctx.fillRect(x + 1, y - 6, 4, 6);
+    // Thumbs up
+    ctx.strokeStyle = '#0284c7';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x + 6, y - 20);
+    ctx.lineTo(x + 13, y - 28);
+    ctx.stroke();
+    ctx.fillStyle = '#fed7aa';
+    ctx.beginPath();
+    ctx.arc(x + 13, y - 30, 3, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   }
 

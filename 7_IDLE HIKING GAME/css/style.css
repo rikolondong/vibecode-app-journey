@@ -1,18 +1,38 @@
-/* Modern Outdoor Nature Aesthetic - Indonesian Hiking Theme */
+/* ==========================================================================
+   ⛰️ EKSPEDISI PUNCAK NUSANTARA - NATURE & OUTDOOR ADVENTURE THEME
+   Desain Visual Nuansa Alam Indonesia: Kayu Jati, Rimba Tropis & Emas Sunrise
+   ========================================================================== */
+
 :root {
-  --bg-dark: #0f172a;
-  --bg-card: rgba(30, 41, 59, 0.88);
-  --bg-card-hover: rgba(51, 65, 85, 0.95);
-  --border-color: rgba(255, 255, 255, 0.12);
+  /* Nuansa Alam & Rimba Gunung Indonesia */
+  --wood-dark: #1b120c;
+  --wood-medium: #3b2214;
+  --wood-light: #5a351f;
+  --wood-border: #7c482b;
+  --wood-highlight: #a8653b;
+
+  --forest-dark: #0a1711;
+  --forest-deep: #10261c;
+  --forest-medium: #1b4230;
+  --forest-emerald: #15803d;
+  --forest-leaf: #22c55e;
+  --forest-bright: #86efac;
+
+  --stone-cadas: #1f2923;
+  --stone-slate: #2b3930;
+  --stone-border: rgba(74, 138, 92, 0.28);
+
+  --amber-campfire: #d97706;
+  --amber-golden: #f59e0b;
+  --amber-sunrise: #fef08a;
+
   --text-main: #f8fafc;
+  --text-parchment: #fef3c7;
   --text-muted: #94a3b8;
-  --primary: #10b981; /* Forest Emerald */
-  --primary-hover: #059669;
-  --accent: #f59e0b; /* Golden Sunrise Amber */
-  --accent-hover: #d97706;
-  --danger: #ef4444;
-  --info: #38bdf8;
-  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  --text-moss: #86efac;
+
+  --shadow-lodge: 0 12px 30px -6px rgba(0, 0, 0, 0.7), 0 6px 14px -4px rgba(0, 0, 0, 0.5);
+  --shadow-button-depth: 0 5px 0;
 }
 
 * {
@@ -21,18 +41,21 @@
   padding: 0;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: manipulation;
 }
 
 body {
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-  background-color: var(--bg-dark);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--forest-dark);
   color: var(--text-main);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   overflow-x: hidden;
-  background-image: radial-gradient(circle at 50% 10%, #1e293b 0%, #0f172a 100%);
+  background-image: 
+    radial-gradient(circle at 50% 12%, rgba(27, 66, 48, 0.6) 0%, rgba(10, 23, 17, 0.95) 75%),
+    linear-gradient(180deg, #060e0a 0%, #0d1e15 100%);
 }
 
 #game-app {
@@ -41,53 +64,64 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: rgba(15, 23, 42, 0.95);
-  box-shadow: var(--shadow);
+  background: rgba(13, 27, 20, 0.96);
+  border-left: 1px solid var(--stone-border);
+  border-right: 1px solid var(--stone-border);
+  box-shadow: var(--shadow-lodge);
   position: relative;
 }
 
-/* Header & Mountain Status */
+/* ==========================================================================
+   1. HEADER: Papan Nama Gerbang Taman Nasional / Pos Simaksi
+   ========================================================================== */
 .game-header {
   padding: 12px 18px;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(180deg, #2b1a11 0%, #1c110a 100%);
+  border-bottom: 2px solid var(--wood-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 4px 12px rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 25;
 }
 
 .mountain-title-area h1 {
   font-size: 1.25rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #fef08a;
+  letter-spacing: -0.01em;
+  color: var(--amber-sunrise);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .mountain-sub {
-  font-size: 0.78rem;
-  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--forest-bright);
+  margin-top: 1px;
+  letter-spacing: 0.01em;
 }
 
 .header-controls {
   display: flex;
-  gap: 8px;
+  gap: 7px;
   align-items: center;
 }
 
-/* Canvas Parallax Display Area */
+/* ==========================================================================
+   2. CANVAS PARALLAX AREA & HUD
+   ========================================================================== */
 .canvas-wrapper {
   position: relative;
   width: 100%;
-  background: #090d16;
+  background: #060a12;
   overflow: hidden;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 2px solid var(--wood-medium);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
 }
 
 #parallaxCanvas {
@@ -97,7 +131,7 @@ body {
   cursor: pointer;
 }
 
-/* HUD Overlay on Canvas */
+/* HUD Overlay on Canvas (Altimeter, Rupiah, Edelweis) */
 .canvas-hud-top {
   position: absolute;
   top: 10px;
@@ -106,17 +140,19 @@ body {
   display: flex;
   justify-content: space-between;
   pointer-events: none;
-  z-index: 5;
+  z-index: 8;
+  gap: 8px;
 }
 
 .hud-pill {
-  background: rgba(15, 23, 42, 0.78);
-  backdrop-filter: blur(6px);
+  background: rgba(16, 28, 22, 0.88);
+  backdrop-filter: blur(8px);
   padding: 5px 12px;
   border-radius: 9999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: 1px solid rgba(134, 239, 172, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -124,69 +160,137 @@ body {
 
 .altimeter {
   color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
 }
 
 .currency-pill {
   color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.35);
 }
 
 .edelweiss-pill {
   color: #fef08a;
+  border-color: rgba(254, 240, 138, 0.35);
 }
 
-/* Progress Bar across Mountain */
+/* Active Buffs Floating Chips */
+.buffs-hud {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.buff-chip {
+  background: rgba(30, 48, 36, 0.9);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--forest-leaf);
+  color: var(--amber-sunrise);
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  animation: pulse 1.8s infinite;
+}
+
+/* ==========================================================================
+   3. PROGRESS BAR & STAMINA (Topographic Trail Track)
+   ========================================================================== */
 .trail-progress-container {
   padding: 10px 18px 6px;
-  background: rgba(30, 41, 59, 0.6);
-  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(180deg, rgba(27, 43, 33, 0.8) 0%, rgba(18, 30, 23, 0.8) 100%);
+  border-bottom: 1px solid rgba(74, 138, 92, 0.2);
 }
 
 .progress-header {
   display: flex;
   justify-content: space-between;
   font-size: 0.78rem;
-  color: var(--text-muted);
-  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--forest-bright);
+  margin-bottom: 6px;
+}
+
+.trail-header-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .progress-bar-bg {
   width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 10px;
+  background: rgba(10, 19, 14, 0.85);
+  border: 1px solid rgba(74, 138, 92, 0.3);
   border-radius: 9999px;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 
 .progress-bar-fill {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, #10b981, #f59e0b);
+  background: linear-gradient(90deg, #15803d 0%, #22c55e 65%, #f59e0b 100%);
   border-radius: 9999px;
   transition: width 0.2s ease-out;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+.progress-milestones {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.milestone-dot {
+  position: absolute;
+  top: -2px;
+  width: 6px;
+  height: 14px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+  opacity: 0.6;
+}
+
+.milestone-dot.peak-dot {
+  background: #f59e0b;
+  width: 10px;
+  height: 16px;
+  top: -3px;
+  border-radius: 3px;
+  opacity: 1;
+  box-shadow: 0 0 8px #f59e0b;
 }
 
 /* Stamina Bar */
 .stamina-container {
   padding: 6px 18px 10px;
-  background: rgba(30, 41, 59, 0.6);
-  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(180deg, rgba(18, 30, 23, 0.8) 0%, rgba(14, 24, 18, 0.9) 100%);
+  border-bottom: 2px solid var(--wood-medium);
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
 .stamina-label {
-  font-size: 0.76rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 800;
   color: #fb923c;
-  min-width: 60px;
+  min-width: 68px;
 }
 
 .stamina-bar-bg {
   flex: 1;
   height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(10, 19, 14, 0.85);
+  border: 1px solid rgba(251, 146, 60, 0.3);
   border-radius: 9999px;
   overflow: hidden;
 }
@@ -194,32 +298,38 @@ body {
 .stamina-bar-fill {
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, #ea580c, #22c55e);
+  background: linear-gradient(90deg, #ea580c 0%, #eab308 50%, #22c55e 100%);
   border-radius: 9999px;
   transition: width 0.15s ease;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.35);
 }
 
 .stamina-text {
   font-size: 0.75rem;
+  font-weight: 700;
   color: var(--text-muted);
-  min-width: 90px;
+  min-width: 95px;
   text-align: right;
 }
 
-/* Quick Action Tap & Rest Bar */
+/* ==========================================================================
+   4. ACTION BAR & TACTILE NATURE BUTTONS
+   ========================================================================== */
 .action-bar {
   padding: 12px 18px;
   display: flex;
   gap: 12px;
-  background: rgba(15, 23, 42, 0.9);
-  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(180deg, #24160e 0%, #170d07 100%);
+  border-bottom: 2px solid var(--wood-border);
 }
 
+/* Tombol Langkah Mantap (Hiking Boot Trail Button) */
 .tap-big-btn {
   flex: 2;
   padding: 14px 18px;
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-  border: none;
+  background: linear-gradient(180deg, #1b6338 0%, #114224 100%);
+  border: 2px solid #2e8b52;
+  border-bottom: 5px solid #0a2615;
   border-radius: 12px;
   color: white;
   font-size: 1.05rem;
@@ -229,64 +339,127 @@ body {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
-  transition: transform 0.08s ease, filter 0.15s ease;
+  box-shadow: 0 6px 16px rgba(17, 66, 36, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.06s ease, filter 0.15s ease, border-bottom-width 0.06s ease;
+  position: relative;
 }
 
 .tap-big-btn:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.12);
 }
 
 .tap-big-btn:active {
-  transform: scale(0.96);
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+  box-shadow: 0 2px 6px rgba(17, 66, 36, 0.4);
+}
+
+.tap-big-btn.btn-summit-glow {
+  background: linear-gradient(180deg, #d97706 0%, #9a3412 100%) !important;
+  border-color: #fde047 !important;
+  border-bottom-color: #451a03 !important;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  animation: pulse 1.5s infinite;
 }
 
 .combo-badge {
   background: #f59e0b;
   color: #0f172a;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 9999px;
   font-size: 0.72rem;
-  font-weight: 800;
-  margin-left: 6px;
-  animation: pulse 1s infinite;
+  font-weight: 900;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
-/* Tab Navigation */
+/* Tombol Buka Tenda (Campfire Timber Style) */
+#btn-rest {
+  flex: 1;
+  background: linear-gradient(180deg, #9a5316 0%, #63320c 100%);
+  border: 2px solid #d97706;
+  border-bottom: 5px solid #3d1c05;
+  color: #fef3c7;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  box-shadow: 0 5px 14px rgba(99, 50, 12, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+#btn-rest:hover {
+  filter: brightness(1.1);
+}
+
+#btn-rest:active {
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+}
+
+/* Tombol Foto (Explorer Brass Camera Button) */
+#btn-photo {
+  background: linear-gradient(180deg, #b48325 0%, #785614 100%);
+  border: 2px solid #facc15;
+  border-bottom: 5px solid #4a3407;
+  color: #1a1202;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 0.85rem;
+  box-shadow: 0 5px 14px rgba(120, 86, 20, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+#btn-photo:hover {
+  filter: brightness(1.12);
+}
+
+#btn-photo:active {
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+}
+
+/* ==========================================================================
+   5. TABS: Papan Petunjuk Kayu Rimba (Wooden Directional Signposts)
+   ========================================================================== */
 .tabs-nav {
   display: flex;
-  background: rgba(30, 41, 59, 0.75);
-  border-bottom: 1px solid var(--border-color);
+  background: linear-gradient(180deg, #241710 0%, #19100a 100%);
+  border-bottom: 2px solid var(--wood-medium);
   overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .tab-btn {
   flex: 1;
-  padding: 12px 8px;
+  padding: 12px 10px;
   background: none;
   border: none;
   border-bottom: 3px solid transparent;
-  color: var(--text-muted);
-  font-size: 0.83rem;
-  font-weight: 600;
+  color: #cbd5e1;
+  font-size: 0.82rem;
+  font-weight: 700;
   cursor: pointer;
   text-align: center;
   white-space: nowrap;
-  transition: all 0.2s;
+  transition: all 0.18s ease;
 }
 
 .tab-btn:hover {
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.03);
+  color: var(--amber-sunrise);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .tab-btn.active {
-  color: #38bdf8;
-  border-bottom-color: #38bdf8;
-  background: rgba(56, 189, 248, 0.08);
+  color: #fef08a;
+  border-bottom: 3px solid var(--forest-leaf);
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.16) 0%, rgba(34, 197, 94, 0.04) 100%);
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.45);
 }
 
-/* Tab Content Areas */
+/* ==========================================================================
+   6. TAB CONTENT: Mountain Lodge Cards & Badges
+   ========================================================================== */
 .tabs-content {
   flex: 1;
   padding: 16px 18px;
@@ -302,22 +475,24 @@ body {
   display: block;
 }
 
-/* Upgrade & Item Cards */
+/* Upgrade, Consumable & Mountain Cards */
 .upgrade-card, .consumable-card, .mountain-select-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-bottom: 10px;
+  background: linear-gradient(180deg, rgba(22, 38, 28, 0.92) 0%, rgba(16, 28, 21, 0.92) 100%);
+  border: 1px solid rgba(74, 138, 92, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 11px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: transform 0.15s, background 0.15s, border-color 0.15s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 0.15s, border-color 0.15s, background 0.15s;
 }
 
 .upgrade-card:hover, .consumable-card:hover {
-  background: var(--bg-card-hover);
-  border-color: rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(28, 48, 36, 0.96) 0%, rgba(20, 36, 26, 0.96) 100%);
+  border-color: rgba(134, 239, 172, 0.5);
+  transform: translateY(-2px);
 }
 
 .upgrade-card.locked {
@@ -326,55 +501,61 @@ body {
 
 .upgrade-info, .consumable-info {
   flex: 1;
-  padding-right: 12px;
+  padding-right: 14px;
 }
 
 .upgrade-title, .consumable-title {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 800;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #f1f5f9;
+  color: #f8fafc;
 }
 
 .upgrade-desc, .consumable-desc {
-  font-size: 0.78rem;
+  font-size: 0.77rem;
   color: var(--text-muted);
   margin-top: 3px;
+  line-height: 1.35;
 }
 
-/* Badges */
+/* Badges (Embroidered Outdoor Patches) */
 .badge {
   font-size: 0.68rem;
-  padding: 2px 6px;
+  padding: 2px 7px;
   border-radius: 4px;
-  font-weight: 700;
-  background: rgba(56, 189, 248, 0.2);
+  font-weight: 800;
+  background: rgba(56, 189, 248, 0.22);
   color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.35);
 }
 
 .badge-party {
-  background: rgba(16, 185, 129, 0.2);
-  color: #6ee7b7;
+  background: rgba(34, 197, 94, 0.22);
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.4);
 }
 
 .badge-stock {
-  background: rgba(245, 158, 11, 0.2);
+  background: rgba(245, 158, 11, 0.22);
   color: #fde68a;
+  border-color: rgba(245, 158, 11, 0.4);
 }
 
 .badge-current {
-  background: rgba(56, 189, 248, 0.25);
-  color: #38bdf8;
+  background: rgba(34, 197, 94, 0.28);
+  color: #86efac;
+  border-color: #22c55e;
 }
 
 .badge-summit {
-  background: rgba(234, 179, 8, 0.25);
+  background: rgba(234, 179, 8, 0.3);
   color: #fef08a;
+  border-color: #eab308;
 }
 
-/* Mountain Select Cards */
+/* Mountain Selection Cards */
 .mountain-select-card {
   flex-direction: column;
   align-items: flex-start;
@@ -382,8 +563,9 @@ body {
 }
 
 .mountain-select-card.active {
-  border-color: #38bdf8;
-  background: rgba(14, 116, 144, 0.2);
+  border-color: var(--forest-leaf);
+  background: linear-gradient(180deg, rgba(27, 66, 48, 0.85) 0%, rgba(18, 44, 32, 0.9) 100%);
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.25);
 }
 
 .mountain-header {
@@ -393,15 +575,22 @@ body {
   width: 100%;
 }
 
+.mountain-header h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fef08a;
+}
+
 .mountain-desc {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--forest-bright);
 }
 
 .mountain-lore {
   font-size: 0.77rem;
   color: #cbd5e1;
   font-style: italic;
+  line-height: 1.4;
 }
 
 .mountain-action {
@@ -409,24 +598,37 @@ body {
   margin-top: 6px;
 }
 
-/* Buttons */
+.consumable-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ==========================================================================
+   7. BUTTONS (Tactile Nature 3D Depth)
+   ========================================================================== */
 .btn {
   padding: 8px 14px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom-width: 4px;
   border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.82rem;
+  font-weight: 800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: all 0.15s ease;
+  transition: transform 0.06s ease, filter 0.15s ease, border-bottom-width 0.06s ease;
+}
+
+.btn:active:not(.btn-disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
 
 .btn-sm {
   padding: 6px 11px;
-  font-size: 0.78rem;
+  font-size: 0.77rem;
 }
 
 .btn-xs {
@@ -436,58 +638,72 @@ body {
 
 .btn-primary {
   background: #0284c7;
+  border-color: #38bdf8;
+  border-bottom-color: #034870;
   color: white;
 }
 .btn-primary:hover {
-  background: #0369a1;
+  filter: brightness(1.1);
 }
 
 .btn-success {
-  background: #10b981;
+  background: #15803d;
+  border-color: #4ade80;
+  border-bottom-color: #0b4520;
   color: white;
 }
 .btn-success:hover {
-  background: #059669;
+  filter: brightness(1.12);
 }
 
 .btn-accent {
-  background: #f59e0b;
-  color: #0f172a;
+  background: #d97706;
+  border-color: #fde047;
+  border-bottom-color: #78350f;
+  color: #1a0f02;
 }
 .btn-accent:hover {
-  background: #d97706;
+  filter: brightness(1.12);
 }
 
 .btn-secondary {
-  background: #334155;
-  color: #e2e8f0;
+  background: #3b2518;
+  border-color: #7c482b;
+  border-bottom-color: #1f1109;
+  color: #fde68a;
 }
 .btn-secondary:hover {
-  background: #475569;
+  filter: brightness(1.12);
 }
 
 .btn-disabled {
-  background: #1e293b;
+  background: #19251e;
+  border-color: #2b3930;
+  border-bottom-color: #141c17;
   color: #64748b;
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.65;
 }
 
 .btn-warning {
-  background: #d97706;
+  background: #b45309;
+  border-color: #fbbf24;
+  border-bottom-color: #5c2703;
   color: white;
 }
 
-/* Modals */
+/* ==========================================================================
+   8. MODALS (Piagam / Sertifikat Resmi Pendakian Gunung Indonesia)
+   ========================================================================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
+  background: rgba(5, 12, 9, 0.82);
+  backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 50;
+  z-index: 60;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease;
@@ -500,13 +716,13 @@ body {
 }
 
 .modal-box {
-  background: #1e293b;
-  border: 1px solid var(--border-color);
+  background: linear-gradient(180deg, #24160e 0%, #150d08 100%);
+  border: 3px solid var(--wood-border);
   border-radius: 16px;
   width: 100%;
   max-width: 480px;
   padding: 24px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   text-align: center;
   transform: scale(0.95);
   transition: transform 0.2s ease;
@@ -517,21 +733,21 @@ body {
 }
 
 .modal-icon {
-  font-size: 3rem;
-  margin-bottom: 12px;
+  font-size: 3.2rem;
+  margin-bottom: 10px;
 }
 
 .modal-box h3 {
   font-size: 1.3rem;
-  font-weight: 800;
-  color: #fef08a;
+  font-weight: 900;
+  color: var(--amber-sunrise);
   margin-bottom: 6px;
 }
 
 .modal-elevation {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: #38bdf8;
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 12px;
 }
 
@@ -543,33 +759,37 @@ body {
 }
 
 .modal-reward {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px dashed #10b981;
+  background: rgba(34, 197, 94, 0.16);
+  border: 1px dashed var(--forest-leaf);
   padding: 10px;
   border-radius: 8px;
-  font-weight: 700;
-  color: #6ee7b7;
+  font-weight: 800;
+  color: #86efac;
   margin-bottom: 20px;
 }
 
-/* Toast Notifications */
+/* ==========================================================================
+   9. TOAST & NOTIFICATIONS
+   ========================================================================== */
 #game-toast {
   position: fixed;
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%) translateY(50px);
-  background: rgba(15, 23, 42, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #f8fafc;
-  padding: 10px 20px;
+  background: linear-gradient(180deg, rgba(27, 43, 33, 0.98) 0%, rgba(16, 28, 21, 0.98) 100%);
+  border: 1px solid var(--forest-leaf);
+  color: #fef08a;
+  padding: 10px 22px;
   border-radius: 9999px;
   font-size: 0.85rem;
-  font-weight: 600;
-  box-shadow: var(--shadow);
-  z-index: 60;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  z-index: 70;
   opacity: 0;
   pointer-events: none;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  max-width: 90%;
 }
 
 #game-toast.show {
@@ -580,9 +800,9 @@ body {
 /* Event Banner */
 #event-banner {
   display: none;
-  background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+  background: linear-gradient(90deg, #1e3a8a 0%, #15803d 100%);
   padding: 10px 18px;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 2px solid var(--forest-leaf);
   animation: slideDown 0.3s ease;
 }
 
@@ -595,13 +815,13 @@ body {
 
 .event-content p {
   font-size: 0.78rem;
-  color: #e0f2fe;
+  color: #f0fdf4;
 }
 
 /* Animations */
 @keyframes pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.05); }
+  50% { opacity: 0.85; transform: scale(1.04); }
 }
 
 @keyframes slideDown {
@@ -609,7 +829,9 @@ body {
   to { transform: translateY(0); }
 }
 
-/* Responsive adjustments */
+/* ==========================================================================
+   10. RESPONSIVE DESIGN (Mobile Friendly)
+   ========================================================================== */
 @media (max-width: 600px) {
   .game-header {
     padding: 10px 14px;
@@ -619,9 +841,10 @@ body {
   }
   .action-bar {
     padding: 8px 12px;
+    gap: 8px;
   }
   .tap-big-btn {
-    padding: 12px;
+    padding: 12px 14px;
     font-size: 0.95rem;
   }
   .tabs-content {
@@ -630,6 +853,6 @@ body {
   }
   .hud-pill {
     padding: 4px 8px;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
   }
 }
