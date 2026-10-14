@@ -163,6 +163,11 @@ body {
   border-color: rgba(56, 189, 248, 0.35);
 }
 
+.timer-pill {
+  color: #fde047;
+  border-color: rgba(253, 224, 71, 0.35);
+}
+
 .currency-pill {
   color: #4ade80;
   border-color: rgba(74, 222, 128, 0.35);
@@ -374,7 +379,7 @@ body {
 
 /* Tombol Buka Tenda (Campfire Timber Style) */
 #btn-rest {
-  flex: 1;
+  flex: 1.2;
   background: linear-gradient(180deg, #9a5316 0%, #63320c 100%);
   border: 2px solid #d97706;
   border-bottom: 5px solid #3d1c05;
@@ -390,27 +395,6 @@ body {
 }
 
 #btn-rest:active {
-  transform: translateY(3px);
-  border-bottom-width: 2px;
-}
-
-/* Tombol Foto (Explorer Brass Camera Button) */
-#btn-photo {
-  background: linear-gradient(180deg, #b48325 0%, #785614 100%);
-  border: 2px solid #facc15;
-  border-bottom: 5px solid #4a3407;
-  color: #1a1202;
-  border-radius: 10px;
-  font-weight: 900;
-  font-size: 0.85rem;
-  box-shadow: 0 5px 14px rgba(120, 86, 20, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-}
-
-#btn-photo:hover {
-  filter: brightness(1.12);
-}
-
-#btn-photo:active {
   transform: translateY(3px);
   border-bottom-width: 2px;
 }
@@ -601,6 +585,88 @@ body {
 .consumable-actions {
   display: flex;
   gap: 8px;
+}
+
+/* Character Customization Tab Styles */
+.custom-card {
+  background: linear-gradient(180deg, rgba(27, 43, 34, 0.9) 0%, rgba(18, 30, 24, 0.95) 100%);
+  border: 1px solid var(--stone-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.custom-group-title {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--amber-golden);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.custom-swatch-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.color-swatch-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #ffffff;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s ease, border-color 0.1s ease;
+}
+
+.color-swatch-btn:hover {
+  transform: scale(1.1);
+  filter: brightness(1.15);
+}
+
+.color-swatch-btn.active {
+  border: 3px solid #fef08a;
+  transform: scale(1.12);
+  box-shadow: 0 0 10px #f59e0b;
+}
+
+.custom-pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.style-option-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(15, 23, 42, 0.6);
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.style-option-btn:hover {
+  background: rgba(30, 41, 59, 0.8);
+  color: #ffffff;
+}
+
+.style-option-btn.active {
+  background: var(--forest-medium);
+  border-color: var(--forest-leaf);
+  color: #fef08a;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.35);
 }
 
 /* ==========================================================================

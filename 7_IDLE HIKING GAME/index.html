@@ -33,6 +33,11 @@
           <span id="current-elevation">2.050 mdpl</span>
           <span style="opacity: 0.6; font-size: 0.7rem;">/ <span id="target-elevation">2.565 mdpl</span></span>
         </div>
+        <div class="hud-pill timer-pill" title="Waktu Nyata Pendakian / Estimasi Total">
+          <span>⏱️</span>
+          <span id="val-time-elapsed">00:00:00</span>
+          <span style="opacity: 0.6; font-size: 0.7rem;">/ <span id="val-time-est">03:30:00</span></span>
+        </div>
         <div class="hud-pill currency-pill">
           <span>💰</span>
           <span id="val-rupiah">Rp 5.000</span>
@@ -77,21 +82,18 @@
     <!-- Quick Action Bar -->
     <div class="action-bar">
       <button class="tap-big-btn" id="btn-tap" onclick="game.handleTap()">
-        <span>🥾 Langkah Mantap!</span>
+        <span>🥾 Gas Nanjak!</span>
         <span class="combo-badge" id="combo-badge" style="display: none;">Combo x1.0! 🔥</span>
       </button>
       <button class="btn btn-secondary" id="btn-rest" onclick="game.toggleRest()">
-        ⛺ Buka Tenda (Istirahat)
-      </button>
-      <button class="btn btn-accent" id="btn-photo" title="Ambil Foto Pemandangan" onclick="game.takeScenicPhoto()">
-        📸 Foto
+        ⛺ Buka Tenda (Napas Dulu)
       </button>
     </div>
 
     <!-- Navigation Tabs -->
     <nav class="tabs-nav">
       <button class="tab-btn active" onclick="switchTab('gear')">🎒 Perlengkapan</button>
-      <button class="tab-btn" onclick="switchTab('party')">👥 Tim & Porter</button>
+      <button class="tab-btn" onclick="switchTab('custom')">🎨 Kostum</button>
       <button class="tab-btn" onclick="switchTab('consumables')">🍜 Bekal</button>
       <button class="tab-btn" onclick="switchTab('mountains')">🗺️ Peta Gunung</button>
       <button class="tab-btn" onclick="switchTab('stats')">🏆 Statistik</button>
@@ -104,9 +106,9 @@
         <div id="tab-gear-content"></div>
       </div>
 
-      <!-- 2. Party Tab -->
-      <div class="tab-pane" id="pane-party">
-        <div id="tab-party-content"></div>
+      <!-- 2. Customization Tab -->
+      <div class="tab-pane" id="pane-custom">
+        <div id="tab-custom-content"></div>
       </div>
 
       <!-- 3. Consumables Tab -->
@@ -114,12 +116,12 @@
         <div id="tab-consumables-content"></div>
       </div>
 
-      <!-- 4. Mountains Tab -->
+      <!-- 5. Mountains Tab -->
       <div class="tab-pane" id="pane-mountains">
         <div id="tab-mountains-content"></div>
       </div>
 
-      <!-- 5. Stats Tab -->
+      <!-- 6. Stats Tab -->
       <div class="tab-pane" id="pane-stats">
         <div style="background: rgba(30, 41, 59, 0.88); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 16px;">
           <h3 style="color: #fef08a; margin-bottom: 12px;">📊 Rekor Ekspedisi Pendaki</h3>
@@ -127,8 +129,7 @@
           <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">Total Jarak Ditempuh: <strong id="stat-distance" style="color: #4ade80;">0 m</strong></p>
           <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">Total Langkah/Tap Manual: <strong id="stat-taps" style="color: #fbbf24;">0 kali</strong></p>
           <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">Total Rupiah Didapat: <strong id="stat-rupiah" style="color: #a7f3d0;">Rp 0</strong></p>
-          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">Puncak Berhasil Ditaklukkan: <strong id="stat-summits" style="color: #f472b6;">0 puncak</strong></p>
-          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 16px;">Foto Panorama Diabadikan: <strong id="stat-photos" style="color: #93c5fd;">0 foto</strong></p>
+          <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 16px;">Puncak Berhasil Ditaklukkan: <strong id="stat-summits" style="color: #f472b6;">0 puncak</strong></p>
 
           <hr style="border: none; border-top: 1px solid rgba(255, 255, 255, 0.1); margin: 12px 0;">
           <div style="display: flex; gap: 10px;">
@@ -182,15 +183,16 @@
   <div class="modal-overlay" id="modal-help">
     <div class="modal-box">
       <div class="modal-icon">⛰️</div>
-      <h3>Panduan Ekspedisi Gunung</h3>
+      <h3>Tips & Etika Pendakian Nusantara</h3>
       <div style="text-align: left; font-size: 0.83rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 16px;">
-        <p>• <strong>Idle Auto-Walk</strong>: Pendaki otomatis melangkah maju mendaki gunung.</p>
-        <p>• <strong>Tombol "Langkah Mantap" / Spasi</strong>: Tap untuk mempercepat langkah dan mengaktifkan <em>Combo Multiplier</em> hingga 2.5x!</p>
-        <p>• <strong>Tenaga & Stamina</strong>: Tenaga berkurang saat berjalan. Jika habis (Lelah), langkah melambat. Pulihkan tenaga dengan <em>Buka Tenda</em> atau seduh <em>Kopi & Mie Instan</em>!</p>
-        <p>• <strong>Tim & Porter</strong>: Rekrut Porter lokal, Ranger, dan Fotografer untuk mendongkrak kecepatan & passive income.</p>
-        <p>• <strong>Edelweis Emas (Prestige)</strong>: Setiap mencapai puncak gunung, dapatkan bunga Edelweis abadi yang memberikan bonus permanen!</p>
+        <p>• <strong>Auto-Walk</strong>: Pendaki otomatis melangkah nanjak menyusuri jalur.</p>
+        <p>• <strong>Gas Nanjak! (Tap / Spasi)</strong>: Klik tombol atau pencet spasi untuk percepat langkah & picu <em>Combo Multiplier</em> sampai 2.5x!</p>
+        <p>• <strong>Tenaga & Istirahat</strong>: Kalau tenaga tiris, jalan jadi lambat. Klik <em>Buka Tenda</em> untuk rehat dan nyeduh kopi. Kamu bebas nentuin kapan mau lanjut jalan!</p>
+        <p>• <strong>Sapa Pendaki Lain (NPC)</strong>: Klik pendaki atau tenda yang kamu temui di jalur untuk ngobrol & dapetin semangat lewat bubble cloud!</p>
+        <p>• <strong>Ganti Kostum</strong>: Buka tab <em>Kostum</em> untuk ubah warna jaket, kupluk, carrier, dan celana favoritmu.</p>
+        <p>• <strong>Bunga Edelweis (Prestige)</strong>: Setiap sampai puncak, bawa pulang Edelweis Emas abadi yang ngasih pengganda bonus permanen!</p>
       </div>
-      <button class="btn btn-primary" onclick="closeHelpModal()">Mengerti, Ayo Mendaki!</button>
+      <button class="btn btn-primary" onclick="closeHelpModal()">Siap Mas, Gasss Mendaki!</button>
     </div>
   </div>
 
@@ -211,13 +213,6 @@
       window.parallax = parallax;
       window.game = game;
       game.initEngine(parallax);
-
-      // Canvas click & touch forwards to Tap
-      const canvasEl = document.getElementById('parallaxCanvas');
-      canvasEl.addEventListener('pointerdown', (e) => {
-        mountainAudio.ensureContext();
-        game.handleTap();
-      });
 
       // Keyboard Spacebar forwards to Tap
       window.addEventListener('keydown', (e) => {
@@ -245,8 +240,6 @@
         if (statRp) statRp.textContent = `Rp ${Math.round(game.stats.totalRupiahEarned).toLocaleString('id-ID')}`;
         const statSum = document.getElementById('stat-summits');
         if (statSum) statSum.textContent = `${game.stats.summitsReached} puncak`;
-        const statPho = document.getElementById('stat-photos');
-        if (statPho) statPho.textContent = `${game.stats.photosTaken} foto`;
 
         requestAnimationFrame(gameLoop);
       }

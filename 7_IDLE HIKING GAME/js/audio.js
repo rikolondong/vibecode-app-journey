@@ -102,6 +102,27 @@ class MountainAudio {
     } catch (e) {}
   }
 
+  playChatPop() {
+    this.ensureContext();
+    if (this.isMuted || !this.sfxEnabled || !this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+
+      gain.gain.setValueAtTime(0.12 * this.sfxVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.13);
+    } catch (e) {}
+  }
+
   playTap() {
     this.ensureContext();
     if (this.isMuted || !this.sfxEnabled || !this.ctx) return;

@@ -15,6 +15,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 5 | [**5_ENDLESS HIGHWAY**](./5_ENDLESS%20HIGHWAY) | Game 3D Mengemudi Jalan Tol Malam Hari Berkabut (*Endless Midnight Highway*) dengan Three.js, audio prosedural, dan fisika realistis. | ✅ Selesai |
 | 6 | [**6_SIMULATOR PERLINTASAN KERETA**](./6_SIMULATOR%20PERLINTASAN%20KERETA) | Simulator 3D Pos Penjaga Perlintasan Kereta Api Indonesia (PJL) dengan Three.js, AI lalu lintas kendaraan, dan audio sirine otentik. | ✅ Selesai |
 | 7 | [**7_IDLE HIKING GAME**](./7_IDLE%20HIKING%20GAME) | Game Idle Mendaki Gunung Indonesia (*Ekspedisi Puncak Nusantara*) dengan 2D Multi-Layer Parallax Engine dan Web Audio API. | ✅ Selesai |
+| 9 | [**9_AI VIRTUAL OFFICE**](./9_AI%20VIRTUAL%20OFFICE) | Visualisasi 3D Isometrik AI Multi-Agent Office dengan kru karakter manusia Voxel realistis, tata ruang kantor modern, audio prosedural, dan simulasi alur tugas. | ✅ Selesai |
 
 ---
 
@@ -127,6 +128,30 @@ Game Idle bertema pendakian gunung-gunung tersohor di Indonesia dengan gaya visu
 - **Tech Stack**: HTML5 Canvas, CSS3 Modern Glassmorphism HUD, Vanilla JavaScript (ES6+), Web Audio API Prosedural.
 
 👉 **[Buka Dokumentasi & Kode Proyek 7](./7_IDLE%20HIKING%20GAME)**
+
+---
+
+## 🏢 Ringkasan Proyek 9: AI Virtual Office 3D (Voxel Human Multi-Agent)
+
+Aplikasi visualisasi dan simulasi interaktif **AI Virtual Office 3D Isometrik** dengan kru karakter manusia voxel bergaya modern tech-workspace:
+- **Karakter Manusia Voxel 3D**:
+  - *Bima (Lead Architect & Orchestrator)*: PM berjas smart-casual dengan kacamata, mengkoordinasikan arsitektur sistem.
+  - *Nadia (Research & Data Scientist)*: Peneliti bersanggul auburn/ginger dengan kacamata merah, meja penuh buku & dokumen.
+  - *Reza (Senior Coder)*: Programmer ber-hoodie merah dengan headphone gaming besar, coding di triple ultrawide monitor.
+  - *Maya (QA & Security Sentinel)*: Auditor pirang kuncir dua yang menjalankan test suite, OWASP scans, dan bug whiteboard.
+  - *Hendro (DevOps & Memory Server)*: Teknisi berjenggot bertopi kupluk yang mengelola server rack kluster dan vector database.
+- **Ruangan Kantor Realistis**:
+  - Lantai kayu parket oak & walnut, karpet beludru eksekutif, partisi kaca frosted, dan uap kopi mengepul dari mesin espresso.
+  - Kursi putar kantor ergonomis, pot tanaman hias Monstera, dan rak server bertingkat dengan lampu LED status berkedip.
+- **Simulasi Multi-Agent Real-time**:
+  - Pertukaran berkas dossier 3D melayang dengan jejak partikel (*particle trail*).
+  - Animasi mengetik pada keyboard meja secara otomatis saat agen sedang bekerja.
+  - Sintesis audio Web Audio API (efek ketikan keyboard mekanik, dispatch blip, suara alert).
+- **Misi Siap Pakai & Kustom**:
+  - 🚀 *Deploy SaaS MVP*, 🛡️ *Security Vulnerability Audit*, 📊 *Riset Pasar & Tren AI 2026*, ⚡ *Emergency Production Hotfix*, serta form instruksi kustom.
+- **Tech Stack**: HTML5 Canvas (Pure Procedural 3D Isometric Engine), Vanilla JavaScript (ES6+), Web Audio API Prosedural, Tailwind CSS.
+
+👉 **[Buka Dokumentasi & Kode Proyek 9](./9_AI%20VIRTUAL%20OFFICE)**
 
 ---
 

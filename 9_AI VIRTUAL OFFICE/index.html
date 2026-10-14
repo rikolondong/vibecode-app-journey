@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Virtual Office 3D - Realistic Voxel Human Multi-Agent</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    canvas {
+      cursor: grab;
+      touch-action: none;
+    }
+    canvas.dragging {
+      cursor: grabbing;
+    }
+    canvas.pointer {
+      cursor: pointer;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.4);
+      border-radius: 999px;
+    }
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.65);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden flex flex-col">
+
+  <!-- TOP HUD NAVIGATION -->
+  <header class="glass-panel sticky top-0 z-40 border-b border-slate-800/80 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 shadow-2xl">
+    <div class="flex items-center gap-3">
+      <div class="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+        <span class="text-lg">🧑‍💼</span>
+        <span class="absolute -top-1 -right-1 flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+        </span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+            AI Virtual Office <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono border border-amber-500/30">Voxel Human Crew</span>
+          </h1>
+        </div>
+        <p class="text-xs text-slate-400 flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          Realistic Tech Workspace · 5 Voxel Human AI Agents · Live Desk Interaction
+        </p>
+      </div>
+    </div>
+
+    <!-- MISSION CONTROLS & CAMERA PRESETS -->
+    <div class="flex items-center flex-wrap gap-2">
+      <div class="relative">
+        <select id="presetMission" class="bg-slate-900 text-xs text-slate-200 border border-slate-700 rounded-lg px-3 py-1.5 pr-8 focus:ring-2 focus:ring-indigo-500 focus:outline-none appearance-none cursor-pointer">
+          <option value="saas">🚀 Misi: Bangun & Deploy SaaS MVP</option>
+          <option value="security">🛡️ Misi: Security Vulnerability Audit</option>
+          <option value="research">📊 Misi: Riset Pasar & Tren AI</option>
+          <option value="hotfix">⚡ Misi: Emergency Prod Hotfix</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
+      </div>
+
+      <button id="btnDispatch" class="px-3.5 py-1.5 bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white text-xs font-semibold rounded-lg shadow-md shadow-indigo-600/30 flex items-center gap-1.5 transition active:scale-95">
+        <span>▶ Jalankan Misi</span>
+      </button>
+
+      <button id="btnPause" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 flex items-center gap-1 transition">
+        <span id="pauseIcon">⏸</span> <span id="pauseText">Pause</span>
+      </button>
+
+      <div class="h-5 w-[1px] bg-slate-800 mx-1"></div>
+
+      <!-- Camera Presets -->
+      <div class="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5 gap-0.5 text-xs text-slate-300">
+        <button data-cam="overview" class="cam-btn px-2 py-1 rounded hover:bg-slate-800 text-[11px] font-medium bg-slate-800 text-amber-300">Overview</button>
+        <button data-cam="pm" class="cam-btn px-2 py-1 rounded hover:bg-slate-800 text-[11px] font-medium">PM Desk</button>
+        <button data-cam="dev" class="cam-btn px-2 py-1 rounded hover:bg-slate-800 text-[11px] font-medium">Dev Pod</button>
+        <button data-cam="res" class="cam-btn px-2 py-1 rounded hover:bg-slate-800 text-[11px] font-medium">Research</button>
+        <button data-cam="lounge" class="cam-btn px-2 py-1 rounded hover:bg-slate-800 text-[11px] font-medium">Lounge</button>
+      </div>
+
+      <!-- Sound FX Toggle -->
+      <button id="btnAudio" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg border border-slate-700 transition" title="Toggle Sound FX">
+        🔊
+      </button>
+
+      <!-- Coffee Boost Button -->
+      <button id="btnCoffee" class="px-2.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-semibold rounded-lg flex items-center gap-1 transition" title="Beri Kopi untuk Kecepatan 2.2x!">
+        ☕ <span>Coffee Boost</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <div class="relative flex-1 flex flex-col lg:flex-row overflow-hidden">
+
+    <!-- 3D ISOMETRIC CANVAS -->
+    <div class="relative flex-1 bg-slate-950 flex flex-col overflow-hidden min-h-[480px] lg:min-h-0">
+      
+      <!-- Ambient Studio Light Radial Overlay -->
+      <div class="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_70%_70%_at_50%_30%,rgba(245,158,11,0.06),rgba(0,0,0,0))]"></div>
+
+      <!-- High DPI Canvas -->
+      <canvas id="officeCanvas" class="w-full h-full block flex-1"></canvas>
+
+      <!-- FLOATING WORKFLOW STAGE HUD PILL -->
+      <div class="absolute top-4 left-4 z-10 glass-panel px-3.5 py-2 rounded-xl flex items-center gap-3 shadow-xl max-w-md pointer-events-none">
+        <div class="relative flex items-center justify-center">
+          <div class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></div>
+          <div class="absolute w-2 h-2 rounded-full bg-amber-500"></div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-[10px] uppercase font-mono tracking-wider text-amber-400 font-semibold" id="hudStageTitle">WORKFLOW ACTIVE</div>
+          <div class="text-xs font-medium text-slate-200 truncate" id="hudStageDesc">Lead Architect mengkoordinasikan tugas tim...</div>
+        </div>
+        <div class="font-mono text-xs px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-amber-300 font-semibold" id="hudProgress">0%</div>
+      </div>
+
+      <!-- Navigation & Interaction Helper -->
+      <div class="absolute bottom-4 left-4 z-10 glass-card px-3 py-1.5 rounded-lg text-[11px] text-slate-400 flex items-center gap-3">
+        <span class="flex items-center gap-1">🖱️ <b>Drag</b> Geser</span>
+        <span>•</span>
+        <span class="flex items-center gap-1">🔍 <b>Scroll</b> Zoom (<span id="zoomLevel">100%</span>)</span>
+        <span>•</span>
+        <span class="flex items-center gap-1">🎯 <b>Klik Karakter</b> Buka Profil</span>
+        <button id="btnResetCam" class="text-amber-400 hover:text-amber-300 underline font-mono ml-1">Reset</button>
+      </div>
+
+      <!-- Character Visual Legend -->
+      <div class="absolute top-4 right-4 z-10 hidden sm:flex flex-col gap-1.5 pointer-events-none">
+        <div class="glass-card px-2.5 py-1 rounded text-[10px] flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+          <span class="text-slate-300 font-medium">Bima (Lead PM & Architect)</span>
+        </div>
+        <div class="glass-card px-2.5 py-1 rounded text-[10px] flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+          <span class="text-slate-300 font-medium">Nadia (Research & Data)</span>
+        </div>
+        <div class="glass-card px-2.5 py-1 rounded text-[10px] flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+          <span class="text-slate-300 font-medium">Reza (Senior Coder - Headphone)</span>
+        </div>
+        <div class="glass-card px-2.5 py-1 rounded text-[10px] flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <span class="text-slate-300 font-medium">Maya (QA & Security Auditor)</span>
+        </div>
+        <div class="glass-card px-2.5 py-1 rounded text-[10px] flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
+          <span class="text-slate-300 font-medium">Hendro (DevOps & Memory DB)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR: INSPECTOR & WORKSPACE TERMINAL -->
+    <div class="w-full lg:w-96 glass-panel border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col h-96 lg:h-auto overflow-hidden">
+      
+      <!-- TABS -->
+      <div class="flex border-b border-slate-800 text-xs font-semibold">
+        <button id="tabInspectorBtn" class="flex-1 py-2.5 px-3 text-center border-b-2 border-amber-500 text-amber-400 bg-slate-900/50 flex items-center justify-center gap-1.5">
+          <span>🧑‍💻</span> Karakter & Status
+        </button>
+        <button id="tabLiveCodeBtn" class="flex-1 py-2.5 px-3 text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
+          <span>💻</span> Live Output & Terminal
+        </button>
+      </div>
+
+      <!-- TAB 1: CHARACTER INSPECTOR -->
+      <div id="tabInspector" class="flex-1 p-3.5 overflow-y-auto space-y-3.5">
+        
+        <!-- Active Character Profile Card -->
+        <div class="glass-card rounded-xl p-3.5 border border-amber-500/30 relative overflow-hidden">
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <div id="inspectorAvatar" class="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-2xl shadow-lg">
+                🧑‍💼
+              </div>
+              <div>
+                <h3 id="inspectorName" class="text-sm font-bold text-white flex items-center gap-1.5">
+                  Bima (Lead Architect)
+                </h3>
+                <div class="text-[11px] text-slate-400" id="inspectorRole">Orchestrator & System Planner</div>
+              </div>
+            </div>
+            <span id="inspectorState" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              BEKERJA
+            </span>
+          </div>
+
+          <!-- Thought bubble / Current Action -->
+          <div class="mt-3 p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 text-xs text-slate-300">
+            <div class="text-[10px] font-mono uppercase text-amber-400 font-bold mb-1 flex items-center justify-between">
+              <span>Aktivitas di Meja Kerja</span>
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            </div>
+            <p id="inspectorThought" class="italic text-slate-300 leading-relaxed">
+              "Menyusun diagram alur data dan mendelegasikan modul backend..."
+            </p>
+          </div>
+
+          <!-- Character Telemetry / Specs -->
+          <div class="grid grid-cols-2 gap-2 mt-3 text-[11px]">
+            <div class="bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+              <span class="text-slate-400 block text-[10px]">AI Engine</span>
+              <span id="inspectorModel" class="font-semibold text-slate-200">Gemini 2.5 Pro</span>
+            </div>
+            <div class="bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+              <span class="text-slate-400 block text-[10px]">Speed / Focus</span>
+              <span id="inspectorLatency" class="font-semibold text-emerald-400 font-mono">22ms (High)</span>
+            </div>
+            <div class="bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+              <span class="text-slate-400 block text-[10px]">Desk Setup</span>
+              <span id="inspectorDesk" class="font-semibold text-amber-300 font-mono">Dual Monitor + Coffee</span>
+            </div>
+            <div class="bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+              <span class="text-slate-400 block text-[10px]">Tugas Selesai</span>
+              <span id="inspectorTasks" class="font-semibold text-indigo-300 font-mono">18 Modul</span>
+            </div>
+          </div>
+
+          <!-- Tools & Skills -->
+          <div class="mt-3">
+            <span class="text-slate-400 text-[10px] uppercase font-mono block mb-1">Tools & Spesialisasi</span>
+            <div id="inspectorTools" class="flex flex-wrap gap-1"></div>
+          </div>
+        </div>
+
+        <!-- Custom Prompt Input Drawer -->
+        <div class="glass-card rounded-xl p-3 border border-slate-800">
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="customPromptInput" class="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+              <span>✍️</span> Kirim Brief ke Ruang Kantor
+            </label>
+            <span class="text-[10px] text-slate-400 font-mono">Multi-Agent</span>
+          </div>
+          <div class="flex gap-1.5">
+            <input type="text" id="customPromptInput" placeholder="Contoh: Rancang arsitektur payment gateway..." class="flex-1 bg-slate-900 text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500">
+            <button id="btnSendPrompt" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold rounded-lg transition active:scale-95">
+              Kirim
+            </button>
+          </div>
+        </div>
+
+        <!-- Team Roster -->
+        <div>
+          <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wider font-mono mb-2 flex items-center justify-between">
+            <span>Daftar Kru Kantor</span>
+            <span class="text-[10px] text-emerald-400 font-mono">5 Karakter Online</span>
+          </h4>
+          <div class="space-y-1.5" id="agentRosterList"></div>
+        </div>
+
+      </div>
+
+      <!-- TAB 2: LIVE CODE & ACTIVITY LOG -->
+      <div id="tabLiveCode" class="hidden flex-1 p-3 flex-col overflow-hidden space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-mono text-slate-300 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            Workspace Log & Code Artifact
+          </span>
+          <button id="btnClearLog" class="text-[10px] text-slate-400 hover:text-slate-200 underline font-mono">Clear</button>
+        </div>
+
+        <div class="bg-slate-950 rounded-lg p-2.5 border border-slate-800 flex-1 overflow-y-auto mono text-xs leading-relaxed text-slate-300 space-y-1" id="liveTerminalOutput">
+          <div class="text-slate-500">// AI Virtual Office Workspace initialized...</div>
+          <div class="text-amber-400">⚡ Tim kantor siap menjalankan tugas kolaboratif.</div>
+        </div>
+
+        <div class="p-2 rounded bg-slate-900/80 border border-slate-800 text-[10px] font-mono flex items-center justify-between text-slate-400">
+          <span>Berkas Dokumen Terkirim: <b class="text-amber-300" id="statPackets">0</b></span>
+          <span>Tugas Selesai: <b class="text-emerald-300" id="statCompleted">0</b></span>
+          <span>Waktu: <b class="text-slate-200" id="statTime">00:00</b></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT ENGINE -->
+  <script>
+    /* =========================================================================
+       VOXEL HUMAN CHARACTER & REALISTIC ISOMETRIC OFFICE ENGINE
+       ========================================================================= */
+
+    // Web Audio Synthesizer (Zero external dependencies)
+    class SoundEngine {
+      constructor() { this.ctx = null; this.muted = false; }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+      }
+      playBlip(freq = 550, duration = 0.07, type = 'sine') {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(freq * 1.3, this.ctx.currentTime + duration);
+          gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+      playKeyboardClick() {
+        if (this.muted) return;
+        this.playBlip(900 + Math.random() * 400, 0.03, 'triangle');
+      }
+      playTaskDispatch() {
+        if (this.muted) return;
+        this.playBlip(620, 0.08, 'sine');
+        setTimeout(() => this.playBlip(820, 0.08, 'sine'), 60);
+      }
+      playSuccess() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+          setTimeout(() => this.playBlip(freq, 0.12, 'sine'), idx * 75);
+        });
+      }
+    }
+    const audio = new SoundEngine();
+
+    const canvas = document.getElementById('officeCanvas');
+    const ctx = canvas.getContext('2d');
+    let W = 900, H = 600, DPR = window.devicePixelRatio || 1;
+
+    // Isometric Camera
+    const cam = {
+      x: 0, y: 0, zoom: 1.0, dragging: false,
+      lastMouseX: 0, lastMouseY: 0, movedTotal: 0
+    };
+
+    const TILE_W = 64;
+    const TILE_H = 32;
+    const Z_STEP = 36;
+    const ROOM_COLS = 13;
+    const ROOM_ROWS = 13;
+
+    // Convert 3D world (x, y, z) to 2D screen coordinate
+    function isoProject(x, y, z = 0) {
+      const sx = cam.x + (x - y) * (TILE_W / 2) * cam.zoom;
+      const sy = cam.y + ((x + y) * (TILE_H / 2) - z * Z_STEP) * cam.zoom;
+      return [sx, sy];
+    }
+
+    // Color shade utilities
+    function hexToRgb(h) {
+      if (h.startsWith('#')) h = h.slice(1);
+      if (h.length === 3) h = h.split('').map(c => c + c).join('');
+      return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+    }
+    function shadeColor(hex, factor) {
+      const [r, g, b] = hexToRgb(hex);
+      const clamp = v => Math.max(0, Math.min(255, Math.round(v * factor)));
+      return `rgb(${clamp(r)},${clamp(g)},${clamp(b)})`;
+    }
+
+    // Draw isometric polygon
+    function drawPoly(pts, fill, stroke = null, lineW = 1) {
+      ctx.beginPath();
+      pts.forEach(([px, py], i) => i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py));
+      ctx.closePath();
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lineW; ctx.stroke(); }
+    }
+
+    // Draw 3D Voxel Box with clean shading
+    function drawVoxel(x, y, z, w, d, h, baseColor, stroke = 'rgba(0,0,0,0.18)', lineW = 1) {
+      // Top face
+      const t1 = isoProject(x, y, z + h);
+      const t2 = isoProject(x + w, y, z + h);
+      const t3 = isoProject(x + w, y + d, z + h);
+      const t4 = isoProject(x, y + d, z + h);
+      drawPoly([t1, t2, t3, t4], shadeColor(baseColor, 1.14), stroke, lineW);
+
+      // Left face
+      const l1 = isoProject(x, y + d, z);
+      const l2 = isoProject(x + w, y + d, z);
+      const l3 = isoProject(x + w, y + d, z + h);
+      const l4 = isoProject(x, y + d, z + h);
+      drawPoly([l1, l2, l3, l4], shadeColor(baseColor, 0.82), stroke, lineW);
+
+      // Right face
+      const r1 = isoProject(x + w, y, z);
+      const r2 = isoProject(x + w, y + d, z);
+      const r3 = isoProject(x + w, y + d, z + h);
+      const r4 = isoProject(x + w, y, z + h);
+      drawPoly([r1, r2, r3, r4], shadeColor(baseColor, 0.65), stroke, lineW);
+    }
+
+    /* =========================================================================
+       HUMAN VOXEL CHARACTERS DEFINITION (Based on reference image style)
+       ========================================================================= */
+    const CHARACTERS = {
+      // 1. Lead Architect / PM: Bima (Neat dark hair, glasses, smart-casual blazer)
+      bima: {
+        id: 'bima',
+        name: 'Bima',
+        title: 'Lead Architect & Orchestrator',
+        avatar: '🧑‍💼',
+        roleBadge: 'Orchestrator Prime',
+        color: '#f59e0b', // Amber
+        x: 5.2, y: 5.2,
+        facing: 'SE',
+        skinTone: '#f8d2b2',
+        hairColor: '#3c2415', // Dark brown neat hair
+        hairStyle: 'neat_sidepart',
+        glasses: true,
+        glassesColor: '#1e293b',
+        shirtColor: '#3b82f6', // Smart blue shirt
+        pantsColor: '#1e293b', // Dark trousers
+        shoesColor: '#451a03',
+        hasHeadphones: false,
+        model: 'Gemini 2.5 Pro (Thinking)',
+        speed: '20ms',
+        deskDesc: 'Executive Oak Desk, iPad Pro & Espresso',
+        tasksDone: 24,
+        status: 'working',
+        currentThought: 'Menguraikan arsitektur sistem dan membagi tugas ke tim dev...',
+        tools: ['Architecture Planner', 'Task Router', 'Milestone Reviewer', 'Sprint Board']
+      },
+
+      // 2. Researcher & Data Analyst: Nadia (Ginger/Auburn bun hair with red glasses, like ref row 2)
+      nadia: {
+        id: 'nadia',
+        name: 'Nadia',
+        title: 'Research & Data Scientist',
+        avatar: '👩‍🔬',
+        roleBadge: 'Research Agent',
+        color: '#06b6d4', // Cyan
+        x: 1.8, y: 1.8,
+        facing: 'SE',
+        skinTone: '#fed7aa',
+        hairColor: '#c2410c', // Auburn ginger hair
+        hairStyle: 'bun_glasses',
+        glasses: true,
+        glassesColor: '#dc2626', // Red frame glasses
+        shirtColor: '#f59e0b', // Mustard yellow sweater
+        pantsColor: '#0f172a',
+        shoesColor: '#ffffff',
+        hasHeadphones: false,
+        model: 'Gemini Flash Search',
+        speed: '16ms',
+        deskDesc: 'Dual UltraSharp Displays, Stacked Papers & Books',
+        tasksDone: 31,
+        status: 'idle',
+        currentThought: 'Membaca dan merangkum paper terbaru serta data performa...',
+        tools: ['Google Search API', 'Doc Parser', 'ArXiv Reader', 'Data Summarizer']
+      },
+
+      // 3. Senior Coder: Reza (Red hoodie guy with big gaming/coding headphones, exact match to bottom-left ref!)
+      reza: {
+        id: 'reza',
+        name: 'Reza',
+        title: 'Senior Full-Stack Engineer',
+        avatar: '👨‍💻',
+        roleBadge: 'Coder Agent',
+        color: '#ef4444', // Red / Rose
+        x: 9.2, y: 1.8,
+        facing: 'SE',
+        skinTone: '#fcd34d',
+        hairColor: '#18181b', // Black hair
+        hairStyle: 'messy_headphone',
+        glasses: false,
+        shirtColor: '#dc2626', // Red hoodie (like reference!)
+        pantsColor: '#1e293b',
+        shoesColor: '#ffffff',
+        hasHeadphones: true,   // BIG HEADPHONES!
+        headphoneColor: '#18181b',
+        headphonePadColor: '#ef4444',
+        model: 'Claude 3.7 Sonnet / Code',
+        speed: '32ms',
+        deskDesc: 'Triple Ultrawide Screens, Mech Keyboard & Monster Energy',
+        tasksDone: 42,
+        status: 'idle',
+        currentThought: 'Menulis endpoint REST dan komponen React dengan TypeScript...',
+        tools: ['VS Code IDE', 'Terminal Shell', 'Git VCS', 'Unit Test Runner']
+      },
+
+      // 4. QA & Security Auditor: Maya (Cute blonde hair with headband/clips, smart blazer)
+      maya: {
+        id: 'maya',
+        name: 'Maya',
+        title: 'QA & Security Sentinel',
+        avatar: '👩‍💻',
+        roleBadge: 'QA Reviewer',
+        color: '#10b981', // Emerald
+        x: 9.2, y: 9.2,
+        facing: 'NW',
+        skinTone: '#ffedd5',
+        hairColor: '#eab308', // Blonde hair with cute clips
+        hairStyle: 'pigtails_clips',
+        glasses: false,
+        shirtColor: '#10b981', // Emerald green top
+        pantsColor: '#334155',
+        shoesColor: '#000000',
+        hasHeadphones: false,
+        model: 'Gemini Pro Guard',
+        speed: '24ms',
+        deskDesc: 'MacBook Pro, Vulnerability Matrix & QA Board',
+        tasksDone: 29,
+        status: 'idle',
+        currentThought: 'Menjalankan skenario penetration test dan regression tests...',
+        tools: ['Jest / Playwright', 'OWASP Vulnerability Scanner', 'AST Linter', 'Coverage Checker']
+      },
+
+      // 5. DevOps & Vector Memory Lead: Hendro (Bearded engineer with cap/beanie, like bottom row ref!)
+      hendro: {
+        id: 'hendro',
+        name: 'Hendro',
+        title: 'DevOps & Vector Memory Lead',
+        avatar: '👨‍🔧',
+        roleBadge: 'Memory Server',
+        color: '#6366f1', // Indigo
+        x: 1.8, y: 9.2,
+        facing: 'NE',
+        skinTone: '#f8d2b2',
+        hairColor: '#292524',
+        hairStyle: 'bearded_cap',
+        hasBeard: true,
+        beardColor: '#1c1917',
+        glasses: false,
+        shirtColor: '#4338ca', // Deep indigo tee
+        pantsColor: '#1e293b',
+        shoesColor: '#78350f',
+        hasHeadphones: false,
+        model: 'Vector Store & Embeddings v3',
+        speed: '10ms',
+        deskDesc: 'Server Rack Terminal Console, Redis Monitor & Sticky Notes',
+        tasksDone: 51,
+        status: 'idle',
+        currentThought: 'Mengindeks 1536-dimensi embeddings ke persistent cluster...',
+        tools: ['ChromaDB', 'Redis Cache', 'Docker Container', 'Kubernetes Cluster']
+      }
+    };
+
+    // Calculate center coordinates
+    Object.values(CHARACTERS).forEach(c => {
+      c.cx = c.x + 0.8;
+      c.cy = c.y + 0.8;
+    });
+
+    let selectedChar = CHARACTERS.bima;
+    let hoveredChar = null;
+
+    /* =========================================================================
+       DRAWING VOXEL HUMAN CHARACTER (CROSSY ROAD / VOXEL STYLE MATCHING REF)
+       ========================================================================= */
+    function drawVoxelHuman(c, time) {
+      const isWorking = c.status === 'working';
+      const isSelected = selectedChar === c;
+      const isHovered = hoveredChar === c;
+
+      // Realistic typing / working animation
+      const typingBob = isWorking ? Math.sin(time * 14) * 0.025 : Math.sin(time * 2.5 + c.cx) * 0.015;
+      const x = c.x;
+      const y = c.y;
+
+      // 1. Shadow beneath character
+      const shadowPos = isoProject(c.cx, c.cy, 0.02);
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.32)';
+      ctx.beginPath();
+      ctx.ellipse(shadowPos[0], shadowPos[1], 18 * cam.zoom, 9 * cam.zoom, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // 2. Ergonomic Office Swivel Chair
+      // Star Base & Stem
+      drawVoxel(x + 0.5, y + 0.5, 0, 0.4, 0.4, 0.25, '#1e293b');
+      // Seat cushion (Dark grey / mesh)
+      drawVoxel(x + 0.35, y + 0.35, 0.25, 0.7, 0.7, 0.12, '#334155');
+      // Backrest
+      drawVoxel(x + 0.35, y + 0.22, 0.37, 0.7, 0.14, 0.65, '#1e293b');
+
+      // 3. Legs & Shoes (Sitting posture)
+      // Left leg
+      drawVoxel(x + 0.4, y + 0.7, 0.22, 0.2, 0.35, 0.16, c.pantsColor);
+      drawVoxel(x + 0.38, y + 0.95, 0, 0.22, 0.22, 0.22, c.shoesColor);
+      // Right leg
+      drawVoxel(x + 0.8, y + 0.7, 0.22, 0.2, 0.35, 0.16, c.pantsColor);
+      drawVoxel(x + 0.78, y + 0.95, 0, 0.22, 0.22, 0.22, c.shoesColor);
+
+      // 4. Torso & Clothes
+      const torsoZ = 0.37 + typingBob;
+      drawVoxel(x + 0.45, y + 0.45, torsoZ, 0.55, 0.5, 0.5, c.shirtColor);
+
+      // Collar / Tie detail
+      if (c.id === 'bima') {
+        // Smart tie
+        drawVoxel(x + 0.68, y + 0.88, torsoZ + 0.1, 0.1, 0.08, 0.35, '#ef4444');
+      }
+
+      // 5. Arms & Hands (Animated typing on keyboard!)
+      const armBobL = isWorking ? Math.sin(time * 16) * 0.04 : 0;
+      const armBobR = isWorking ? Math.cos(time * 16) * 0.04 : 0;
+      // Left arm forward onto desk
+      drawVoxel(x + 0.32, y + 0.65, torsoZ + 0.18 + armBobL, 0.15, 0.4, 0.15, c.shirtColor);
+      drawVoxel(x + 0.32, y + 1.0, torsoZ + 0.18 + armBobL, 0.14, 0.12, 0.12, c.skinTone); // Left hand
+      // Right arm forward onto desk
+      drawVoxel(x + 0.98, y + 0.65, torsoZ + 0.18 + armBobR, 0.15, 0.4, 0.15, c.shirtColor);
+      drawVoxel(x + 0.98, y + 1.0, torsoZ + 0.18 + armBobR, 0.14, 0.12, 0.12, c.skinTone); // Right hand
+
+      // 6. Big Voxel Head (Core signature of reference art!)
+      const headZ = torsoZ + 0.52;
+      const hx = x + 0.4, hy = y + 0.4;
+      // Main Head Skin Block (0.65w x 0.62d x 0.58h)
+      drawVoxel(hx, hy, headZ, 0.65, 0.62, 0.56, c.skinTone);
+
+      // Cute Big Voxel Eyes (2 pixels wide with dark pupil and white sclera)
+      // Left Eye
+      drawVoxel(hx + 0.1, hy + 0.62, headZ + 0.18, 0.15, 0.02, 0.18, '#ffffff');
+      drawVoxel(hx + 0.15, hy + 0.63, headZ + 0.20, 0.10, 0.02, 0.14, '#1c1917');
+      // Right Eye
+      drawVoxel(hx + 0.4, hy + 0.62, headZ + 0.18, 0.15, 0.02, 0.18, '#ffffff');
+      drawVoxel(hx + 0.45, hy + 0.63, headZ + 0.20, 0.10, 0.02, 0.14, '#1c1917');
+
+      // Glasses (if applicable: Bima & Nadia)
+      if (c.glasses) {
+        const gColor = c.glassesColor || '#1e293b';
+        // Left rim
+        drawVoxel(hx + 0.06, hy + 0.63, headZ + 0.15, 0.22, 0.03, 0.24, gColor);
+        // Bridge
+        drawVoxel(hx + 0.28, hy + 0.63, headZ + 0.24, 0.09, 0.03, 0.06, gColor);
+        // Right rim
+        drawVoxel(hx + 0.37, hy + 0.63, headZ + 0.15, 0.22, 0.03, 0.24, gColor);
+      }
+
+      // Beard (Hendro DevOps)
+      if (c.hasBeard) {
+        drawVoxel(hx + 0.12, hy + 0.62, headZ + 0.02, 0.42, 0.04, 0.14, c.beardColor);
+      }
+
+      // Mouth / Smile
+      const mouthColor = '#be123c';
+      drawVoxel(hx + 0.26, hy + 0.62, headZ + 0.07, 0.14, 0.02, 0.05, mouthColor);
+
+      // 7. Voxel Hair Styles (Tailored to match reference characters)
+      if (c.hairStyle === 'neat_sidepart') {
+        // Top Hair Cap with volume
+        drawVoxel(hx - 0.04, hy - 0.04, headZ + 0.42, 0.73, 0.7, 0.2, c.hairColor);
+        // Back of head hair
+        drawVoxel(hx - 0.04, hy - 0.04, headZ + 0.12, 0.73, 0.18, 0.34, c.hairColor);
+        // Sideburns
+        drawVoxel(hx - 0.04, hy + 0.12, headZ + 0.16, 0.1, 0.45, 0.3, c.hairColor);
+        drawVoxel(hx + 0.59, hy + 0.12, headZ + 0.16, 0.1, 0.45, 0.3, c.hairColor);
+      } else if (c.hairStyle === 'bun_glasses') {
+        // Redhead bun hair (Nadia)
+        drawVoxel(hx - 0.04, hy - 0.04, headZ + 0.38, 0.73, 0.7, 0.22, c.hairColor);
+        drawVoxel(hx - 0.04, hy - 0.04, headZ + 0.1, 0.73, 0.2, 0.32, c.hairColor);
+        // High top bun
+        drawVoxel(hx + 0.18, hy + 0.12, headZ + 0.58, 0.3, 0.3, 0.24, c.hairColor);
+      } else if (c.hairStyle === 'messy_headphone') {
+        // Reza: Black messy anime bangs + big red gaming headphones!
+        drawVoxel(hx - 0.04, hy - 0.04, headZ + 0.44, 0.73, 0.7, 0.18, c.hairColor);
+        drawVoxel(hx - 0.04, hy - 0.04, headZ + 0.14, 0.73, 0.2, 0.32, c.hairColor);
+        // Bangs over forehead
+        drawVoxel(hx + 0.08, hy + 0.6, headZ + 0.38, 0.5, 0.06, 0.14, c.hairColor);
+      } else if (c.hairStyle === 'pigtails_clips') {
+        // Maya: Blonde hair with cute side pigtails
+        drawVoxel(hx - 0.04, hy - 0.04, headZ + 0.42, 0.73, 0.7, 0.2, c.hairColor);
+        drawVoxel(hx - 0.04, hy - 0.04, headZ + 0.1, 0.73, 0.2, 0.34, c.hairColor);
+        // Side pigtails
+        drawVoxel(hx - 0.14, hy + 0.15, headZ + 0.15, 0.14, 0.3, 0.32, c.hairColor);
+        drawVoxel(hx + 0.65, hy + 0.15, headZ + 0.15, 0.14, 0.3, 0.32, c.hairColor);
+        // White hair clips
+        drawVoxel(hx - 0.02, hy + 0.52, headZ + 0.4, 0.08, 0.08, 0.08, '#ffffff');
+        drawVoxel(hx + 0.59, hy + 0.52, headZ + 0.4, 0.08, 0.08, 0.08, '#ffffff');
+      } else if (c.hairStyle === 'bearded_cap') {
+        // Hendro: Tech beanie cap
+        drawVoxel(hx - 0.05, hy - 0.05, headZ + 0.40, 0.75, 0.72, 0.26, '#3730a3');
+        drawVoxel(hx - 0.04, hy - 0.04, headZ + 0.12, 0.73, 0.2, 0.3, c.hairColor);
+      }
+
+      // 8. Big Headphones (Reza - bottom left reference photo match!)
+      if (c.hasHeadphones) {
+        // Headband over top
+        drawVoxel(hx + 0.02, hy + 0.18, headZ + 0.58, 0.62, 0.15, 0.08, c.headphoneColor);
+        // Left Ear Cup (Padded)
+        drawVoxel(hx - 0.12, hy + 0.15, headZ + 0.18, 0.12, 0.28, 0.3, c.headphoneColor);
+        drawVoxel(hx - 0.15, hy + 0.18, headZ + 0.21, 0.04, 0.22, 0.24, c.headphonePadColor);
+        // Right Ear Cup (Padded)
+        drawVoxel(hx + 0.65, hy + 0.15, headZ + 0.18, 0.12, 0.28, 0.3, c.headphoneColor);
+        drawVoxel(hx + 0.76, hy + 0.18, headZ + 0.21, 0.04, 0.22, 0.24, c.headphonePadColor);
+      }
+
+      // 9. Overhead Badge & Status Indicator
+      const badgePos = isoProject(c.cx, c.cy, headZ + 1.25);
+      drawCharacterBadge(c, badgePos[0], badgePos[1], isSelected || isHovered);
+    }
+
+    // Overhead HUD Pill for each character
+    function drawCharacterBadge(c, x, y, isProminent) {
+      ctx.save();
+      ctx.font = `600 ${Math.max(11, 12 * cam.zoom)}px 'Plus Jakarta Sans', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      const tagText = `${c.avatar} ${c.name} · ${c.roleBadge}`;
+      const metrics = ctx.measureText(tagText);
+      const tagW = metrics.width + 16;
+      const tagH = 22 * cam.zoom;
+
+      ctx.fillStyle = isProminent ? 'rgba(15, 23, 42, 0.96)' : 'rgba(15, 23, 42, 0.8)';
+      ctx.strokeStyle = c.color;
+      ctx.lineWidth = isProminent ? 2 : 1;
+      ctx.beginPath();
+      ctx.roundRect(x - tagW / 2, y - tagH / 2, tagW, tagH, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = isProminent ? '#ffffff' : '#cbd5e1';
+      ctx.fillText(tagText, x, y);
+
+      // Status indicator mini dot
+      const dotX = x - tagW / 2 + 8;
+      const dotColor = c.status === 'working' ? '#10b981' : '#64748b';
+      ctx.fillStyle = dotColor;
+      ctx.beginPath();
+      ctx.arc(dotX, y, 3 * cam.zoom, 0, Math.PI * 2);
+      ctx.fill();
+
+      // If actively working, render thought cloud bubble
+      if (c.status === 'working') {
+        const thoughtY = y - 24 * cam.zoom;
+        const stateMsg = c.currentAction || "Menulis kode...";
+        ctx.font = `500 ${Math.max(10, 10.5 * cam.zoom)}px 'JetBrains Mono', monospace`;
+        const stateMetrics = ctx.measureText(stateMsg);
+        const bubbleW = stateMetrics.width + 14;
+        const bubbleH = 18 * cam.zoom;
+
+        ctx.fillStyle = shadeColor(c.color, 0.28);
+        ctx.strokeStyle = c.color;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(x - bubbleW / 2, thoughtY - bubbleH / 2, bubbleW, bubbleH, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(stateMsg, x, thoughtY);
+      }
+
+      ctx.restore();
+    }
+
+    /* =========================================================================
+       REALISTIC OFFICE ENVIRONMENT GEOMETRY
+       ========================================================================= */
+    function drawRealisticOffice(time) {
+      // 1. Concrete Subfloor Slab
+      drawVoxel(-0.5, -0.5, -0.6, ROOM_COLS + 1, ROOM_ROWS + 1, 0.6, '#0f172a', '#1e293b');
+
+      // 2. Realistic Luxury Wood Parquet Floor (Oak & Walnut planks)
+      for (let x = 0; x < ROOM_COLS; x++) {
+        for (let y = 0; y < ROOM_ROWS; y++) {
+          let floorColor = '#78350f';
+          const isStripe = (x * 2 + y) % 3 === 0;
+
+          // Executive Command Center (Center Carpet Rug)
+          if (x >= 4 && x <= 7 && y >= 4 && y <= 7) {
+            floorColor = isStripe ? '#1e1b4b' : '#312e81'; // Luxury Indigo Carpet
+          }
+          // Break Room & Lounge (Tile Floor)
+          else if (x >= 4 && x <= 7 && y < 3) {
+            floorColor = (x + y) % 2 === 0 ? '#e2e8f0' : '#cbd5e1'; // Modern White Marble Tiles
+          }
+          // Main Workspaces: Warm Natural Oak Wood Parquet
+          else {
+            floorColor = isStripe ? '#b45309' : '#92400e';
+          }
+
+          const pts = [
+            isoProject(x, y, 0),
+            isoProject(x + 1, y, 0),
+            isoProject(x + 1, y + 1, 0),
+            isoProject(x, y + 1, 0)
+          ];
+          drawPoly(pts, floorColor, 'rgba(0,0,0,0.06)', 1);
+        }
+      }
+
+      // 3. Realistic Glass Office Partition Walls & Frames
+      // North Wall (Brick & Window)
+      drawVoxel(-0.5, -0.5, 0, ROOM_COLS + 1, 0.35, 1.8, '#334155', '#475569');
+      // West Wall
+      drawVoxel(-0.5, -0.5, 0, 0.35, ROOM_ROWS + 1, 1.8, '#334155', '#475569');
+
+      // Frosted Glass Partition between Dev Pod & Lounge
+      const glassPos1 = isoProject(8.0, 0, 0);
+      const glassPos2 = isoProject(8.0, 3.5, 0);
+      ctx.save();
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+      ctx.lineWidth = 2 * cam.zoom;
+      ctx.beginPath();
+      ctx.moveTo(glassPos1[0], glassPos1[1]);
+      ctx.lineTo(glassPos2[0], glassPos2[1]);
+      ctx.stroke();
+      ctx.restore();
+
+      // 4. WORKSTATION 1: Bima (Lead PM & Architect - Center Desk)
+      // Solid Modern Oak Desk
+      drawVoxel(4.6, 6.2, 0, 2.4, 1.1, 0.68, '#d97706'); // Wooden Desk Top
+      drawVoxel(4.7, 6.3, 0, 0.15, 0.15, 0.68, '#1e293b'); // Left leg
+      drawVoxel(6.8, 6.3, 0, 0.15, 0.15, 0.68, '#1e293b'); // Right leg
+      // Laptop on desk
+      drawVoxel(5.2, 6.4, 0.68, 0.6, 0.45, 0.03, '#94a3b8'); // MacBook base
+      drawVoxel(5.2, 6.35, 0.71, 0.6, 0.04, 0.42, '#0284c7'); // Screen glow
+      // Coffee mug & Notebook
+      drawVoxel(6.1, 6.5, 0.68, 0.18, 0.18, 0.2, '#f8fafc'); // White ceramic mug
+      drawVoxel(4.8, 6.4, 0.68, 0.3, 0.4, 0.02, '#10b981'); // Green notebook
+
+      // 5. WORKSTATION 2: Nadia (Research Lab - Top-Left)
+      drawVoxel(1.2, 2.8, 0, 2.6, 1.1, 0.68, '#f59e0b');
+      // Dual Monitor Stand
+      drawVoxel(1.4, 3.0, 0.68, 0.8, 0.08, 0.5, '#06b6d4'); // Monitor 1 (Data analytics)
+      drawVoxel(2.4, 3.0, 0.68, 0.8, 0.08, 0.5, '#0891b2'); // Monitor 2 (Browser / ArXiv)
+      // Stack of Research Papers & Books
+      drawVoxel(1.3, 2.9, 0.68, 0.35, 0.45, 0.14, '#f8fafc');
+      drawVoxel(1.3, 2.9, 0.82, 0.32, 0.42, 0.12, '#3b82f6');
+      // Tall Bookshelf against wall
+      drawVoxel(0.1, 0.8, 0, 0.45, 1.8, 1.9, '#78350f');
+      for (let bk = 0; bk < 3; bk++) {
+        drawVoxel(0.12, 0.9 + bk * 0.4, 0.4 + bk * 0.45, 0.38, 0.35, 0.32, bk % 2 ? '#0284c7' : '#ef4444');
+      }
+
+      // 6. WORKSTATION 3: Reza (Senior Dev Pod - Top-Right)
+      drawVoxel(8.6, 2.8, 0, 2.8, 1.1, 0.68, '#1e293b'); // Sleek Matte Black Dev Desk
+      // Triple Ultrawide Monitors
+      drawVoxel(8.7, 3.0, 0.68, 0.7, 0.08, 0.52, '#22c55e'); // Left: Terminal & logs
+      drawVoxel(9.6, 3.0, 0.68, 0.85, 0.08, 0.55, '#10b981'); // Center: VS Code Dark Theme
+      drawVoxel(10.6, 3.0, 0.68, 0.7, 0.08, 0.52, '#059669'); // Right: Localhost Preview
+      // Mechanical Keyboard with RGB light
+      const rgbShift = Math.sin(time * 5);
+      drawVoxel(9.6, 2.9, 0.68, 0.55, 0.22, 0.04, '#0f172a');
+      // Red Bull / Soda can
+      drawVoxel(8.8, 2.9, 0.68, 0.14, 0.14, 0.25, '#3b82f6');
+
+      // 7. WORKSTATION 4: Maya (QA & Security - Bottom-Right)
+      drawVoxel(8.6, 8.0, 0, 2.6, 1.1, 0.68, '#d97706');
+      // Curved QA Monitor + Test iPad
+      drawVoxel(8.8, 8.2, 0.68, 1.1, 0.1, 0.58, '#f59e0b');
+      drawVoxel(10.2, 8.3, 0.68, 0.4, 0.3, 0.04, '#94a3b8'); // iPad test device
+      // QA Whiteboard on Stand behind desk
+      drawVoxel(11.4, 8.2, 0, 0.15, 1.8, 1.6, '#f8fafc', '#94a3b8');
+      // Sticky notes on whiteboard
+      drawVoxel(11.45, 8.4, 0.8, 0.02, 0.25, 0.25, '#facc15'); // Yellow post-it
+      drawVoxel(11.45, 8.8, 1.1, 0.02, 0.25, 0.25, '#f43f5e'); // Pink bug alert!
+      drawVoxel(11.45, 9.2, 0.8, 0.02, 0.25, 0.25, '#22c55e'); // Green resolved note
+
+      // 8. WORKSTATION 5: Hendro (DevOps & Memory Server - Bottom-Left)
+      drawVoxel(1.2, 8.0, 0, 2.4, 1.1, 0.68, '#475569');
+      drawVoxel(1.5, 8.2, 0.68, 0.9, 0.1, 0.52, '#6366f1'); // Server Dashboard
+      // Server Cluster Rack in the corner (Realistic Glass & Steel)
+      drawVoxel(0.1, 10.5, 0, 1.1, 1.2, 1.9, '#1e293b');
+      // Blinking Rack Status LEDs
+      for (let s = 0; s < 4; s++) {
+        const ledZ = 0.4 + s * 0.38;
+        const ledPos = isoProject(1.2, 11.0 + (s % 2) * 0.3, ledZ);
+        const isBlink = Math.sin(time * 8 + s * 2) > 0;
+        ctx.save();
+        ctx.fillStyle = isBlink ? '#22c55e' : '#1e1b4b';
+        ctx.shadowColor = '#22c55e';
+        ctx.shadowBlur = isBlink ? 8 : 0;
+        ctx.beginPath();
+        ctx.arc(ledPos[0], ledPos[1], 2.5 * cam.zoom, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // 9. BREAK ROOM & KITCHENETTE (Top-Center: x 4.5 to 7.0, y 0.5 to 2.5)
+      // Espresso Counter & Cupboards
+      drawVoxel(4.6, 0.5, 0, 2.6, 1.0, 0.72, '#334155');
+      // Espresso Coffee Machine
+      drawVoxel(4.8, 0.6, 0.72, 0.5, 0.5, 0.45, '#ef4444');
+      // Rising Coffee Steam
+      const steamPos = isoProject(5.05, 0.85, 1.25 + Math.sin(time * 3) * 0.08);
+      ctx.save();
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.beginPath();
+      ctx.arc(steamPos[0], steamPos[1], 3.2 * cam.zoom, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Water Dispenser
+      drawVoxel(6.4, 0.6, 0.72, 0.35, 0.35, 0.65, '#38bdf8');
+
+      // Cozy Lounge Armchair & Coffee Table
+      drawVoxel(4.8, 2.0, 0, 0.8, 0.8, 0.4, '#1e293b'); // Lounge Armchair
+      drawVoxel(5.8, 2.0, 0, 0.7, 0.7, 0.3, '#78350f'); // Coffee Table
+
+      // 10. Office Plants (Monsteras & Fiddle Leaf Fig)
+      drawVoxel(3.8, 0.8, 0, 0.5, 0.5, 0.45, '#92400e'); // Clay Pot
+      const plantTop1 = isoProject(4.05, 1.05, 0.9);
+      ctx.save();
+      ctx.fillStyle = '#15803d';
+      ctx.beginPath();
+      ctx.arc(plantTop1[0], plantTop1[1], 10 * cam.zoom, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Tall Plant near meeting room
+      drawVoxel(11.8, 0.8, 0, 0.5, 0.5, 0.5, '#78350f');
+      const plantTop2 = isoProject(12.05, 1.05, 1.1);
+      ctx.save();
+      ctx.fillStyle = '#16a34a';
+      ctx.beginPath();
+      ctx.arc(plantTop2[0], plantTop2[1], 12 * cam.zoom, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    /* =========================================================================
+       ANIMATED TASK DOSSIER & DOCUMENT PACKET (Cross-Desk Communication)
+       ========================================================================= */
+    let flyingPacketTrail = [];
+
+    function drawTaskDossier(packet, progress, time) {
+      const fromChar = CHARACTERS[packet.from];
+      const toChar = CHARACTERS[packet.to];
+      if (!fromChar || !toChar) return;
+
+      const ease = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      const u = ease(progress);
+
+      const curX = fromChar.cx + (toChar.cx - fromChar.cx) * u;
+      const curY = fromChar.cy + (toChar.cy - fromChar.cy) * u;
+      const curZ = 0.9 + Math.sin(Math.PI * progress) * 1.3;
+
+      flyingPacketTrail.push({ x: curX, y: curY, z: curZ, color: fromChar.color, time: time });
+      if (flyingPacketTrail.length > 25) flyingPacketTrail.shift();
+
+      // Particle Trail
+      flyingPacketTrail.forEach((p, idx) => {
+        const pScr = isoProject(p.x, p.y, p.z);
+        const alpha = (idx / flyingPacketTrail.length) * 0.6;
+        ctx.save();
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(pScr[0], pScr[1], (2 + (idx / flyingPacketTrail.length) * 3) * cam.zoom, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Shadow on floor
+      const shadowPos = isoProject(curX, curY, 0.04);
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.32)';
+      ctx.beginPath();
+      ctx.ellipse(shadowPos[0], shadowPos[1], 12 * cam.zoom, 6 * cam.zoom, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // 3D Animated Blueprint / Task Dossier Box
+      drawVoxel(curX - 0.22, curY - 0.22, curZ, 0.44, 0.44, 0.25, fromChar.color, '#ffffff', 1.5);
+
+      // Packet Label Pill
+      const packetScr = isoProject(curX, curY, curZ + 0.55);
+      ctx.save();
+      ctx.font = `600 ${Math.max(10, 11 * cam.zoom)}px 'Plus Jakarta Sans', sans-serif`;
+      ctx.textAlign = 'center';
+      const labelW = ctx.measureText(packet.label).width + 14;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+      ctx.strokeStyle = fromChar.color;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(packetScr[0] - labelW / 2, packetScr[1] - 10, labelW, 20, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(packet.label, packetScr[0], packetScr[1] + 1);
+      ctx.restore();
+    }
+
+    /* =========================================================================
+       MISSIONS & SIMULATION PIPELINE
+       ========================================================================= */
+    const MISSIONS = {
+      saas: {
+        title: "Bangun & Deploy SaaS MVP",
+        steps: [
+          { char: 'bima', stage: 'Bima: Membedah Arsitektur SaaS', thought: 'Menentukan tech stack Next.js, Tailwind, Prisma ORM, dan Stripe Webhooks...', log: 'Bima (PM): Memetakan 4 modul dan menugaskan Nadia untuk riset library.', codeSnippet: `// Blueprint Dispatched:\nexport interface SaaSPlan {\n  auth: "Auth.js v5 (JWT & Sessions)";\n  db: "PostgreSQL on Supabase";\n  billing: "Stripe Subscriptions";\n}`, dur: 2.2 },
+          { packet: { from: 'bima', to: 'nadia', label: 'Brief Riset UI & Library' }, dur: 1.3 },
+          { char: 'nadia', stage: 'Nadia: Riset Komponen & Library', thought: 'Mengecek dokumentasi Radix UI, Lucide Icons, dan library chart interaktif...', log: 'Nadia (Research): Menemukan 8 pola komponen UI paling modular dan cepat.', codeSnippet: `const findings = {\n  tableLib: "@tanstack/react-table",\n  charts: "recharts",\n  icons: "lucide-react"\n};`, dur: 2.6 },
+          { packet: { from: 'nadia', to: 'reza', label: 'Kirim Dokumen Spek ke Coder' }, dur: 1.3 },
+          { char: 'reza', stage: 'Reza: Coding Backend & UI Component', thought: 'Memasang headphone, mengoding Server Actions, API routes, dan antarmuka...', log: 'Reza (Coder): Mengompilasi 4 endpoint API dan halaman dashboard utama.', codeSnippet: `export async function createTeamAction(name: string) {\n  const user = await getCurrentUser();\n  return await db.team.create({ data: { name, ownerId: user.id } });\n}`, dur: 3.2 },
+          { packet: { from: 'reza', to: 'maya', label: 'Kirim Kode ke QA untuk Diuji' }, dur: 1.3 },
+          { char: 'maya', stage: 'Maya: QA Unit Test & OWASP Audit', thought: 'Menjalankan Jest test suite dan memindai celah SQL injection...', log: 'Maya (QA): 28/28 Test Lulus (Coverage 98.7%). Zero vulnerability found.', codeSnippet: `PASS tests/auth.test.ts\nPASS tests/billing.test.ts\n✓ CSRF tokens verified\n✓ Rate limit: 100 req/min verified`, dur: 2.4 },
+          { packet: { from: 'maya', to: 'hendro', label: 'Simpan Snapshot ke Database' }, dur: 1.3 },
+          { char: 'hendro', stage: 'Hendro: Deploy & Indexing ke Vector DB', thought: 'Mengindeks dokumentasi API dan snapshot commit ke database vector...', log: 'Hendro (DevOps): Menyimpan 1,200 embedding data dan mengonfirmasi server sehat.', codeSnippet: `await chromaClient.getOrCreateCollection({\n  name: "saas-mvp-prod",\n  metadata: { status: "HEALTHY", region: "ap-southeast-1" }\n});`, dur: 2.0 },
+          { packet: { from: 'hendro', to: 'bima', label: 'Laporan Sukses Dideploy' }, dur: 1.3 },
+          { char: 'bima', stage: 'Bima: Misi Selesai dengan Sempurna!', thought: 'Semua anggota tim telah menyelesaikan modul tepat waktu!', log: '🚀 Bima: SaaS MVP Sukses Dideploy ke Produksi!', codeSnippet: `// DEPLOYMENT STATUS: LIVE 🟢\n// URL: https://office-crew.ai\n// Latency: 14ms`, dur: 2.0, isEnd: true }
+        ]
+      },
+
+      security: {
+        title: "Security Vulnerability Audit",
+        steps: [
+          { char: 'bima', stage: 'Bima: Menetapkan SOP Audit Keamanan', thought: 'Mengarahkan tim QA untuk menjalankan simulasi serangan Red Team...', log: 'Bima: Menginisialisasi audit keamanan menyeluruh.', codeSnippet: `const SECURITY_AUDIT_SCOPE = {\n  target: "auth-service:v2.1",\n  compliance: ["OWASP-TOP-10", "ISO-27001"]\n};`, dur: 2.0 },
+          { packet: { from: 'bima', to: 'maya', label: 'Perintah Pen-Testing Dikirim' }, dur: 1.2 },
+          { char: 'maya', stage: 'Maya: Fuzzing & Payload Injection', thought: 'Menguji regex parser pada input email... Menemukan potensi ReDoS!', log: 'Maya (QA): Waspada! Potensi ReDoS ditemukan pada regex validator.', codeSnippet: `[VULNERABILITY DETECTED]\nFile: auth/validator.ts:32\nSeverity: HIGH (CVSS 7.5)\nIssue: Catastrophic backtracking on malicious regex payload`, dur: 2.8 },
+          { packet: { from: 'maya', to: 'reza', label: 'Kirim Bug Report ke Reza' }, dur: 1.2 },
+          { char: 'reza', stage: 'Reza: Hotpatching Celah Keamanan', thought: 'Mengganti ekspresi regex rentan dengan parser deterministik aman...', log: 'Reza (Coder): Menulis patch dan mengupdate lib validator.', codeSnippet: `// SECURE PATCH:\nexport function isValidEmail(email: string): boolean {\n  if (email.length > 254) return false;\n  return validator.isEmail(email);\n}`, dur: 2.6 },
+          { packet: { from: 'reza', to: 'maya', label: 'Patch Dikirim untuk Re-test' }, dur: 1.2 },
+          { char: 'maya', stage: 'Maya: Verifikasi Patch Bersih', thought: 'Mengirimkan 10,000 payload uji... Semua serangan berhasil ditangkal!', log: 'Maya (QA): Verifikasi Berhasil. Celah tertutup 100%.', codeSnippet: `VERIFICATION:\nExploit attempt #1 => REJECTED (400 Bad Request)\nLatency impact => 0.2ms\nSecurity Grade: A+`, dur: 2.0 },
+          { packet: { from: 'maya', to: 'bima', label: 'Kirim Sertifikat Aman' }, dur: 1.2 },
+          { char: 'bima', stage: 'Bima: Sistem Terlindungi Sepenuhnya', thought: 'Laporan audit keamanan ditandatangani dan diarsipkan.', log: '🛡️ Audit Keamanan Selesai. Sistem aman dan terlindungi.', codeSnippet: `// AUDIT SIGNED: SHA256:d8f1e09c...\n// STATUS: 100% SECURE & CERTIFIED`, dur: 1.8, isEnd: true }
+        ]
+      },
+
+      research: {
+        title: "Riset Pasar & Tren AI 2026",
+        steps: [
+          { char: 'bima', stage: 'Bima: Merumuskan Rencana Riset', thought: 'Menentukan topik riset tren Agentic Workflows dan SLM lokal...', log: 'Bima: Menugaskan Nadia untuk menyusun laporan tren teknologi.', codeSnippet: `const RESEARCH_AREAS = ["Autonomous Agent Teams", "On-Device Inference", "Vector Cache"];`, dur: 2.0 },
+          { packet: { from: 'bima', to: 'nadia', label: 'Brief Riset Dikirim' }, dur: 1.2 },
+          { char: 'nadia', stage: 'Nadia: Mengkaji 40+ Paper Terkini', thought: 'Menganalisis benchmark terbaru dari ArXiv dan adopsi industri tech...', log: 'Nadia (Research): Menemukan tren efisiensi 3.8x pada sistem multi-agent.', codeSnippet: `const insights = {\n  marketGrowth: "+280% YoY",\n  keyDriver: "Collaborative Voxel & Agent Orchestration",\n  roi: "4.2x Faster Ship Speed"\n};`, dur: 3.2 },
+          { packet: { from: 'nadia', to: 'hendro', label: 'Simpan ke Knowledge Base' }, dur: 1.2 },
+          { char: 'hendro', stage: 'Hendro: Sinkronisasi Knowledge Graph', thought: 'Menghubungkan entitas pasar ke database perusahaan...', log: 'Hendro: Mengindeks 450 entitas riset ke Vector Store.', codeSnippet: `await db.graph.createNodes({\n  source: "Report:AI-Trends-2026",\n  topics: ["Multi-Agent", "Realtime Bus"]\n});`, dur: 2.2 },
+          { packet: { from: 'hendro', to: 'bima', label: 'Executive Brief Siap' }, dur: 1.2 },
+          { char: 'bima', stage: 'Bima: Laporan Riset Diterbitkan', thought: 'Menyajikan rekomendasi strategis bagi tim pengembang.', log: '📊 Riset Selesai! Strategi tahun 2026 telah dirilis.', codeSnippet: `// EXECUTIVE BRIEF PUBLISHED:\n// Rekomendasi: Implementasi agen otonom pada tim development internal.`, dur: 2.0, isEnd: true }
+        ]
+      },
+
+      hotfix: {
+        title: "Emergency Prod Hotfix",
+        steps: [
+          { char: 'bima', stage: 'Bima: ALARM! Error Spike di Server', thought: 'Mendeteksi lonjakan HTTP 500 pada gateway pembayaran!', log: '🚨 Bima: ALARM DARURAT! Meminta Reza segera memperbaiki leak.', codeSnippet: `[ALERT] Service: PaymentGateway\nError: ConnectionPoolExhausted\nStatus: CRITICAL`, dur: 1.8 },
+          { packet: { from: 'bima', to: 'reza', label: 'Kirim Stacktrace ke Coder' }, dur: 1.0 },
+          { char: 'reza', stage: 'Reza: Patching Connection Leak', thought: 'Memperbaiki connection release pada block finally di database pool...', log: 'Reza (Coder): Berhasil menutup connection leak!', codeSnippet: `try {\n  return await pool.query(sql);\n} finally {\n  await pool.release(conn); // FIX LEAK!\n}`, dur: 2.5 },
+          { packet: { from: 'reza', to: 'maya', label: 'Kirim Smoke Test ke QA' }, dur: 1.0 },
+          { char: 'maya', stage: 'Maya: Stress Test 5,000 req/s', thought: 'Menguji performa di bawah traffic tinggi... Koneksi stabil!', log: 'Maya (QA): Beban 5,000 req/s normal. Error rate 0.00%.', codeSnippet: `k6 load test result:\n✓ http_req_failed: 0.00%\n✓ p95_latency: 22ms`, dur: 2.0 },
+          { packet: { from: 'maya', to: 'bima', label: 'Hotfix Siap Dirilis' }, dur: 1.0 },
+          { char: 'bima', stage: 'Bima: Server Produksi Pulih 100%', thought: 'Insiden selesai diatasi dalam hitungan menit.', log: '⚡ Hotfix Sukses! Zero downtime tercapai.', codeSnippet: `// INCIDENT CLOSED\n// All services reporting GREEN.`, dur: 1.8, isEnd: true }
+        ]
+      }
+    };
+
+    let currentMissionKey = 'saas';
+    let currentStepIdx = 0;
+    let stepTimer = 0;
+    let isPaused = false;
+    let isRunning = true;
+    let speedMultiplier = 1.0;
+    let totalPacketsSent = 0;
+    let totalCompleted = 0;
+    let secondsElapsed = 0;
+
+    /* =========================================================================
+       MAIN RENDER LOOP WITH REALISTIC LIGHTING & DEPTH SORTING
+       ========================================================================= */
+    function render(time) {
+      ctx.save();
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+
+      // Warm Natural Studio Lighting Gradient
+      const bgGrad = ctx.createRadialGradient(W / 2, H / 2, 90, W / 2, H / 2, W * 0.85);
+      bgGrad.addColorStop(0, '#0f172a');
+      bgGrad.addColorStop(1, '#020617');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Draw Realistic Office Floor, Walls & Furniture
+      drawRealisticOffice(time);
+
+      // Dynamic Depth Sorted Entity Queue
+      const renderQueue = [];
+
+      // Add Voxel Characters
+      Object.values(CHARACTERS).forEach(c => {
+        renderQueue.push({
+          depth: c.cx + c.cy,
+          draw: () => drawVoxelHuman(c, time)
+        });
+      });
+
+      // Add Flying Document Dossier
+      const mission = MISSIONS[currentMissionKey];
+      const step = mission.steps[currentStepIdx];
+      if (step && step.packet) {
+        const progress = Math.min(1.0, stepTimer / (step.dur / speedMultiplier));
+        const fromC = CHARACTERS[step.packet.from];
+        const toC = CHARACTERS[step.packet.to];
+        if (fromC && toC) {
+          const curX = fromC.cx + (toC.cx - fromC.cx) * progress;
+          const curY = fromC.cy + (toC.cy - fromC.cy) * progress;
+          renderQueue.push({
+            depth: curX + curY + 0.5,
+            draw: () => drawTaskDossier(step.packet, progress, time)
+          });
+        }
+      }
+
+      // Sort & Render
+      renderQueue.sort((a, b) => a.depth - b.depth);
+      renderQueue.forEach(item => item.draw());
+
+      ctx.restore();
+    }
+
+    /* =========================================================================
+       SIMULATION PIPELINE ADVANCEMENT
+       ========================================================================= */
+    function advanceSimulation(dt) {
+      if (isPaused || !isRunning) return;
+      const mission = MISSIONS[currentMissionKey];
+      if (!mission || !mission.steps) return;
+
+      const step = mission.steps[currentStepIdx];
+      if (!step) return;
+
+      stepTimer += dt;
+      const effectiveDuration = step.dur / speedMultiplier;
+
+      const percent = Math.min(100, Math.round(((currentStepIdx + (stepTimer / effectiveDuration)) / mission.steps.length) * 100));
+      document.getElementById('hudProgress').textContent = `${percent}%`;
+
+      if (stepTimer >= effectiveDuration) {
+        stepTimer = 0;
+        currentStepIdx++;
+
+        if (currentStepIdx >= mission.steps.length) {
+          currentStepIdx = 0;
+          totalCompleted++;
+          document.getElementById('statCompleted').textContent = totalCompleted;
+          audio.playSuccess();
+          logTerminal(`🎉 Misi "${mission.title}" Selesai dengan sukses!`);
+          setTimeout(() => applyStepState(), 1000);
+        } else {
+          applyStepState();
+        }
+      }
+    }
+
+    function applyStepState() {
+      const mission = MISSIONS[currentMissionKey];
+      const step = mission.steps[currentStepIdx];
+      if (!step) return;
+
+      Object.values(CHARACTERS).forEach(c => {
+        c.status = 'idle';
+        c.currentAction = '';
+      });
+
+      if (step.char) {
+        const activeC = CHARACTERS[step.char];
+        if (activeC) {
+          activeC.status = 'working';
+          activeC.currentAction = step.stage;
+          activeC.currentThought = step.thought;
+          activeC.tasksDone++;
+          audio.playKeyboardClick();
+
+          document.getElementById('hudStageTitle').textContent = `${activeC.name.toUpperCase()} (AKTIF)`;
+          document.getElementById('hudStageDesc').textContent = step.stage;
+
+          if (selectedChar === activeC) updateInspectorUI();
+          if (step.log) logTerminal(step.log);
+          if (step.codeSnippet) appendCodeSnippet(step.codeSnippet);
+        }
+      } else if (step.packet) {
+        totalPacketsSent++;
+        document.getElementById('statPackets').textContent = totalPacketsSent;
+        audio.playTaskDispatch();
+        document.getElementById('hudStageTitle').textContent = `DOKUMEN DIKIRIM`;
+        document.getElementById('hudStageDesc').textContent = `${step.packet.label} (${step.packet.from.toUpperCase()} → ${step.packet.to.toUpperCase()})`;
+      }
+
+      updateRosterUI();
+    }
+
+    function logTerminal(text) {
+      const term = document.getElementById('liveTerminalOutput');
+      const timeStr = new Date().toLocaleTimeString();
+      const div = document.createElement('div');
+      div.className = 'text-slate-300 py-0.5 border-b border-slate-900/60 font-mono text-[11px]';
+      div.innerHTML = `<span class="text-slate-500">[${timeStr}]</span> ${text}`;
+      term.appendChild(div);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function appendCodeSnippet(code) {
+      const term = document.getElementById('liveTerminalOutput');
+      const pre = document.createElement('pre');
+      pre.className = 'my-1 p-2 rounded bg-slate-900 text-amber-300 font-mono text-[11px] overflow-x-auto border border-slate-800';
+      pre.textContent = code;
+      term.appendChild(pre);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    /* =========================================================================
+       INSPECTOR & ROSTER UI BINDINGS
+       ========================================================================= */
+    function updateInspectorUI() {
+      const c = selectedChar;
+      document.getElementById('inspectorAvatar').textContent = c.avatar;
+      document.getElementById('inspectorName').textContent = `${c.name} (${c.title.split('&')[0]})`;
+      document.getElementById('inspectorRole').textContent = c.title;
+      document.getElementById('inspectorModel').textContent = c.model;
+      document.getElementById('inspectorLatency').textContent = c.speed;
+      document.getElementById('inspectorDesk').textContent = c.deskDesc;
+      document.getElementById('inspectorTasks').textContent = `${c.tasksDone} Modul`;
+      document.getElementById('inspectorThought').textContent = `"${c.currentThought}"`;
+
+      const stateEl = document.getElementById('inspectorState');
+      if (c.status === 'working') {
+        stateEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+        stateEl.textContent = 'BEKERJA';
+      } else {
+        stateEl.className = 'px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-slate-800 text-slate-400 border border-slate-700';
+        stateEl.textContent = 'STANDBY';
+      }
+
+      const toolsContainer = document.getElementById('inspectorTools');
+      toolsContainer.innerHTML = '';
+      c.tools.forEach(t => {
+        const badge = document.createElement('span');
+        badge.className = 'px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 border border-slate-700';
+        badge.textContent = t;
+        toolsContainer.appendChild(badge);
+      });
+    }
+
+    function updateRosterUI() {
+      const roster = document.getElementById('agentRosterList');
+      roster.innerHTML = '';
+      Object.values(CHARACTERS).forEach(c => {
+        const card = document.createElement('div');
+        const isSel = selectedChar === c;
+        card.className = `p-2 rounded-lg border text-xs flex items-center justify-between cursor-pointer transition ${
+          isSel ? 'bg-amber-950/40 border-amber-500/60 text-white shadow-md' : 'bg-slate-900/60 border-slate-800 hover:bg-slate-800/80 text-slate-300'
+        }`;
+        card.onclick = () => {
+          selectedChar = c;
+          updateInspectorUI();
+          focusCameraOnCharacter(c);
+        };
+
+        card.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg flex items-center justify-center text-sm" style="background:${c.color}22; border:1px solid ${c.color}55">${c.avatar}</span>
+            <div>
+              <div class="font-semibold text-[11px] leading-tight">${c.name} <span class="text-[9px] text-slate-400">(${c.roleBadge})</span></div>
+              <div class="text-[9px] text-slate-400">${c.title.split('&')[0]}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono text-slate-400">${c.tasksDone} done</span>
+            <span class="w-2 h-2 rounded-full ${c.status === 'working' ? 'bg-emerald-400 animate-ping' : 'bg-slate-600'}"></span>
+          </div>
+        `;
+        roster.appendChild(card);
+      });
+    }
+
+    /* =========================================================================
+       CAMERA & MOUSE INTERACTION
+       ========================================================================= */
+    function resizeCanvas() {
+      DPR = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      W = rect.width;
+      H = rect.height;
+      canvas.width = W * DPR;
+      canvas.height = H * DPR;
+
+      if (!cam.initialized) {
+        resetCamera();
+        cam.initialized = true;
+      }
+    }
+
+    function resetCamera() {
+      cam.zoom = Math.min(W / (ROOM_COLS * TILE_W + 110), 1.15);
+      cam.x = W / 2;
+      cam.y = H / 2 - (ROOM_ROWS * TILE_H * 0.45 * cam.zoom);
+      updateZoomBadge();
+    }
+
+    function updateZoomBadge() {
+      document.getElementById('zoomLevel').textContent = `${Math.round(cam.zoom * 100)}%`;
+    }
+
+    function focusCameraOnCharacter(c) {
+      cam.zoom = 1.35;
+      cam.x = W / 2 - (c.cx - c.cy) * (TILE_W / 2) * cam.zoom;
+      cam.y = H / 2 - ((c.cx + c.cy) * (TILE_H / 2) - 1.2 * Z_STEP) * cam.zoom;
+      updateZoomBadge();
+    }
+
+    function getCharacterUnderCursor(mx, my) {
+      let closest = null;
+      let minDist = 46 * cam.zoom;
+      Object.values(CHARACTERS).forEach(c => {
+        const p = isoProject(c.cx, c.cy, 0.8);
+        const dist = Math.hypot(mx - p[0], my - p[1]);
+        if (dist < minDist) { minDist = dist; closest = c; }
+      });
+      return closest;
+    }
+
+    canvas.addEventListener('pointerdown', e => {
+      canvas.setPointerCapture(e.pointerId);
+      cam.dragging = true;
+      cam.lastMouseX = e.clientX;
+      cam.lastMouseY = e.clientY;
+      cam.movedTotal = 0;
+      canvas.classList.add('dragging');
+    });
+
+    canvas.addEventListener('pointermove', e => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+
+      if (cam.dragging) {
+        const dx = e.clientX - cam.lastMouseX;
+        const dy = e.clientY - cam.lastMouseY;
+        cam.x += dx; cam.y += dy;
+        cam.movedTotal += Math.abs(dx) + Math.abs(dy);
+        cam.lastMouseX = e.clientX;
+        cam.lastMouseY = e.clientY;
+      } else {
+        hoveredChar = getCharacterUnderCursor(mx, my);
+        canvas.classList.toggle('pointer', !!hoveredChar);
+      }
+    });
+
+    canvas.addEventListener('pointerup', e => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+
+      if (cam.dragging && cam.movedTotal < 6) {
+        const clicked = getCharacterUnderCursor(mx, my);
+        if (clicked) {
+          selectedChar = clicked;
+          updateInspectorUI();
+          audio.playBlip(650, 0.05);
+        }
+      }
+      cam.dragging = false;
+      canvas.classList.remove('dragging');
+    });
+
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+
+      const factor = e.deltaY < 0 ? 1.1 : 0.9;
+      const newZoom = Math.max(0.4, Math.min(2.4, cam.zoom * factor));
+      const ratio = newZoom / cam.zoom;
+
+      cam.x = mx - (mx - cam.x) * ratio;
+      cam.y = my - (my - cam.y) * ratio;
+      cam.zoom = newZoom;
+      updateZoomBadge();
+    }, { passive: false });
+
+    /* =========================================================================
+       DOM CONTROLS & LISTENERS
+       ========================================================================= */
+    document.getElementById('btnResetCam').onclick = resetCamera;
+
+    document.getElementById('presetMission').onchange = e => {
+      currentMissionKey = e.target.value;
+      currentStepIdx = 0; stepTimer = 0;
+      applyStepState();
+      logTerminal(`Ganti misi ke: "${MISSIONS[currentMissionKey].title}"`);
+    };
+
+    document.getElementById('btnDispatch').onclick = () => {
+      currentStepIdx = 0; stepTimer = 0;
+      isRunning = true; isPaused = false;
+      applyStepState();
+      audio.playTaskDispatch();
+      logTerminal(`🚀 Menjalankan alur kerja: ${MISSIONS[currentMissionKey].title}`);
+    };
+
+    document.getElementById('btnPause').onclick = () => {
+      isPaused = !isPaused;
+      document.getElementById('pauseIcon').textContent = isPaused ? '▶' : '⏸';
+      document.getElementById('pauseText').textContent = isPaused ? 'Resume' : 'Pause';
+      logTerminal(isPaused ? '⏸ Alur kerja di-pause.' : '▶ Alur kerja dilanjutkan.');
+    };
+
+    document.getElementById('btnAudio').onclick = () => {
+      audio.muted = !audio.muted;
+      document.getElementById('btnAudio').textContent = audio.muted ? '🔇' : '🔊';
+    };
+
+    let boostActive = false;
+    document.getElementById('btnCoffee').onclick = () => {
+      boostActive = !boostActive;
+      speedMultiplier = boostActive ? 2.2 : 1.0;
+      const btn = document.getElementById('btnCoffee');
+      if (boostActive) {
+        btn.className = 'px-2.5 py-1.5 bg-amber-500 text-slate-950 font-bold text-xs rounded-lg flex items-center gap-1 transition shadow-lg shadow-amber-500/40 animate-pulse';
+        btn.innerHTML = '⚡ <span>BOOST 2.2x AKTIF!</span>';
+        audio.playSuccess();
+        logTerminal('☕ Coffee boost aktif! Kecepatan tim meningkat 2.2x.');
+      } else {
+        btn.className = 'px-2.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-xs font-semibold rounded-lg flex items-center gap-1 transition';
+        btn.innerHTML = '☕ <span>Coffee Boost</span>';
+        logTerminal('Efek kopi habis. Kecepatan kerja normal (1.0x).');
+      }
+    };
+
+    document.querySelectorAll('.cam-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('bg-slate-800', 'text-amber-300'));
+        btn.classList.add('bg-slate-800', 'text-amber-300');
+        const target = btn.dataset.cam;
+        if (target === 'overview') resetCamera();
+        else if (target === 'pm') focusCameraOnCharacter(CHARACTERS.bima);
+        else if (target === 'dev') focusCameraOnCharacter(CHARACTERS.reza);
+        else if (target === 'res') focusCameraOnCharacter(CHARACTERS.nadia);
+        else if (target === 'lounge') {
+          cam.zoom = 1.45;
+          cam.x = W / 2 - (5.5 - 1.5) * (TILE_W / 2) * cam.zoom;
+          cam.y = H / 2 - ((5.5 + 1.5) * (TILE_H / 2) - 1.2 * Z_STEP) * cam.zoom;
+          updateZoomBadge();
+        }
+      };
+    });
+
+    document.getElementById('btnSendPrompt').onclick = () => {
+      const input = document.getElementById('customPromptInput');
+      const val = input.value.trim();
+      if (!val) return;
+
+      logTerminal(`Instruksi Kustom Pengguna: "${val}"`);
+      CHARACTERS.bima.status = 'working';
+      CHARACTERS.bima.currentAction = `Brief: "${val.slice(0, 24)}..."`;
+      CHARACTERS.bima.currentThought = `Menganalisis instruksi baru: "${val}" dan mengalokasikan ke tim...`;
+      updateInspectorUI();
+      audio.playTaskDispatch();
+      input.value = '';
+      currentStepIdx = 0; stepTimer = 0;
+      applyStepState();
+    };
+
+    document.getElementById('tabInspectorBtn').onclick = () => {
+      document.getElementById('tabInspector').classList.remove('hidden');
+      document.getElementById('tabLiveCode').classList.add('hidden');
+      document.getElementById('tabInspectorBtn').className = 'flex-1 py-2.5 px-3 text-center border-b-2 border-amber-500 text-amber-400 bg-slate-900/50 flex items-center justify-center gap-1.5';
+      document.getElementById('tabLiveCodeBtn').className = 'flex-1 py-2.5 px-3 text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5';
+    };
+
+    document.getElementById('tabLiveCodeBtn').onclick = () => {
+      document.getElementById('tabInspector').classList.add('hidden');
+      document.getElementById('tabLiveCode').classList.remove('hidden');
+      document.getElementById('tabLiveCode').classList.add('flex');
+      document.getElementById('tabLiveCodeBtn').className = 'flex-1 py-2.5 px-3 text-center border-b-2 border-amber-500 text-amber-400 bg-slate-900/50 flex items-center justify-center gap-1.5';
+      document.getElementById('tabInspectorBtn').className = 'flex-1 py-2.5 px-3 text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5';
+    };
+
+    document.getElementById('btnClearLog').onclick = () => {
+      document.getElementById('liveTerminalOutput').innerHTML = '<div class="text-slate-500">// Log dibersihkan.</div>';
+    };
+
+    setInterval(() => {
+      if (!isPaused && isRunning) {
+        secondsElapsed++;
+        const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+        const secs = String(secondsElapsed % 60).padStart(2, '0');
+        document.getElementById('statTime').textContent = `${mins}:${secs}`;
+      }
+    }, 1000);
+
+    /* =========================================================================
+       INITIALIZATION & RAF
+       ========================================================================= */
+    let lastTimestamp = performance.now();
+    let globalTime = 0;
+
+    function gameLoop(now) {
+      const dt = Math.min(0.06, (now - lastTimestamp) / 1000);
+      lastTimestamp = now;
+
+      if (!isPaused) {
+        globalTime += dt;
+        advanceSimulation(dt);
+      }
+
+      render(globalTime);
+      requestAnimationFrame(gameLoop);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    updateInspectorUI();
+    updateRosterUI();
+    applyStepState();
+    logTerminal("Ruang Kantor Voxel Human 3D siap. Tim sedang bekerja...");
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>

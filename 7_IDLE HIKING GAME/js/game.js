@@ -1,18 +1,19 @@
-// Core Game Logic & Idle Engine
+// Core Game Logic & Realistic Expedition Idle Engine - Ekspedisi Puncak Nusantara
 class HikingGame {
   constructor() {
-    this.saveKey = 'indonesia_hiking_idle_save_v1';
+    this.saveKey = 'indonesia_hiking_idle_save_v3';
 
     // Player Stats & Currencies
-    this.rupiah = 5000; // Starter money Rp 5.000
-    this.spirit = 0; // Hiking Spirit
-    this.goldenEdelweiss = 0; // Prestige currency
+    this.rupiah = 5000;
+    this.spirit = 0;
+    this.goldenEdelweiss = 0;
 
     // Mountain Progression
     this.currentMountainIndex = 0;
     this.unlockedMountains = ['prau'];
-    this.distance = 0; // in meters for current mountain
-    this.peakConquered = {}; // mountainId: times conquered
+    this.distance = 0; // meter
+    this.elapsedTime = 0; // seconds spent hiking current mountain
+    this.peakConquered = {};
     this.hasReachedCurrentSummit = false;
 
     // Active hiking & combo
@@ -25,39 +26,39 @@ class HikingGame {
     this.maxStamina = 100;
     this.isResting = false;
 
+    // Character Customization
+    this.customization = {
+      jacketColor: '#ea580c',
+      headwear: 'beanie',
+      headwearColor: '#eab308',
+      carrierColor: '#dc2626',
+      pantsColor: '#1e293b'
+    };
+
     // Active buffs / consumables
     this.activeBuffs = {
-      coffee: 0, // seconds left
+      coffee: 0,
       chocolate: 0,
       jalak: 0,
       herbal: 0
     };
 
-    // Gear Upgrades
+    // Gear Upgrades (Real outdoor equipment focusing on stamina, comfort, and pack capacity)
     this.gear = {
-      shoes: { level: 1, baseCost: 1000, costMult: 1.45, name: 'Sepatu Trekking', desc: 'Kecepatan jalan +1.0 m/s' },
-      pole: { level: 1, baseCost: 2500, costMult: 1.5, name: 'Trekking Pole', desc: 'Power tap +6 meter per klik' },
-      carrier: { level: 0, baseCost: 7500, costMult: 1.55, name: 'Tas Carrier 60L', desc: 'Pendapatan pasif +Rp 40/dtk' },
-      jacket: { level: 0, baseCost: 15000, costMult: 1.6, name: 'Jaket Windbreaker', desc: 'Stamina lebih hemat 10%' },
-      stove: { level: 0, baseCost: 35000, costMult: 1.65, name: 'Nesting & Kompor Gas', desc: 'Pemulihan tenda +100%' },
-      headlamp: { level: 0, baseCost: 80000, costMult: 1.7, name: 'Headlamp LED', desc: 'Kecepatan malam hari +40%' }
+      shoes: { level: 1, baseCost: 1000, costMult: 1.45, name: 'Sepatu Trekking Sol Vibram', desc: 'Sol cengkeram kuat, hemat stamina langkah 6%' },
+      pole: { level: 1, baseCost: 2500, costMult: 1.5, name: 'Trekking Pole Karbon', desc: 'Tumpuan langkah stabil, tap +0.5m per klik' },
+      carrier: { level: 0, baseCost: 7500, costMult: 1.55, name: 'Carrier 60L + Raincover', desc: 'Kapasitas logistik besar, pasif +Rp 35/dtk' },
+      jacket: { level: 0, baseCost: 15000, costMult: 1.6, name: 'Jaket Windbreaker Gore-Tex', desc: 'Tahan angin dingin, stamina hemat 10%' },
+      stove: { level: 0, baseCost: 35000, costMult: 1.65, name: 'Nesting & Kompor Windproof', desc: 'Masak air cepat di tenda, pulih tenaga +100%' },
+      headlamp: { level: 0, baseCost: 80000, costMult: 1.7, name: 'Headlamp LED Terang', desc: 'Nembus kabut malam hari, kurangi lelah malam 30%' }
     };
 
-    // Party Members (Recruited Companions)
-    this.party = [
-      { id: 'porter', type: 'porter', name: 'Porter Lokal (Pak Slamet)', count: 0, baseCost: 12000, costMult: 1.65, desc: '+2.5 m/s & +Rp 60/dtk' },
-      { id: 'friend', type: 'friend', name: 'Sahabat Pendaki Santai', count: 0, baseCost: 25000, costMult: 1.7, desc: '+Rp 200/dtk (Konten Medsos)' },
-      { id: 'guide', type: 'guide', name: 'Ranger Taman Nasional', count: 0, baseCost: 70000, costMult: 1.75, desc: '+5.0 m/s & -20% Stamina use' },
-      { id: 'photographer', type: 'photographer', name: 'Fotografer Alam Liar', count: 0, baseCost: 180000, costMult: 1.8, desc: '+Rp 650/dtk & Bonus Foto 2x' },
-      { id: 'medic', type: 'medic', name: 'Dokter Relawan', count: 0, baseCost: 450000, costMult: 1.85, desc: '+150% Stamina Regen & Anti Dingin' }
-    ];
-
-    // Consumables inventory
+    // Consumables inventory (Real Indonesian mountain treats)
     this.consumables = {
-      coffee: { count: 1, cost: 5000, name: 'Kopi Jahe Hangat', desc: 'Kecepatan x2 selama 30 detik', duration: 30 },
-      noodle: { count: 1, cost: 8000, name: 'Mie Instan Telur Gunung', desc: 'Pulihkan 100% Stamina seketika', duration: 0 },
-      chocolate: { count: 0, cost: 15000, name: 'Cokelat Energi', desc: 'Stamina tanpa batas selama 20 detik', duration: 20 },
-      herbal: { count: 0, cost: 25000, name: 'Madu & Tolak Angin', desc: 'Tap Power x3 selama 25 detik', duration: 25 }
+      coffee: { count: 1, cost: 5000, name: 'Kopi Jahe Gula Aren', desc: 'Sruput anget, dorongan langkah +40% selama 30 detik', duration: 30 },
+      noodle: { count: 1, cost: 8000, name: 'Mie Rebus Telur Setengah Matang', desc: 'Kenikmatan hakiki, pulihkan 100% Tenaga seketika', duration: 0 },
+      chocolate: { count: 0, cost: 15000, name: 'Cokelat Batang Energi', desc: 'Gula darah stabil, tenaga tanpa batas selama 20 detik', duration: 20 },
+      herbal: { count: 0, cost: 25000, name: 'Madu Alami & Tolak Angin', desc: 'Badan enteng, Tap Power x2 selama 25 detik', duration: 25 }
     };
 
     // Stats tracking
@@ -65,13 +66,12 @@ class HikingGame {
       totalDistanceTraversed: 0,
       totalTaps: 0,
       totalRupiahEarned: 5000,
-      summitsReached: 0,
-      photosTaken: 0
+      summitsReached: 0
     };
 
     // Random Event state
     this.activeEvent = null;
-    this.eventCooldown = 20;
+    this.eventCooldown = 30;
 
     // Engine references
     this.parallax = null;
@@ -87,6 +87,7 @@ class HikingGame {
   initEngine(parallaxInstance) {
     this.parallax = parallaxInstance;
     this.parallax.setMountain(this.getCurrentMountain());
+    this.parallax.setCustomization(this.customization);
     this.updateUI();
   }
 
@@ -94,82 +95,62 @@ class HikingGame {
     return MOUNTAIN_DATA[this.currentMountainIndex] || MOUNTAIN_DATA[0];
   }
 
+  // --- REALISTIC STANDARD HIKING SPEED ---
+  // Calibrated so that idle walking matches the real-world average ascent time of the mountain
   getSpeedMps() {
     if (this.isResting) return 0;
 
     const m = this.getCurrentMountain();
-    // Stop ground movement when standing at the summit crest
-    if (this.distance >= m.totalDistance) return 0;
+    if (this.distance >= m.totalDistance) return 0; // Stop when at summit!
 
-    let speed = 1.2; // Base speed: 1.2 m/s
+    // Base speed = totalDistance / (realHours * 3600 seconds)
+    // E.g. Prau: 4500m / (3.5h * 3600s) = ~0.357 m/s (1.29 km/jam, standar nanjak manusia)
+    const realSeconds = (m.realHours || 3.5) * 3600;
+    let speed = m.totalDistance / realSeconds;
 
-    // Gear shoes bonus
-    speed += (this.gear.shoes.level - 1) * 0.9;
+    // Small subtle gear shoes tuning (max +15% total, keeping it grounded and realistic)
+    speed *= (1 + (this.gear.shoes.level - 1) * 0.015);
 
-    // Party bonuses
-    this.party.forEach(p => {
-      if (p.id === 'porter') speed += p.count * 2.5;
-      if (p.id === 'guide') speed += p.count * 5.0;
-    });
+    // Controlled modest combo multiplier (caps at +20% maximum)
+    speed *= (1 + (this.comboMultiplier - 1) * 0.2);
 
-    // Combo multiplier
-    speed *= this.comboMultiplier;
-
-    // Buff multipliers
-    if (this.activeBuffs.coffee > 0) speed *= 2.0;
-    if (this.activeBuffs.jalak > 0) speed *= 1.5;
+    // Buffs
+    if (this.activeBuffs.coffee > 0) speed *= 1.4; // Kopi memberi dorongan +40%
+    if (this.activeBuffs.jalak > 0) speed *= 1.35; // Dipandu burung jalak +35%
 
     // Weather impact
     if (this.parallax) {
-      if (this.parallax.weather === 'rainy' && this.party.find(p => p.id === 'medic')?.count === 0) {
-        speed *= 0.75; // Rain slows down unless medic is recruited
-      }
-      // Night check
-      const t = this.parallax.timeOfDay;
-      if ((t < 0.25 || t > 0.75) && this.gear.headlamp.level > 0) {
-        speed *= (1 + this.gear.headlamp.level * 0.4);
+      if (this.parallax.weather === 'rainy') {
+        speed *= 0.8; // Hujan memperlambat langkah
       }
     }
 
-    // Stamina exhaustion penalty
+    // Stamina exhaustion penalty (dengkul gemetar)
     if (this.stamina <= 0 && this.activeBuffs.chocolate <= 0) {
-      speed *= 0.35; // Kelelahan memperlambat langkah
+      speed *= 0.45;
     }
 
-    // Prestige bonus (+25% per Golden Edelweiss)
-    speed *= (1 + this.goldenEdelweiss * 0.25);
-
-    return Math.max(0.1, speed);
+    return Math.max(0.08, speed);
   }
 
   getTapPower() {
-    let tapMeters = 8; // Base 8 meters per tap
-    tapMeters += (this.gear.pole.level - 1) * 6;
+    // Realistic stride tap: 1.5 meter per tap (a couple of firm strides)
+    let tapMeters = 1.5;
+    tapMeters += (this.gear.pole.level - 1) * 0.3;
 
-    if (this.activeBuffs.herbal > 0) tapMeters *= 3.0;
-    tapMeters *= (1 + this.goldenEdelweiss * 0.25);
+    if (this.activeBuffs.herbal > 0) tapMeters *= 2.0;
 
-    return Math.round(tapMeters);
+    return parseFloat(tapMeters.toFixed(1));
   }
 
   getRupiahPerSecond() {
-    let rps = 5; // Base passive sponsor
-    rps += this.gear.carrier.level * 40;
-
-    this.party.forEach(p => {
-      if (p.id === 'porter') rps += p.count * 60;
-      if (p.id === 'friend') rps += p.count * 200;
-      if (p.id === 'photographer') rps += p.count * 650;
-    });
-
-    // Prestige multiplier (+50% per Golden Edelweiss)
+    let rps = 5;
+    rps += this.gear.carrier.level * 35;
     rps *= (1 + this.goldenEdelweiss * 0.5);
-
     return rps;
   }
 
   // --- CORE GAME LOOP ---
-
   update(deltaMs) {
     const deltaSec = deltaMs / 1000;
     const m = this.getCurrentMountain();
@@ -184,42 +165,32 @@ class HikingGame {
     // 2. Combo decay
     if (Date.now() - this.lastTapTime > 3500) {
       this.tapCombo = Math.max(0, this.tapCombo - deltaSec * 3);
-      this.comboMultiplier = 1.0 + Math.min(1.5, (this.tapCombo / 20) * 1.5);
+      this.comboMultiplier = 1.0 + Math.min(0.25, (this.tapCombo / 20) * 0.25);
     }
 
-    // 3. Resting / Camp Mode or Hiking Progression
+    // 3. Resting vs Hiking Progression
     if (this.isResting) {
-      // Rapid Stamina recovery
-      const restSpeed = 18 * (1 + this.gear.stove.level * 1.0);
+      // Rapid Stamina recovery while resting in tent
+      const restSpeed = 22 * (1 + this.gear.stove.level * 1.0);
       this.stamina = Math.min(this.maxStamina, this.stamina + restSpeed * deltaSec);
-      if (this.stamina >= this.maxStamina) {
-        // Auto resume after full recovery
-        this.toggleRest(false);
-      }
+      // NOTE: NO AUTO-RESUME! Player decides manually when to resume walking!
     } else {
-      // Normal hiking
       const speed = this.getSpeedMps();
       const traveled = speed * deltaSec;
 
       if (this.distance < m.totalDistance) {
         this.distance = Math.min(m.totalDistance, this.distance + traveled);
+        this.elapsedTime += deltaSec;
         this.stats.totalDistanceTraversed += traveled;
 
-        // Stamina consumption
+        // Realistic stamina drain
         if (this.activeBuffs.chocolate <= 0) {
-          let drainRate = 1.5;
+          let drainRate = 0.85;
           if (this.gear.jacket.level > 0) drainRate *= 0.9;
-          const guideCount = this.party.find(p => p.id === 'guide')?.count || 0;
-          drainRate *= Math.max(0.4, 1 - guideCount * 0.15);
+          if (this.gear.shoes.level > 0) drainRate *= (1 - Math.min(0.3, this.gear.shoes.level * 0.05));
 
           this.stamina = Math.max(0, this.stamina - drainRate * deltaSec);
         }
-
-        // Natural passive stamina regen from medic/porter
-        const medicCount = this.party.find(p => p.id === 'medic')?.count || 0;
-        const porterCount = this.party.find(p => p.id === 'porter')?.count || 0;
-        const naturalRegen = (medicCount * 2.0 + porterCount * 0.4) * deltaSec;
-        this.stamina = Math.min(this.maxStamina, this.stamina + naturalRegen);
       } else {
         // Reached Summit!
         this.checkSummitReached();
@@ -237,16 +208,16 @@ class HikingGame {
     // 6. Random Events Cooldown & Triggering
     this.eventCooldown -= deltaSec;
     if (this.eventCooldown <= 0) {
-      this.eventCooldown = 40 + Math.random() * 30;
+      this.eventCooldown = 45 + Math.random() * 35;
       this.triggerRandomEvent();
     }
 
-    // 7. Update Parallax Visuals
+    // 7. Update Parallax Visuals (Solo Hiker)
     if (this.parallax) {
       this.parallax.isResting = this.isResting;
       this.parallax.isSummit = (this.distance >= m.totalDistance);
-      this.parallax.update(this.getSpeedMps(), deltaMs);
-      this.parallax.render(this.party);
+      this.parallax.update(this.getSpeedMps(), deltaMs, this.distance, this.activeEvent, this.activeBuffs);
+      this.parallax.render();
     }
 
     // 8. Live HUD update
@@ -260,46 +231,46 @@ class HikingGame {
   }
 
   // --- ACTIONS & INTERACTION ---
-
   handleTap() {
-    mountainAudio.ensureContext();
-    mountainAudio.playTap();
+    if (typeof mountainAudio !== 'undefined') {
+      mountainAudio.ensureContext();
+      mountainAudio.playTap();
+    }
 
     const m = this.getCurrentMountain();
     if (this.distance >= m.totalDistance) {
       const award = (this.currentMountainIndex + 1) * 2;
       this.showModalSummit(m, award);
-      this.showToast('🏆 Puncak telah ditaklukkan! Ambil foto panorama atau lakukan Prestige!');
+      this.showToast('🏆 Puncak Nusantara telah diraih! Rayakan di puncak atau mulai ekspedisi baru!');
       return;
     }
 
     if (this.isResting) {
-      // Tap while resting gently wakes up
       this.toggleRest(false);
       return;
     }
 
     // Increase tap combo
     this.lastTapTime = Date.now();
-    this.tapCombo = Math.min(40, this.tapCombo + 1);
-    this.comboMultiplier = 1.0 + Math.min(1.5, (this.tapCombo / 15) * 1.5);
+    this.tapCombo = Math.min(30, this.tapCombo + 1);
+    this.comboMultiplier = 1.0 + Math.min(0.25, (this.tapCombo / 15) * 0.25);
 
-    // Advance distance
+    // Advance realistic distance
     const tapPower = this.getTapPower();
     this.distance = Math.min(m.totalDistance, this.distance + tapPower);
     this.stats.totalDistanceTraversed += tapPower;
     this.stats.totalTaps++;
 
-    // Extra rupiah and spirit from active effort
-    const tapReward = Math.round(tapPower * 2.5 * (1 + this.goldenEdelweiss * 0.5));
+    // Extra rupiah and spirit
+    const tapReward = Math.round(tapPower * 4.0 * (1 + this.goldenEdelweiss * 0.5));
     this.rupiah += tapReward;
     this.spirit += 1;
     this.stats.totalRupiahEarned += tapReward;
 
-    // Visual feedback on sloped trail
+    // Visual feedback
     if (this.parallax) {
-      this.parallax.spawnFloatingText(`+${tapPower}m!`, null, null, '#38bdf8');
-      if (Math.random() < 0.4) {
+      this.parallax.spawnFloatingText(`+${tapPower}m`, null, null, '#38bdf8');
+      if (Math.random() < 0.3) {
         this.parallax.spawnFloatingText(`+Rp ${tapReward.toLocaleString('id-ID')}`, null, null, '#4ade80');
       }
       const tapX = this.parallax.width * 0.38;
@@ -310,13 +281,13 @@ class HikingGame {
   }
 
   toggleRest(forceState = null) {
-    mountainAudio.ensureContext();
+    if (typeof mountainAudio !== 'undefined') mountainAudio.ensureContext();
     this.isResting = (forceState !== null) ? forceState : !this.isResting;
     if (this.isResting) {
-      mountainAudio.playCooking();
-      this.showToast('🏕️ Membuka tenda di pos istirahat... Menyeduh kopi hangat!');
+      if (typeof mountainAudio !== 'undefined') mountainAudio.playCooking();
+      this.showToast('⛺ Buka tenda dome dulu... Duduk selonjoran sambil menyeduh kopi anget!');
     } else {
-      this.showToast('🥾 Melipat tenda dan melanjutkan pendakian!');
+      this.showToast('🥾 Tenda dilipat rapi, ransel digendong lagi. Yuk gas nanjak!');
     }
     this.updateUI();
   }
@@ -327,12 +298,13 @@ class HikingGame {
       if (this.distance >= cp.distance && idx > this.lastCheckpointReachedIndex) {
         this.lastCheckpointReachedIndex = idx;
         if (idx > 0) {
-          // Checkpoint reached reward
           const reward = (idx * 5000) * (this.currentMountainIndex + 1);
           this.rupiah += reward;
           this.spirit += 15;
-          mountainAudio.playFanfare();
-          mountainAudio.playCoin();
+          if (typeof mountainAudio !== 'undefined') {
+            mountainAudio.playFanfare();
+            mountainAudio.playCoin();
+          }
           this.showModalCheckpoint(cp, reward);
         }
       }
@@ -345,7 +317,7 @@ class HikingGame {
       this.hasReachedCurrentSummit = true;
       this.peakConquered[m.id] = (this.peakConquered[m.id] || 0) + 1;
       this.stats.summitsReached++;
-      mountainAudio.playFanfare();
+      if (typeof mountainAudio !== 'undefined') mountainAudio.playFanfare();
       const edelweissAward = (this.currentMountainIndex + 1) * 2;
       this.goldenEdelweiss += edelweissAward;
 
@@ -355,7 +327,6 @@ class HikingGame {
   }
 
   // --- UPGRADES & PURCHASES ---
-
   buyGearUpgrade(gearKey) {
     const item = this.gear[gearKey];
     if (!item) return;
@@ -364,29 +335,12 @@ class HikingGame {
     if (this.rupiah >= cost) {
       this.rupiah -= cost;
       item.level++;
-      mountainAudio.playUpgrade();
-      this.showToast(`Berhasil upgrade ${item.name} ke Level ${item.level}!`);
+      if (typeof mountainAudio !== 'undefined') mountainAudio.playUpgrade();
+      this.showToast(`Mantap! ${item.name} naik ke Level ${item.level}!`);
       this.updateUI();
       this.saveGame();
     } else {
-      this.showToast(`Rupiah belum cukup! Butuh Rp ${cost.toLocaleString('id-ID')}`);
-    }
-  }
-
-  recruitParty(partyId) {
-    const member = this.party.find(p => p.id === partyId);
-    if (!member) return;
-
-    const cost = Math.round(member.baseCost * Math.pow(member.costMult, member.count));
-    if (this.rupiah >= cost) {
-      this.rupiah -= cost;
-      member.count++;
-      mountainAudio.playUpgrade();
-      this.showToast(`Merekrut ${member.name}! Tim makin solid!`);
-      this.updateUI();
-      this.saveGame();
-    } else {
-      this.showToast(`Rupiah belum cukup! Butuh Rp ${cost.toLocaleString('id-ID')}`);
+      this.showToast(`Uang jajan kurang mas! Butuh Rp ${cost.toLocaleString('id-ID')}`);
     }
   }
 
@@ -397,8 +351,8 @@ class HikingGame {
     if (this.rupiah >= item.cost) {
       this.rupiah -= item.cost;
       item.count++;
-      mountainAudio.playCoin();
-      this.showToast(`Membeli ${item.name}! Masuk kantong bekal.`);
+      if (typeof mountainAudio !== 'undefined') mountainAudio.playCoin();
+      this.showToast(`Beli ${item.name}! Masuk kantong ransel.`);
       this.updateUI();
       this.saveGame();
     } else {
@@ -411,48 +365,55 @@ class HikingGame {
     if (!item || item.count <= 0) return;
 
     item.count--;
-    mountainAudio.playCooking();
+    if (typeof mountainAudio !== 'undefined') mountainAudio.playCooking();
 
     if (itemKey === 'coffee') {
       this.activeBuffs.coffee = 30;
-      this.showToast('☕ Slurrp! Kopi jahe hangat diminum! Kecepatan mendaki 2x lipat!');
+      this.showToast('☕ Srupuuut! Kopi jahe hangat masuk tenggorokan! Langkah lebih enteng selama 30 dtk!');
     } else if (itemKey === 'noodle') {
       this.stamina = this.maxStamina;
       this.spirit += 10;
-      this.showToast('🍜 Mantap! Mie rebus hangat di puncak memulihkan 100% Stamina!');
+      this.showToast('🍜 Kenikmatan anak gunung! Kuah mie panas memulihkan 100% Tenaga seketika!');
     } else if (itemKey === 'chocolate') {
       this.activeBuffs.chocolate = 20;
-      this.showToast('🍫 Manis & bertenaga! Stamina tak terbatas selama 20 detik!');
+      this.showToast('🍫 Manis & bertenaga! Tenaga tak terbatas selama 20 detik!');
     } else if (itemKey === 'herbal') {
       this.activeBuffs.herbal = 25;
-      this.showToast('🌿 Badan hangat dan fit! Tap Power melesat 3x lipat!');
+      this.showToast('🌿 Badan hangat dan fit! Tap Power melesat 2x lipat!');
     }
 
     this.updateUI();
   }
 
-  // --- MOUNTAIN SWITCHING & PRESTIGE ---
+  setCustomOption(category, value) {
+    this.customization[category] = value;
+    if (this.parallax) {
+      this.parallax.setCustomization(this.customization);
+    }
+    this.renderCustomizationTab();
+    this.saveGame();
+  }
 
+  // --- MOUNTAIN SWITCHING & PRESTIGE ---
   selectMountain(index) {
     const target = MOUNTAIN_DATA[index];
     if (!target) return;
 
     if (!this.unlockedMountains.includes(target.id)) {
-      // Attempt to unlock
       if (this.rupiah >= target.unlockCost) {
         this.rupiah -= target.unlockCost;
         this.unlockedMountains.push(target.id);
-        mountainAudio.playFanfare();
-        this.showToast(`Izin Simaksi ${target.name} resmi dibuka!`);
+        if (typeof mountainAudio !== 'undefined') mountainAudio.playFanfare();
+        this.showToast(`Alhamdulillah! Izin Simaksi ${target.name} resmi disetujui!`);
       } else {
-        this.showToast(`Biaya simaksi ${target.name} butuh Rp ${target.unlockCost.toLocaleString('id-ID')}`);
+        this.showToast(`Simaksi ${target.name} butuh biaya Rp ${target.unlockCost.toLocaleString('id-ID')}`);
         return;
       }
     }
 
-    // Switch mountain
     this.currentMountainIndex = index;
     this.distance = 0;
+    this.elapsedTime = 0;
     this.lastCheckpointReachedIndex = -1;
     this.isResting = false;
     this.hasReachedCurrentSummit = false;
@@ -460,10 +421,10 @@ class HikingGame {
     if (this.parallax) {
       this.parallax.setMountain(target);
       this.parallax.scrollX = 0;
-      this.parallax.worldDistance = 0;
+      this.parallax.currentDistance = 0;
     }
 
-    this.showToast(`Memulai pendakian baru di ${target.name}!`);
+    this.showToast(`Bismillah, kita mulai pendakian di ${target.name}!`);
     this.updateUI();
     this.saveGame();
   }
@@ -471,78 +432,69 @@ class HikingGame {
   prestigeReincarnate() {
     const m = this.getCurrentMountain();
     if (this.distance < m.totalDistance) {
-      this.showToast('Capai puncak terlebih dahulu untuk menyelesaikan ekspedisi!');
+      this.showToast('Yuk selesaikan sampai puncak dulu sebelum buka ekspedisi baru!');
       return;
     }
 
-    // Bonus edelweiss
     const bonusEdelweiss = (this.currentMountainIndex + 1) * 3;
     this.goldenEdelweiss += bonusEdelweiss;
 
-    // Reset current mountain distance & base currencies but keep permanent Edelweiss & unlocks
     this.distance = 0;
+    this.elapsedTime = 0;
     this.lastCheckpointReachedIndex = -1;
     this.hasReachedCurrentSummit = false;
     this.stamina = this.maxStamina;
     this.rupiah = 10000;
 
-    mountainAudio.playFanfare();
-    this.showToast(`Ekspedisi selesai! Memperoleh +${bonusEdelweiss} 🌸 Edelweis Emas!`);
+    if (typeof mountainAudio !== 'undefined') mountainAudio.playFanfare();
+    this.showToast(`Ekspedisi sukses besar! Memperoleh +${bonusEdelweiss} 🌸 Bunga Edelweis Emas!`);
     this.updateUI();
     this.saveGame();
   }
 
-  takeScenicPhoto() {
-    mountainAudio.ensureContext();
-    mountainAudio.playCamera();
-    this.stats.photosTaken++;
-
-    const m = this.getCurrentMountain();
-    let photoReward = Math.round((2500 + Math.random() * 7500) * (this.currentMountainIndex + 1));
-    const photoPhotographer = this.party.find(p => p.id === 'photographer')?.count || 0;
-    if (photoPhotographer > 0) photoReward *= (1 + photoPhotographer);
-
-    this.rupiah += photoReward;
-    this.stats.totalRupiahEarned += photoReward;
-
-    if (this.parallax) {
-      this.parallax.spawnFloatingText(`📸 +Rp ${photoReward.toLocaleString('id-ID')}`, null, null, '#facc15');
-    }
-    this.showToast(`📸 Jepret! Foto panorama alam laku terjual Rp ${photoReward.toLocaleString('id-ID')}!`);
-    this.updateUI();
-  }
-
   // --- RANDOM EVENTS ---
-
   triggerRandomEvent() {
     const events = [
       {
         title: 'Burung Jalak Lawu Muncul!',
-        desc: 'Burung jalak gading penunjuk jalan setia terbang melompat di depan setapakmu!',
+        desc: 'Burung jalak gading penunjuk jalan melompat-lompat di depan setapakmu, memandu jalur paling aman.',
+        btnText: 'Ikuti Jalak! (+Langkah Lancar)',
         action: () => {
           this.activeBuffs.jalak = 25;
-          mountainAudio.playBirdChirp();
-          this.showToast('🕊️ Burung Jalak memandu jalan! Kecepatan mendaki +50% selama 25 detik!');
+          if (typeof mountainAudio !== 'undefined') mountainAudio.playBirdChirp();
+          this.showToast('🕊️ Burung Jalak memandu jalur! Langkah makin gesit selama 25 detik!');
         }
       },
       {
-        title: 'Rombongan Pendaki Ramah!',
-        desc: 'Berpapasan dengan rombongan ramah yang menyapa "Mari mas, monggo ngopi bareng!" dan membagikan bekal.',
+        title: 'Papasan Rombongan Pendaki Ramah!',
+        desc: 'Berpapasan sama rombongan turun: "Monggo mas, santai aja! Di depan ada spot istirahat adem."',
+        btnText: 'Sapa & Terima Oleh-oleh',
         action: () => {
           this.consumables.coffee.count++;
           this.stamina = Math.min(this.maxStamina, this.stamina + 35);
-          mountainAudio.playCoin();
-          this.showToast('🤝 Diberi segelas kopi panas dari pendaki lain! Stamina terisi!');
+          if (typeof mountainAudio !== 'undefined') mountainAudio.playCoin();
+          this.showToast('🤝 Dikasih bekal kopi sachet dari pendaki lain! Tenaga terisi kembali!');
         }
       },
       {
         title: 'Kabut Merekah Menampilkan Lautan Awan!',
-        desc: 'Momen magis saat angin menguak kabut tebal dan memperlihatkan samudra awan di bawah kaki.',
+        desc: 'Angin sepoi-sepoi menyingkap kabut tebal, memperlihatkan samudra awan putih berkilau di bawah kaki.',
+        btnText: 'Nikmati Laut Awan (+Uang & Semangat)',
         action: () => {
           const reward = 15000 * (this.currentMountainIndex + 1);
           this.rupiah += reward;
-          mountainAudio.playCamera();
-          this.showToast(`🌅 Pemandangan laut awan viral! Dapat saweran vlog Rp ${reward.toLocaleString('id-ID')}!`);
+          this.spirit += 20;
+          if (typeof mountainAudio !== 'undefined') mountainAudio.playFanfare();
+          this.showToast(`🌅 Pemandangan laut awan magis! Hati tenang & dapat rezeki Rp ${reward.toLocaleString('id-ID')}!`);
+        }
+      },
+      {
+        title: 'Nemu Warung Pos Masih Buka!',
+        desc: 'Warung bambu di pos masih mengepulkan asap. Ada gorengan pisang hangat dan teh melati panas.',
+        btnText: 'Ganjal Perut di Warung',
+        action: () => {
+          this.stamina = this.maxStamina;
+          this.showToast('🍌 Makan gorengan panas di warung pos! Tenaga pulih full 100%!');
         }
       }
     ];
@@ -552,13 +504,21 @@ class HikingGame {
     this.showEventNotification(ev);
   }
 
-  // --- UI BINDINGS & SYNCHRONIZATION ---
+  // --- TIME FORMATTING UTILS ---
+  formatDuration(seconds) {
+    const s = Math.floor(seconds);
+    const hrs = Math.floor(s / 3600);
+    const mins = Math.floor((s % 3600) / 60);
+    const secs = s % 60;
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+  }
 
+  // --- UI BINDINGS & SYNCHRONIZATION ---
   updateHUD() {
     const m = this.getCurrentMountain();
     if (!m) return;
 
-    // Top Stat Bar
     const progressPct = Math.min(100, (this.distance / m.totalDistance) * 100);
     const currentElevation = Math.round(m.baseElevation + (m.elevation - m.baseElevation) * (this.distance / m.totalDistance));
 
@@ -573,6 +533,13 @@ class HikingGame {
 
     const tgtElevEl = document.getElementById('target-elevation');
     if (tgtElevEl) tgtElevEl.textContent = `${m.elevation.toLocaleString('id-ID')} mdpl`;
+
+    // Realistic Expedition Timer Display
+    const timeElapsedEl = document.getElementById('val-time-elapsed');
+    if (timeElapsedEl) timeElapsedEl.textContent = this.formatDuration(this.elapsedTime);
+
+    const timeEstEl = document.getElementById('val-time-est');
+    if (timeEstEl) timeEstEl.textContent = this.formatDuration((m.realHours || 3.5) * 3600);
 
     const progFillEl = document.getElementById('progress-bar-fill');
     if (progFillEl) progFillEl.style.width = `${progressPct}%`;
@@ -590,8 +557,10 @@ class HikingGame {
     const edelEl = document.getElementById('val-edelweiss');
     if (edelEl) edelEl.textContent = `${this.goldenEdelweiss} 🌸`;
 
+    const spdMps = this.getSpeedMps();
+    const spdKmh = (spdMps * 3.6).toFixed(1);
     const spdEl = document.getElementById('val-speed');
-    if (spdEl) spdEl.textContent = `${this.getSpeedMps().toFixed(1)} m/dtk`;
+    if (spdEl) spdEl.textContent = `${spdMps.toFixed(2)} m/dtk (${spdKmh} km/j)`;
 
     // Stamina Bar
     const staminaPct = Math.max(0, Math.min(100, (this.stamina / this.maxStamina) * 100));
@@ -599,37 +568,54 @@ class HikingGame {
     if (stamFillEl) stamFillEl.style.width = `${staminaPct}%`;
 
     const stamTextEl = document.getElementById('stamina-text');
-    if (stamTextEl) stamTextEl.textContent = `${Math.round(this.stamina)} / ${this.maxStamina} ${this.stamina <= 0 ? '(LELAH)' : ''}`;
+    if (stamTextEl) {
+      if (this.isResting) {
+        if (this.stamina >= this.maxStamina) {
+          stamTextEl.textContent = `100 / 100 (Full Tenaga ✨)`;
+        } else {
+          stamTextEl.textContent = `${Math.round(this.stamina)} / ${this.maxStamina} (Rehat Tenda ⛺)`;
+        }
+      } else {
+        stamTextEl.textContent = `${Math.round(this.stamina)} / ${this.maxStamina} ${this.stamina <= 0 ? '(Dengkul Lemas)' : ''}`;
+      }
+    }
 
     // Tap Combo indicator
     const comboEl = document.getElementById('combo-badge');
     if (comboEl) {
       if (this.tapCombo > 2) {
         comboEl.style.display = 'inline-block';
-        comboEl.textContent = `Combo x${this.comboMultiplier.toFixed(1)}! 🔥`;
+        comboEl.textContent = `Pace x${this.comboMultiplier.toFixed(2)}! 🔥`;
       } else {
         comboEl.style.display = 'none';
       }
     }
 
-    // Toggle rest button label & styling
+    // Rest button
     const restBtn = document.getElementById('btn-rest');
     if (restBtn) {
-      const restText = this.isResting ? '🥾 Lanjut Mendaki' : '⛺ Buka Tenda (Istirahat)';
-      if (restBtn.textContent.trim() !== restText) {
-        restBtn.innerHTML = restText;
-        restBtn.className = this.isResting ? 'btn btn-accent pulse' : 'btn btn-secondary';
+      if (this.isResting) {
+        if (this.stamina >= this.maxStamina) {
+          restBtn.innerHTML = '🥾 Tenaga Penuh! Gas Jalan Lagi';
+          restBtn.className = 'btn btn-success pulse';
+        } else {
+          restBtn.innerHTML = '🥾 Lipat Tenda & Lanjut';
+          restBtn.className = 'btn btn-accent';
+        }
+      } else {
+        restBtn.innerHTML = '⛺ Buka Tenda (Napas Dulu)';
+        restBtn.className = 'btn btn-secondary';
       }
     }
 
-    // Main Tap Button state when at summit vs climbing
+    // Main Tap Button state
     const tapBtn = document.getElementById('btn-tap');
     if (tapBtn) {
       if (this.distance >= m.totalDistance) {
         tapBtn.innerHTML = '<span>🏆 Rayakan Puncak! (Prestige)</span>';
         tapBtn.classList.add('btn-summit-glow');
       } else {
-        tapBtn.innerHTML = `<span>🥾 Langkah Mantap!</span><span class="combo-badge" id="combo-badge" style="${this.tapCombo > 2 ? 'display: inline-block;' : 'display: none;'}">Combo x${this.comboMultiplier.toFixed(1)}! 🔥</span>`;
+        tapBtn.innerHTML = `<span>🥾 Gas Nanjak! (+${this.getTapPower()}m)</span><span class="combo-badge" id="combo-badge" style="${this.tapCombo > 2 ? 'display: inline-block;' : 'display: none;'}">Pace x${this.comboMultiplier.toFixed(2)}! 🔥</span>`;
         tapBtn.classList.remove('btn-summit-glow');
       }
     }
@@ -638,10 +624,10 @@ class HikingGame {
     const buffsContainer = document.getElementById('active-buffs-hud');
     if (buffsContainer) {
       const activeList = [];
-      if (this.activeBuffs.coffee > 0) activeList.push(`☕ Kopi (${Math.ceil(this.activeBuffs.coffee)}s)`);
+      if (this.activeBuffs.coffee > 0) activeList.push(`☕ Kopi Jahe (${Math.ceil(this.activeBuffs.coffee)}s)`);
       if (this.activeBuffs.chocolate > 0) activeList.push(`🍫 Cokelat (${Math.ceil(this.activeBuffs.chocolate)}s)`);
-      if (this.activeBuffs.jalak > 0) activeList.push(`🕊️ Jalak (${Math.ceil(this.activeBuffs.jalak)}s)`);
-      if (this.activeBuffs.herbal > 0) activeList.push(`🌿 Madu (${Math.ceil(this.activeBuffs.herbal)}s)`);
+      if (this.activeBuffs.jalak > 0) activeList.push(`🕊️ Jalak Lawu (${Math.ceil(this.activeBuffs.jalak)}s)`);
+      if (this.activeBuffs.herbal > 0) activeList.push(`🌿 Madu Alami (${Math.ceil(this.activeBuffs.herbal)}s)`);
 
       if (activeList.length > 0) {
         buffsContainer.style.display = 'flex';
@@ -674,24 +660,14 @@ class HikingGame {
     if (statRp) statRp.textContent = `Rp ${Math.round(this.stats.totalRupiahEarned).toLocaleString('id-ID')}`;
     const statSum = document.getElementById('stat-summits');
     if (statSum) statSum.textContent = `${this.stats.summitsReached} puncak`;
-    const statPho = document.getElementById('stat-photos');
-    if (statPho) statPho.textContent = `${this.stats.photosTaken} foto`;
   }
 
   updateUI() {
     this.updateHUD();
-
-    // Update gear list in DOM
     this.renderGearTab();
-
-    // Update party list in DOM
-    this.renderPartyTab();
-
-    // Update consumables tab
     this.renderConsumablesTab();
-
-    // Update mountain map tab
     this.renderMountainsTab();
+    this.renderCustomizationTab();
   }
 
   renderGearTab() {
@@ -715,29 +691,6 @@ class HikingGame {
         </div>
       `;
     }
-    container.innerHTML = html;
-  }
-
-  renderPartyTab() {
-    const container = document.getElementById('tab-party-content');
-    if (!container) return;
-
-    let html = '';
-    this.party.forEach(p => {
-      const cost = Math.round(p.baseCost * Math.pow(p.costMult, p.count));
-      const canAfford = this.rupiah >= cost;
-      html += `
-        <div class="upgrade-card ${canAfford ? '' : 'locked'}">
-          <div class="upgrade-info">
-            <div class="upgrade-title">${p.name} <span class="badge badge-party">x${p.count}</span></div>
-            <div class="upgrade-desc">${p.desc}</div>
-          </div>
-          <button class="btn btn-sm ${canAfford ? 'btn-success' : 'btn-disabled'}" onclick="game.recruitParty('${p.id}')">
-            Rekrut Rp ${cost.toLocaleString('id-ID')}
-          </button>
-        </div>
-      `;
-    });
     container.innerHTML = html;
   }
 
@@ -779,6 +732,7 @@ class HikingGame {
       const isUnlocked = this.unlockedMountains.includes(m.id);
       const isCurrent = this.currentMountainIndex === idx;
       const conqueredCount = this.peakConquered[m.id] || 0;
+      const realDur = m.realHours ? `~${m.realHours} jam` : '~3.5 jam';
 
       html += `
         <div class="mountain-select-card ${isCurrent ? 'active' : ''}">
@@ -787,11 +741,11 @@ class HikingGame {
             ${isCurrent ? '<span class="badge badge-current">Sedang Didaki</span>' : ''}
             ${conqueredCount > 0 ? `<span class="badge badge-summit">🏆 Takluk ${conqueredCount}x</span>` : ''}
           </div>
-          <p class="mountain-desc">${m.region} • ${m.trailName}</p>
+          <p class="mountain-desc">${m.region} • ${m.trailName} • ⏱️ Estimasi Waktu Nyata: <strong>${realDur}</strong></p>
           <p class="mountain-lore">${m.description}</p>
           <div class="mountain-action">
             ${isUnlocked ? (
-              isCurrent ? '<button class="btn btn-sm btn-disabled">Sedang Berjalan</button>' :
+              isCurrent ? '<button class="btn btn-sm btn-disabled">Sedang Di Sini</button>' :
               `<button class="btn btn-sm btn-primary" onclick="game.selectMountain(${idx})">Pindah Gunung</button>`
             ) : (
               `<button class="btn btn-sm btn-warning" onclick="game.selectMountain(${idx})">Buka Simaksi (Rp ${m.unlockCost.toLocaleString('id-ID')})</button>`
@@ -803,8 +757,121 @@ class HikingGame {
     container.innerHTML = html;
   }
 
-  // --- MODALS & NOTIFICATIONS ---
+  renderCustomizationTab() {
+    const container = document.getElementById('tab-custom-content');
+    if (!container) return;
 
+    const c = this.customization;
+
+    const jacketOptions = [
+      { name: 'Oranye Gunung', color: '#ea580c' },
+      { name: 'Merah Maroon', color: '#991b1b' },
+      { name: 'Biru Navy', color: '#1d4ed8' },
+      { name: 'Hijau Rimba', color: '#15803d' },
+      { name: 'Kuning Kunyit', color: '#eab308' },
+      { name: 'Hitam Cadas', color: '#1e293b' }
+    ];
+
+    const headwearTypes = [
+      { id: 'beanie', name: 'Kupluk Hangat' },
+      { id: 'bucket', name: 'Topi Rimba' },
+      { id: 'bandana', name: 'Buff / Bandana' },
+      { id: 'headlamp', name: 'Headlamp Malam' }
+    ];
+
+    const headwearColors = [
+      { name: 'Kuning', color: '#eab308' },
+      { name: 'Merah', color: '#dc2626' },
+      { name: 'Biru', color: '#2563eb' },
+      { name: 'Hijau', color: '#16a34a' },
+      { name: 'Hitam', color: '#0f172a' }
+    ];
+
+    const carrierColors = [
+      { name: 'Merah Crimson', color: '#dc2626' },
+      { name: 'Biru Kobalt', color: '#0284c7' },
+      { name: 'Hijau Lumut', color: '#3f6212' },
+      { name: 'Ungu Outdoor', color: '#7e22ce' },
+      { name: 'Hitam Karbon', color: '#0f172a' }
+    ];
+
+    const pantsColors = [
+      { name: 'Hitam Cadas', color: '#1e293b' },
+      { name: 'Abu Khaki', color: '#64748b' },
+      { name: 'Cokelat Tanah', color: '#54361e' },
+      { name: 'Hijau Army', color: '#1e3a2b' }
+    ];
+
+    let html = `
+      <div class="custom-card">
+        <h4 class="custom-group-title">🧥 Jaket Windbreaker</h4>
+        <div class="custom-swatch-group">
+          ${jacketOptions.map(opt => `
+            <button class="color-swatch-btn ${c.jacketColor === opt.color ? 'active' : ''}" 
+                    style="background: ${opt.color};" 
+                    title="${opt.name}" 
+                    onclick="game.setCustomOption('jacketColor', '${opt.color}')">
+              ${c.jacketColor === opt.color ? '✓' : ''}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="custom-card">
+        <h4 class="custom-group-title">🧢 Model Penutup Kepala</h4>
+        <div class="custom-pill-group">
+          ${headwearTypes.map(h => `
+            <button class="style-option-btn ${c.headwear === h.id ? 'active' : ''}" 
+                    onclick="game.setCustomOption('headwear', '${h.id}')">
+              ${h.name}
+            </button>
+          `).join('')}
+        </div>
+        <div class="custom-swatch-group" style="margin-top: 8px;">
+          ${headwearColors.map(opt => `
+            <button class="color-swatch-btn ${c.headwearColor === opt.color ? 'active' : ''}" 
+                    style="background: ${opt.color};" 
+                    title="${opt.name}" 
+                    onclick="game.setCustomOption('headwearColor', '${opt.color}')">
+              ${c.headwearColor === opt.color ? '✓' : ''}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="custom-card">
+        <h4 class="custom-group-title">🎒 Tas Carrier 60L</h4>
+        <div class="custom-swatch-group">
+          ${carrierColors.map(opt => `
+            <button class="color-swatch-btn ${c.carrierColor === opt.color ? 'active' : ''}" 
+                    style="background: ${opt.color};" 
+                    title="${opt.name}" 
+                    onclick="game.setCustomOption('carrierColor', '${opt.color}')">
+              ${c.carrierColor === opt.color ? '✓' : ''}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="custom-card">
+        <h4 class="custom-group-title">👖 Celana Quickdry</h4>
+        <div class="custom-swatch-group">
+          ${pantsColors.map(opt => `
+            <button class="color-swatch-btn ${c.pantsColor === opt.color ? 'active' : ''}" 
+                    style="background: ${opt.color};" 
+                    title="${opt.name}" 
+                    onclick="game.setCustomOption('pantsColor', '${opt.color}')">
+              ${c.pantsColor === opt.color ? '✓' : ''}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = html;
+  }
+
+  // --- MODALS & NOTIFICATIONS ---
   showToast(message) {
     const toast = document.getElementById('game-toast');
     if (!toast) return;
@@ -823,7 +890,7 @@ class HikingGame {
       <div class="event-content">
         <strong>✨ ${ev.title}</strong>
         <p>${ev.desc}</p>
-        <button class="btn btn-xs btn-accent" onclick="game.claimEvent()">Ambil Manfaat!</button>
+        <button class="btn btn-xs btn-accent" onclick="game.claimEvent()">${ev.btnText || 'Ambil Berkah!'}</button>
       </div>
     `;
     banner.style.display = 'block';
@@ -856,7 +923,7 @@ class HikingGame {
   showModalSummit(mountain, edelweiss) {
     const modal = document.getElementById('modal-summit');
     if (!modal) return;
-    document.getElementById('modal-summit-title').textContent = `SELAMAT! MENAKLUKKAN ${mountain.name.toUpperCase()}!`;
+    document.getElementById('modal-summit-title').textContent = `ALHAMDULILLAH! PUNCAK ${mountain.name.toUpperCase()} TERCAPAI!`;
     document.getElementById('modal-summit-height').textContent = `${mountain.elevation} mdpl - ${mountain.peakName}`;
     document.getElementById('modal-summit-edelweiss').textContent = `+${edelweiss} 🌸 Bunga Edelweis Emas (Bonus Permanen!)`;
     modal.classList.add('active');
@@ -868,7 +935,6 @@ class HikingGame {
   }
 
   // --- SAVE & LOAD SYSTEM ---
-
   saveGame() {
     const data = {
       rupiah: this.rupiah,
@@ -877,11 +943,12 @@ class HikingGame {
       currentMountainIndex: this.currentMountainIndex,
       unlockedMountains: this.unlockedMountains,
       distance: this.distance,
+      elapsedTime: this.elapsedTime,
       peakConquered: this.peakConquered,
       stamina: this.stamina,
       gear: this.gear,
-      party: this.party,
       consumables: this.consumables,
+      customization: this.customization,
       stats: this.stats,
       savedAt: Date.now()
     };
@@ -894,7 +961,9 @@ class HikingGame {
 
   loadGame() {
     try {
-      const raw = localStorage.getItem(this.saveKey);
+      let raw = localStorage.getItem(this.saveKey);
+      if (!raw) raw = localStorage.getItem('indonesia_hiking_idle_save_v2');
+      if (!raw) raw = localStorage.getItem('indonesia_hiking_idle_save_v1');
       if (!raw) return;
       const data = JSON.parse(raw);
 
@@ -904,6 +973,7 @@ class HikingGame {
       this.currentMountainIndex = data.currentMountainIndex || 0;
       this.unlockedMountains = data.unlockedMountains || ['prau'];
       this.distance = data.distance || 0;
+      this.elapsedTime = data.elapsedTime || 0;
       this.peakConquered = data.peakConquered || {};
       this.stamina = data.stamina !== undefined ? data.stamina : 100;
 
@@ -913,32 +983,42 @@ class HikingGame {
         }
       }
 
-      if (data.party) {
-        data.party.forEach(savedP => {
-          const match = this.party.find(p => p.id === savedP.id);
-          if (match) match.count = savedP.count || 0;
-        });
-      }
-
       if (data.consumables) {
         for (const k in data.consumables) {
           if (this.consumables[k]) this.consumables[k].count = data.consumables[k].count || 0;
         }
       }
 
+      if (data.customization) {
+        this.customization = Object.assign(this.customization, data.customization);
+      }
+
       if (data.stats) {
         this.stats = Object.assign(this.stats, data.stats);
       }
 
-      // Offline Earnings calculation
+      // Offline Earnings & Progress calculation based on realistic speed
       if (data.savedAt) {
         const offlineSec = Math.min(8 * 3600, Math.max(0, (Date.now() - data.savedAt) / 1000));
         if (offlineSec > 10) {
-          const offlineRupiah = Math.floor(this.getRupiahPerSecond() * offlineSec * 0.7); // 70% offline efficiency
+          const offlineRupiah = Math.floor(this.getRupiahPerSecond() * offlineSec * 0.7);
           this.rupiah += offlineRupiah;
           this.stats.totalRupiahEarned += offlineRupiah;
+
+          // Also progress realistic distance if not resting
+          const m = this.getCurrentMountain();
+          const realSeconds = (m.realHours || 3.5) * 3600;
+          const realisticMps = m.totalDistance / realSeconds;
+          const offlineDist = Math.min(m.totalDistance - this.distance, realisticMps * offlineSec * 0.7);
+
+          if (offlineDist > 0) {
+            this.distance += offlineDist;
+            this.elapsedTime += offlineSec * 0.7;
+            this.stats.totalDistanceTraversed += offlineDist;
+          }
+
           setTimeout(() => {
-            this.showToast(`Selamat datang kembali! Pendaki offline mengumpulkan Rp ${offlineRupiah.toLocaleString('id-ID')}!`);
+            this.showToast(`Selamat datang kembali! Selama offline, langkahmu bertambah +${Math.round(offlineDist)}m dan mengumpulkan Rp ${offlineRupiah.toLocaleString('id-ID')}!`);
           }, 1200);
         }
       }
@@ -950,6 +1030,8 @@ class HikingGame {
   resetGame() {
     if (confirm('Yakin ingin mereset seluruh progres pendakian?')) {
       localStorage.removeItem(this.saveKey);
+      localStorage.removeItem('indonesia_hiking_idle_save_v2');
+      localStorage.removeItem('indonesia_hiking_idle_save_v1');
       location.reload();
     }
   }
