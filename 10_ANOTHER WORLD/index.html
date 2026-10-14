@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUNIA LAIN: MALAM UJI NYALI - Indonesian Horror FNAF</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- VHS & CRT Distortion Effects -->
+        <div class="vhs-noise"></div>
+        <div class="blackout" id="blackout-screen"></div>
+
+        <!-- ==================== TITLE SCREEN ==================== -->
+        <div class="screen active" id="screen-title" style="background-image: url('assets/images/title_poster.jpg'); background-size: cover; background-position: center;">
+            <div class="title-box">
+                <div class="title-header">
+                    <h1>DUNIA LAIN</h1>
+                    <h2>[ UJI NYALI : POS PANTAU PRODUKSI ]</h2>
+                </div>
+                <div class="title-desc">
+                    <p>Lokasi: Bekas Rumah Sakit Kolonial Angker, Jawa Tengah.</p>
+                    <p>Anda bertugas sebagai <strong>Operator Pos Pantau Kru TV</strong> di Mobil OB Van. Pantau gerak-gerik peserta uji nyali dan amankan pos dari mahluk tak kasat mata sampai jam <strong>06:00 Subuh</strong>.</p>
+                    <p class="tagline">"Jika Anda tidak kuat... lambaikan tangan ke kamera!"</p>
+                </div>
+                <div class="title-buttons">
+                    <button class="btn-horror" id="btn-start-night1">MULAI TUGAS (MALAM 1)</button>
+                    <button class="btn-horror btn-secondary" id="btn-start-night2">MALAM 2 (TEROR POHON BERINGIN)</button>
+                    <button class="btn-horror btn-secondary" id="btn-start-night3">MALAM 3 (MALAM PENGANTIN JENAZAH)</button>
+                    <button class="btn-horror btn-secondary" id="btn-open-guide">PANDUAN OPERATOR & PROTOKOL</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== OFFICE VIEWPORT ==================== -->
+        <div class="screen" id="screen-office">
+            <!-- 3-Way Panoramic Office Area -->
+            <div id="office-viewport">
+                <!-- LEFT DOOR ZONE -->
+                <div class="office-zone zone-left">
+                    <div class="door-control-panel panel-left">
+                        <button class="door-btn btn-door-toggle" id="btn-door-left">
+                            <span class="label">[Q] PINTU</span>
+                            <span id="text-door-left">BUKA</span>
+                        </button>
+                        <button class="door-btn btn-light-toggle" id="btn-light-left">
+                            <span class="label">[A] LAMPU</span>
+                            <span id="text-light-left">MATI</span>
+                        </button>
+                    </div>
+                    <div class="metal-door door-left" id="shutter-left"></div>
+                    <div class="spotlight-reveal spotlight-left" id="spotlight-left" style="background-image: url('assets/images/door_left_pocong.jpg');"></div>
+                </div>
+
+                <!-- CENTER OPERATOR DESK ZONE -->
+                <div class="office-zone zone-center">
+                    <img src="assets/images/office.jpg" class="office-backdrop" alt="Ruang Kontrol OB Van">
+                </div>
+
+                <!-- RIGHT DOOR ZONE -->
+                <div class="office-zone zone-right">
+                    <div class="door-control-panel panel-right">
+                        <button class="door-btn btn-door-toggle" id="btn-door-right">
+                            <span class="label">[E] PINTU</span>
+                            <span id="text-door-right">BUKA</span>
+                        </button>
+                        <button class="door-btn btn-light-toggle" id="btn-light-right">
+                            <span class="label">[D] LAMPU</span>
+                            <span id="text-light-right">MATI</span>
+                        </button>
+                    </div>
+                    <div class="metal-door door-right" id="shutter-right"></div>
+                    <div class="spotlight-reveal spotlight-right" id="spotlight-right" style="background-image: url('assets/images/door_right_kunti.jpg');"></div>
+                </div>
+            </div>
+
+            <!-- Edge Hover Panning Triggers -->
+            <div class="pan-trigger pan-left" id="trigger-pan-left"></div>
+            <div class="pan-trigger pan-right" id="trigger-pan-right"></div>
+
+            <!-- Office HUD Layer -->
+            <div class="hud-layer">
+                <div class="hud-top-right">
+                    <div class="time-display" id="hud-time">12:00 AM</div>
+                    <div class="night-display" id="hud-night">MALAM 1</div>
+                </div>
+
+                <div class="hud-bottom-left">
+                    <div class="battery-row">
+                        <span>DAYA AKI:</span>
+                        <span id="battery-percent">100%</span>
+                        <div class="battery-gauge">
+                            <div class="battery-fill" id="battery-fill"></div>
+                        </div>
+                    </div>
+                    <div class="usage-row">
+                        <span>KONSUMSI LISTRIK:</span>
+                        <div class="usage-bars" id="usage-bars">
+                            <div class="usage-pip active"></div>
+                            <div class="usage-pip"></div>
+                            <div class="usage-pip"></div>
+                            <div class="usage-pip"></div>
+                            <div class="usage-pip"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom CCTV Flip Button -->
+                <div class="cctv-bar-toggle" id="btn-toggle-cctv">
+                    <span class="cctv-icon">📺</span>
+                    <span class="cctv-text">[SPACE] MONITOR CCTV PENGINTIP</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== CCTV MONITOR VIEWPORT ==================== -->
+        <div id="screen-cctv">
+            <div class="cctv-feed-container">
+                <img src="assets/images/cam04_banyan.jpg" class="cctv-image" id="cctv-image" alt="Feed Kamera CCTV">
+            </div>
+
+            <div class="cctv-hud">
+                <div class="rec-indicator">
+                    <div class="rec-dot"></div>
+                    <span>REC &bull; NIGHT VISION INFRARED</span>
+                </div>
+                <div class="camera-label" id="cctv-camera-name">CAM 04 - POHON BERINGIN</div>
+
+                <!-- Contestant Candle Status on CAM 05 -->
+                <div class="participant-status-panel" id="participant-panel" style="display: none;">
+                    <div class="candle-indicator">🕯️ LILIN PESERTA: <span id="candle-text">MENYALA</span></div>
+                    <div class="candle-bar">
+                        <div class="candle-fill" id="candle-fill"></div>
+                    </div>
+                    <button class="btn-cctv-action btn-candle" id="btn-relight-candle">🔥 TIUP DUPA / KUATKAN DOA</button>
+                </div>
+
+                <!-- CCTV Control Actions Bar -->
+                <div class="cctv-controls-bar">
+                    <button class="btn-cctv-action" id="btn-audio-distract">📢 PANCAR AUDIO RADIO (LURE)</button>
+                    <button class="btn-cctv-action" id="btn-emergency-surrender">🏳️ LAMBAIKAN TANGAN (EVAKUASI)</button>
+                </div>
+
+                <!-- Interactive Minimap -->
+                <div class="minimap-container">
+                    <div class="minimap-title">DENAH LOKASI UJI NYALI</div>
+                    <div class="minimap-layout">
+                        <button class="cam-btn" id="cam-01" data-cam="1">CAM 1</button>
+                        <button class="cam-btn" id="cam-02" data-cam="2">CAM 2</button>
+                        <button class="cam-btn" id="cam-03" data-cam="3">CAM 3</button>
+                        <button class="cam-btn active" id="cam-04" data-cam="4">CAM 4</button>
+                        <button class="cam-btn" id="cam-05" data-cam="5">CAM 5</button>
+                        <button class="cam-btn" id="cam-06" data-cam="6">CAM 6</button>
+                        <button class="cam-btn" id="cam-07" data-cam="7">CAM 7</button>
+                        <button class="cam-btn" id="cam-08" data-cam="8">CAM 8</button>
+                    </div>
+                </div>
+
+                <!-- Return to Office Button -->
+                <div class="cctv-bar-toggle" id="btn-close-cctv">
+                    <span class="cctv-icon">🔻</span>
+                    <span class="cctv-text">[SPACE] KEMBALI KE POS OPERATOR</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== JUMPSCARE OVERLAY ==================== -->
+        <div id="screen-jumpscare">
+            <img src="assets/images/jumpscare_pocong.jpg" class="jumpscare-image" id="jumpscare-image" alt="Jumpscare">
+        </div>
+
+        <!-- ==================== GAME OVER SCREEN ==================== -->
+        <div class="screen" id="screen-gameover">
+            <div class="endgame-modal">
+                <h1 class="endgame-title lose-title">SIARAN TERPUTUS</h1>
+                <p class="endgame-desc" id="gameover-reason">Mahluk gaib berhasil menerobos pos pantau operator. Uji nyali berakhir dalam kepanikan massal.</p>
+                <button class="btn-horror" id="btn-retry">COBA LAGI MALAM INI</button>
+                <button class="btn-horror btn-secondary" style="margin-top: 15px;" id="btn-back-menu">KEMBALI KE MENU UTAMA</button>
+            </div>
+        </div>
+
+        <!-- ==================== WIN SCREEN (06:00 SUBUH) ==================== -->
+        <div class="screen" id="screen-win">
+            <div class="endgame-modal win-modal">
+                <h1 class="endgame-title win-title">06:00 SUBUH</h1>
+                <h2 style="color: var(--crt-green); font-size: 26px; margin-bottom: 15px;">UJI NYALI BERHASIL!</h2>
+                <p class="endgame-desc">Adzan Subuh berkumandang. Seluruh mahluk gaib lenyap kembali ke dimensi mereka. Peserta dan pos pantau berhasil bertahan semalaman penuh!</p>
+                <button class="btn-horror" id="btn-next-night">LANJUT KE MALAM BERIKUTNYA</button>
+            </div>
+        </div>
+
+        <!-- ==================== GUIDE & LORE MODAL ==================== -->
+        <div class="modal-overlay" id="modal-guide">
+            <div class="modal-content">
+                <h2>PROTOKOL OPERATOR POS PANTAU DUNIA LAIN</h2>
+                <p>Selamat datang di pos produksi <strong>Dunia Lain</strong>. Sebagai operator, Anda bertanggung jawab mengawasi siaran langsung dan keselamatan peserta:</p>
+                
+                <h3>KONTROL TOMBOL CEPAT:</h3>
+                <ul>
+                    <li><strong>[SPACE]:</strong> Buka / Tutup Monitor CCTV.</li>
+                    <li><strong>[Q]:</strong> Buka / Tutup Teralis Pintu Kiri.</li>
+                    <li><strong>[A]:</strong> Nyalakan Lampu Sorot Pintu Kiri (Cek Pocong).</li>
+                    <li><strong>[E]:</strong> Buka / Tutup Teralis Pintu Kanan.</li>
+                    <li><strong>[D]:</strong> Nyalakan Lampu Sorot Pintu Kanan (Cek Kuntilanak).</li>
+                    <li><strong>Gerakkan Kursor ke Pinggir Layar:</strong> Menggeser pandangan kiri/kanan.</li>
+                </ul>
+
+                <h3>ENTITAS MAHLUK GAIB & CARA MENGHADAPINYA:</h3>
+                <ul>
+                    <li><strong>POCONG (Pelompat Agresif):</strong> Berpindah dari CAM 4 (Pohon Beringin) ke CAM 1, lalu CAM 6 (Pintu Kiri). Jika terdengar suara loncatan debum atau terdeteksi di lampu kiri, SEGERA TUTUP PINTU KIRI!</li>
+                    <li><strong>KUNTILANAK (Penyusup Halus):</strong> Mengeluarkan suara tawa melengking atau tangisan. Muncul di CAM 3, mengitari peserta di CAM 5, lalu mendekat ke CAM 7 (Pintu Kanan). Cek lampu kanan dan tutup pintu kanan bila dia melayang di depan pintu!</li>
+                    <li><strong>GENDERUWO (Raksasa Penyerap Energi):</strong> Berdiam di CAM 2 (Kamar Jenazah). Jika mendekat ke CAM 8 (Genset), dia akan menyerap aki sangat cepat. Gunakan tombol [PANCAR AUDIO RADIO] di ruangan lain untuk memancingnya pergi!</li>
+                    <li><strong>LILIN PESERTA (CAM 5):</strong> Peserta hanya dibekali 1 lilin. Jika lilin padam ditiup hantu, peserta akan panik dan kesurupan! Buka CAM 5 dan klik [TIUP DUPA / KUATKAN DOA] jika lilin berkedip.</li>
+                    <li><strong>DAYA AKI:</strong> Menutup pintu, menyalakan lampu, dan membuka CCTV menguras aki. Jika aki 0%, genset mati total dan mahluk gaib akan langsung menyerang pos pantau!</li>
+                </ul>
+
+                <button class="btn-close-modal" id="btn-close-guide">SAYA SIAP BERTUGAS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/sound.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

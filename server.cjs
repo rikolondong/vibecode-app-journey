@@ -29,7 +29,10 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/9_AI VIRTUAL OFFICE/') || decodedUrl.startsWith('/9/')) {
+  if (decodedUrl.startsWith('/10_ANOTHER WORLD/') || decodedUrl.startsWith('/10/')) {
+    projectDir = '10_ANOTHER WORLD';
+    relativePath = decodedUrl.replace(/^\/(10_ANOTHER WORLD|10)\/?/, '');
+  } else if (decodedUrl.startsWith('/9_AI VIRTUAL OFFICE/') || decodedUrl.startsWith('/9/')) {
     projectDir = '9_AI VIRTUAL OFFICE';
     relativePath = decodedUrl.replace(/^\/(9_AI VIRTUAL OFFICE|9)\/?/, '');
   } else if (decodedUrl.startsWith('/7_IDLE HIKING GAME/') || decodedUrl.startsWith('/7/')) {
@@ -89,4 +92,5 @@ server.listen(PORT, () => {
   console.log(`- Project 6: http://localhost:${PORT}/6/`);
   console.log(`- Project 7: http://localhost:${PORT}/7/`);
   console.log(`- Project 9: http://localhost:${PORT}/9/`);
+  console.log(`- Project 10: http://localhost:${PORT}/10/`);
 });

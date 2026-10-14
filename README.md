@@ -16,6 +16,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 6 | [**6_SIMULATOR PERLINTASAN KERETA**](./6_SIMULATOR%20PERLINTASAN%20KERETA) | Simulator 3D Pos Penjaga Perlintasan Kereta Api Indonesia (PJL) dengan Three.js, AI lalu lintas kendaraan, dan audio sirine otentik. | ✅ Selesai |
 | 7 | [**7_IDLE HIKING GAME**](./7_IDLE%20HIKING%20GAME) | Game Idle Mendaki Gunung Indonesia (*Ekspedisi Puncak Nusantara*) dengan 2D Multi-Layer Parallax Engine dan Web Audio API. | ✅ Selesai |
 | 9 | [**9_AI VIRTUAL OFFICE**](./9_AI%20VIRTUAL%20OFFICE) | Visualisasi 3D Isometrik AI Multi-Agent Office dengan kru karakter manusia Voxel realistis, tata ruang kantor modern, audio prosedural, dan simulasi alur tugas. | ✅ Selesai |
+| 10 | [**10_ANOTHER WORLD**](./10_ANOTHER%20WORLD) | Game Horor Indonesia bertema acara TV *Dunia Lain* (Uji Nyali) dengan mekanik Five Nights at Freddy's (FNAF), audio prosedural, dan 11 aset gambar pre-render. | ✅ Selesai |
 
 ---
 
@@ -152,6 +153,36 @@ Aplikasi visualisasi dan simulasi interaktif **AI Virtual Office 3D Isometrik** 
 - **Tech Stack**: HTML5 Canvas (Pure Procedural 3D Isometric Engine), Vanilla JavaScript (ES6+), Web Audio API Prosedural, Tailwind CSS.
 
 👉 **[Buka Dokumentasi & Kode Proyek 9](./9_AI%20VIRTUAL%20OFFICE)**
+
+---
+
+## 👻 Ringkasan Proyek 10: Dunia Lain - Malam Uji Nyali (Indonesian FNAF Horror Game)
+
+Game horor survival orang pertama berbasis *point-and-click* yang memadukan mekanik gameplay **Five Nights at Freddy's (FNAF)** dengan atmosfer mencekam acara televisi legendaris Indonesia **"Dunia Lain" (Uji Nyali)**:
+- **Konsep & Lore Pos Pantau**:
+  - Anda bertugas sebagai operator keamanan di mobil kontrol siaran (*OB Van*) kru TV di bekas Rumah Sakit Kolonial terbengkalai, Jawa Tengah.
+  - Memantau peserta uji nyali dan bertahan dari serangan mahluk halus dari jam **00:00 hingga 06:00 Subuh**.
+- **Mekanik Inti (FNAF Style)**:
+  - **Sudut Pandang Panoramik 180°**: Geser pandangan antara pintu teralis kiri, meja monitor operator, dan pintu teralis kanan.
+  * **Pintu & Lampu Sorot**: Tutup/buka pintu teralis besi (`[Q]` dan `[E]`) serta nyalakan lampu sorot (`[A]` dan `[D]`) untuk mendeteksi penampakan di depan pintu.
+  * **Manajemen Daya Aki Genset**: Setiap aksi mengonsumsi listrik aki; jika aki habis (0%), genset padam dan memicu *Blackout Jumpscare*.
+  * **Monitor CCTV Inframerah (8 Channel Kamera)**: Beralih antar kamera (Lorong Utama, Kamar Jenazah, Ruang Bedah, Pohon Beringin, Sayap Kiri/Kanan, Ruang Generator).
+- **Mekanik Otentik Acara Dunia Lain**:
+  - 🕯️ **Lilin Peserta Uji Nyali (CAM 05)**: Jaga nyala lilin peserta dengan tombol *Tiup Dupa / Kuatkan Doa* sebelum peserta histeris dan kerasukan!
+  - 📢 **Pancar Audio Radio**: Memancing mahluk gaib agar menjauh dari pos pantau operator.
+  - 🏳️ **Lambaikan Tangan ke Kamera**: Tombol menyerah khas peserta Dunia Lain untuk evakuasi darurat.
+- **Entitas Mahluk Gaib Indonesia**:
+  - **Pocong** (pelompat agresif dari Pohon Beringin ke Pintu Kiri).
+  - **Kuntilanak** (penyusup bergaun putih berdarah yang meniup lilin peserta lalu mendekati Pintu Kanan).
+  - **Genderuwo** (raksasa hitam di Kamar Jenazah yang menyedot daya aki di Ruang Generator).
+  - **Tuyul** (menyelinap di saluran bawah tanah untuk mengacaukan kabel).
+- **Aset Gambar Pre-Render Kualitas Tinggi**:
+  - Dilengkapi 11 gambar pre-render lengkap: Ruang Pos Operator OB Van, Pintu Kiri (Pocong), Pintu Kanan (Kuntilanak), CAM 01 s.d. CAM 08, Poster Judul TV 2000-an, dan Jumpscare.
+- **Audio Synthesizer Prosedural (Web Audio API)**:
+  - Dissonant Gong Gamelan Slendro/Pelog, sub-bass drone 36Hz, tawa melengking Kuntilanak (FM tremolo), hentakan langkah Pocong, geraman Genderuwo, static radio walkie-talkie, dan dentang kemenangan Adzan Subuh.
+- **Tech Stack**: HTML5 Semantic, Modern Vintage CRT/VHS CSS Effects, Vanilla JavaScript (ES6+ State Machine & AI), Web Audio API.
+
+👉 **[Buka Dokumentasi & Kode Proyek 10](./10_ANOTHER%20WORLD)**
 
 ---
 
