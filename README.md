@@ -17,6 +17,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 7 | [**7_IDLE HIKING GAME**](./7_IDLE%20HIKING%20GAME) | Game Idle Mendaki Gunung Indonesia (*Ekspedisi Puncak Nusantara*) dengan 2D Multi-Layer Parallax Engine dan Web Audio API. | ✅ Selesai |
 | 9 | [**9_AI VIRTUAL OFFICE**](./9_AI%20VIRTUAL%20OFFICE) | Visualisasi 3D Isometrik AI Multi-Agent Office dengan kru karakter manusia Voxel realistis, tata ruang kantor modern, audio prosedural, dan simulasi alur tugas. | ✅ Selesai |
 | 10 | [**10_ANOTHER WORLD**](./10_ANOTHER%20WORLD) | Game Horor Indonesia bertema acara TV *Dunia Lain* (Uji Nyali) dengan mekanik Five Nights at Freddy's (FNAF), audio prosedural, dan 11 aset gambar pre-render. | ✅ Selesai |
+| 11 | [**11_HOME SURVIVOR**](./11_HOME%20SURVIVOR) | Game Simulasi Realistis 3D Isometric Bertahan Hidup di Rumah saat Serangan Zombie (ala *Project Zomboid*) dengan Three.js, Cutaway Walls, Barikade Papan, Stealth, & Web Audio API. | ✅ Selesai |
 
 ---
 
@@ -183,6 +184,27 @@ Game horor survival orang pertama berbasis *point-and-click* yang memadukan meka
 - **Tech Stack**: HTML5 Semantic, Modern Vintage CRT/VHS CSS Effects, Vanilla JavaScript (ES6+ State Machine & AI), Web Audio API.
 
 👉 **[Buka Dokumentasi & Kode Proyek 10](./10_ANOTHER%20WORLD)**
+
+---
+
+## 🧟‍♂️ Ringkasan Proyek 11: Home Survivor - Isolation (3D Isometric Zombie Survival)
+
+Game simulasi realistis bertahan hidup di dalam rumah saat terjadi serangan zombie bergaya **3D Isometric** (terinspirasi dari *Project Zomboid*):
+- **Rumah 3D Multi-Ruangan & Cutaway Walls Otomatis**:
+  - Terdiri dari **Ruang Tamu, Dapur, Kamar Tidur, Kamar Mandi, Garasi & Bengkel, serta Halaman & Jalan Raya**.
+  - Sistem **Cutaway Walls** otomatis merendahkan dinding penghalang pandangan kamera saat pemain berada di dalam ruangan.
+- **Fortifikasi Rumah & Barikade Realistis**:
+  - **Barikade Papan Kayu 3D (`[B]`)**: Pasang hingga 4 lapis papan kayu di setiap pintu dan jendela menggunakan *Papan Kayu*, *Paku Besi*, dan *Palu*.
+  - **Tirai Jendela (`[G]`)**: Tutup/buka tirai jendela agar cahaya lampu ruangan di malam hari tidak memancing zombie dari luar.
+  - **Bongkar Perabotan (`[X]`)**: Bongkar meja, sofa, peti gudang, atau tebang pohon di halaman untuk mendapatkan bahan papan kayu darurat.
+- **Simulasi Vitals, Moodles & Jaringan Utilitas Kota**:
+  - Kelola **HP, Stamina, Lapar, Haus, Kantuk, Tingkat Panik**, serta kondisi medis **Pendarahan (Bleeding)** dan **Infeksi**.
+  - Pasokan listrik kota dan air PDAM akan terputus seiring berjalannya hari; nyalakan **Generator Bensin Cadangan** di garasi dengan risiko suara mesin memancing gerombolan zombie.
+- **Pertarungan, Stealth & Gelombang Suara 3D**:
+  - Senjata Melee (*Pemukul Baseball, Tongkat Berpaku, Pisau Dapur, Palu, Kapak Pemadam*), *Shove/Dorong* (`[Spasi]`), serta *Pistol 9mm* dengan efek *muzzle flash* dan lingkaran gelombang kebisingan 3D (*Noise Ripple*).
+- **Tech Stack**: Three.js (r128 WebGL Orthographic Isometric Camera & Shadows), Pure Procedural Web Audio API, HTML5 & Modern Tactical CSS3.
+
+👉 **[Buka Dokumentasi & Kode Proyek 11](./11_HOME%20SURVIVOR)**
 
 ---
 

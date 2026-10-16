@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HOME SURVIVOR — Simulasi 3D Isometric Bertahan Hidup Zombie</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Three.js r128 CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <!-- 3D Isometric Canvas Container -->
+  <div id="game-canvas-container"></div>
+
+  <!-- Screen Vignette & Panic/Bleeding FX -->
+  <div id="screen-fx"></div>
+
+  <!-- Top HUD: Clock, Day, Utility Grid Status -->
+  <div id="top-hud">
+    <div class="clock-box">
+      <span id="hud-time">08:00</span>
+      <span id="hud-day">HARI 1</span>
+    </div>
+    <div class="hud-divider"></div>
+    <div class="utility-indicators">
+      <div id="badge-power" class="util-badge active">⚡ Listrik ON</div>
+      <div id="badge-water" class="util-badge active">🚰 Air PDAM ON</div>
+      <div id="badge-lights" class="util-badge active">💡 Lampu Rumah [L]: ON</div>
+    </div>
+  </div>
+
+  <!-- Left HUD: Survival Vitals -->
+  <div id="vitals-panel">
+    <div class="panel-header">
+      <span>Kondisi Penyintas</span>
+      <span>Real-Time</span>
+    </div>
+
+    <div class="vital-row">
+      <div class="vital-label"><span>❤️ Kesehatan (HP)</span><span id="val-hp">100%</span></div>
+      <div class="vital-bar-bg"><div id="bar-hp" class="vital-bar-fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="vital-row">
+      <div class="vital-label"><span>⚡ Stamina Fisik</span><span id="val-stamina">100%</span></div>
+      <div class="vital-bar-bg"><div id="bar-stamina" class="vital-bar-fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="vital-row">
+      <div class="vital-label"><span>🍖 Nutrisi (Lapar)</span><span id="val-hunger">Kenyang</span></div>
+      <div class="vital-bar-bg"><div id="bar-hunger" class="vital-bar-fill" style="width:90%"></div></div>
+    </div>
+
+    <div class="vital-row">
+      <div class="vital-label"><span>💧 Hidrasi (Haus)</span><span id="val-thirst">Segar</span></div>
+      <div class="vital-bar-bg"><div id="bar-thirst" class="vital-bar-fill" style="width:88%"></div></div>
+    </div>
+
+    <div class="vital-row">
+      <div class="vital-label"><span>💤 Kesegaran (Kantuk)</span><span id="val-fatigue">Bugar</span></div>
+      <div class="vital-bar-bg"><div id="bar-fatigue" class="vital-bar-fill" style="width:92%"></div></div>
+    </div>
+
+    <div class="vital-row" style="margin-bottom:0">
+      <div class="vital-label"><span>🔦 Baterai Senter [F]</span><span id="val-battery">90%</span></div>
+      <div class="vital-bar-bg"><div id="bar-battery" class="vital-bar-fill" style="width:90%"></div></div>
+    </div>
+  </div>
+
+  <!-- Quick Controls Guide -->
+  <div id="controls-card">
+    <div class="panel-header" style="margin-bottom:6px">Panduan Kontrol</div>
+    <div class="ctrl-line"><span>Bergerak</span><span class="ctrl-key">W A S D</span></div>
+    <div class="ctrl-line"><span>Lari / Mengendap</span><span class="ctrl-key">Shift / C</span></div>
+    <div class="ctrl-line"><span>Serang / Tembak</span><span class="ctrl-key">Klik Kiri</span></div>
+    <div class="ctrl-line"><span>Dorong Zombie</span><span class="ctrl-key">Spasi</span></div>
+    <div class="ctrl-line"><span>Buka / Geledah / Gunakan</span><span class="ctrl-key">E</span></div>
+    <div class="ctrl-line"><span>Paku Barikade Papan</span><span class="ctrl-key">B</span></div>
+    <div class="ctrl-line"><span>Tutup / Buka Tirai</span><span class="ctrl-key">G</span></div>
+    <div class="ctrl-line"><span>Bongkar Perabot / Kayu</span><span class="ctrl-key">X</span></div>
+    <div class="ctrl-line"><span>Senter / Lampu Rumah</span><span class="ctrl-key">F / L</span></div>
+    <div class="ctrl-line"><span>Putar Kamera / Zoom</span><span class="ctrl-key">Q, R / Scroll</span></div>
+  </div>
+
+  <!-- Top Right: Moodles (Status Alerts) -->
+  <div id="moodles-container"></div>
+
+  <!-- Side Panels: Container Loot, Inventory, Crafting -->
+  <div id="side-panels">
+    <!-- Container Looting Panel -->
+    <div id="loot-panel" class="game-panel hidden">
+      <div class="panel-header">
+        <span id="loot-panel-title">📦 Isi Wadah</span>
+        <button id="btn-take-all" class="btn-small">Ambil Semua</button>
+      </div>
+      <div id="loot-list" class="item-list"></div>
+    </div>
+
+    <!-- Inventory Panel -->
+    <div id="inventory-panel" class="game-panel hidden">
+      <div class="panel-header">
+        <span>🎒 Tas Inventaris [I]</span>
+      </div>
+      <div id="inv-summary" style="font-size:0.74rem;color:#e5a93c;margin-bottom:8px;font-weight:600;"></div>
+      <div id="inventory-list" class="item-list"></div>
+    </div>
+
+    <!-- Crafting Panel -->
+    <div id="crafting-panel" class="game-panel hidden">
+      <div class="panel-header">
+        <span>🛠️ Perakitan & Pertukangan [K]</span>
+      </div>
+      <div id="crafting-list" class="item-list"></div>
+    </div>
+  </div>
+
+  <!-- Timed Action Progress Bar -->
+  <div id="action-progress-box" class="hidden">
+    <div id="action-label">Memasang Barikade...</div>
+    <div class="action-bar-bg">
+      <div id="action-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- Context-Sensitive Interaction Prompt -->
+  <div id="interaction-prompt" class="hidden"></div>
+
+  <!-- Bottom Left: Radio & Survival Event Log -->
+  <div id="event-log-box">
+    <div class="panel-header" style="margin-bottom:6px">
+      <span>📻 Log Kejadian & Radio Darurat</span>
+    </div>
+    <div id="event-log"></div>
+  </div>
+
+  <!-- Bottom Center: Hotbar & Quick Buttons -->
+  <div id="bottom-hud">
+    <div id="hotbar"></div>
+    <div class="hud-btn-group">
+      <button id="btn-toggle-inv" class="hud-btn" title="Buka Tas Inventaris (Tombol I / Tab)">
+        <span>🎒</span>
+        <span>Tas [I]</span>
+      </button>
+      <button id="btn-toggle-craft" class="hud-btn" title="Menu Perakitan / Crafting (Tombol K)">
+        <span>🛠️</span>
+        <span>Rakit [K]</span>
+      </button>
+      <button id="btn-flashlight" class="hud-btn" title="Nyalakan/Matikan Senter (Tombol F)">
+        <span>🔦</span>
+        <span>Senter [F]</span>
+      </button>
+      <button id="btn-rotate-cam" class="hud-btn" title="Putar Sudut Kamera Isometric 90 Derajat (Q/R)">
+        <span>🎥</span>
+        <span>Kamera [R]</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Briefing / Game Over Modal -->
+  <div id="modal-overlay">
+    <div class="modal-card">
+      <h1 id="modal-title">HOME SURVIVOR: ISOLATION</h1>
+      <p id="modal-desc">
+        <strong>Simulasi Realistis 3D Isometric Bertahan Hidup di Rumah</strong><br><br>
+        Kota telah jatuh ke tangan zombie. Rumah ini adalah benteng terakhir Anda.<br>
+        • <strong>Perkuat Rumah:</strong> Pasang papan kayu di jendela & pintu (<strong>B</strong>) dan tutup tirai (<strong>G</strong>) agar cahaya lampu tidak mengundang zombie di malam hari.<br>
+        • <strong>Kelola Kebutuhan:</strong> Geledah kulkas, lemari dapur, kotak P3K kamar mandi, garasi, hingga mobil polisi di jalan raya (<strong>E</strong>).<br>
+        • <strong>Perhatikan Suara:</strong> Berlari, memalu paku, dan menembakkan pistol 9mm menimbulkan gelombang suara yang memancing gerombolan zombie!
+      </p>
+      <button id="btn-start-game" class="btn-primary">Mulai Bertahan Hidup</button>
+    </div>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/systems.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
