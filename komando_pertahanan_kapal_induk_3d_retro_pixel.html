@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KOMANDO PERTAHANAN KAPAL INDUK - 3D Retro Pixel Sim</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --hud-green: #00ff66;
+            --hud-amber: #ffb000;
+            --hud-red: #ff2a2a;
+            --hud-cyan: #00e5ff;
+            --hud-bg: rgba(6, 18, 12, 0.82);
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #050a0e;
+            font-family: 'VT323', monospace;
+            color: var(--hud-green);
+        }
+
+        .font-pixel {
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        /* 3D Retro Pixel Canvas Scaling */
+        #game-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            z-index: 1;
+        }
+
+        /* CRT & Scanline Overlay Effects */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 15;
+            background: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%), 
+                linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 6px 100%;
+            box-shadow: inset 0 0 70px rgba(0,0,0,0.75);
+        }
+
+        .night-vision-filter {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 12;
+            background: radial-gradient(circle, rgba(0, 255, 80, 0.08) 0%, rgba(0, 40, 10, 0.45) 100%);
+            mix-blend-mode: screen;
+            display: none;
+        }
+
+        /* Retro Tactical Panel Borders */
+        .pixel-panel {
+            background: var(--hud-bg);
+            border: 2px solid var(--hud-green);
+            box-shadow: 
+                0 0 0 2px #020804,
+                inset 0 0 12px rgba(0, 255, 102, 0.15),
+                4px 4px 0px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(2px);
+        }
+
+        .pixel-panel-amber {
+            background: rgba(20, 14, 4, 0.85);
+            border: 2px solid var(--hud-amber);
+            box-shadow: 0 0 0 2px #080501, 4px 4px 0px rgba(0, 0, 0, 0.7);
+            color: var(--hud-amber);
+        }
+
+        .pixel-panel-red {
+            background: rgba(28, 6, 6, 0.88);
+            border: 2px solid var(--hud-red);
+            box-shadow: 0 0 0 2px #0a0101, 0 0 15px rgba(255, 42, 42, 0.35), 4px 4px 0px rgba(0, 0, 0, 0.7);
+            color: var(--hud-red);
+        }
+
+        /* Retro Pixel Buttons */
+        .pixel-btn {
+            position: relative;
+            background: #0b2216;
+            border: 2px solid var(--hud-green);
+            color: var(--hud-green);
+            padding: 6px 10px;
+            font-family: 'VT323', monospace;
+            font-size: 1.05rem;
+            line-height: 1.1;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #000;
+            transition: transform 0.05s, background 0.1s, box-shadow 0.05s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .pixel-btn:hover:not(:disabled) {
+            background: var(--hud-green);
+            color: #031108;
+            font-weight: bold;
+        }
+
+        .pixel-btn:active:not(:disabled) {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #000;
+        }
+
+        .pixel-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            border-color: #3a5c47;
+            color: #527a61;
+        }
+
+        .pixel-btn.active-mode {
+            background: var(--hud-green);
+            color: #020c06;
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--hud-green), 2px 2px 0px #000;
+        }
+
+        .pixel-btn-red {
+            background: #2a0808;
+            border-color: var(--hud-red);
+            color: #ff6b6b;
+        }
+        .pixel-btn-red:hover:not(:disabled) {
+            background: var(--hud-red);
+            color: #fff;
+        }
+
+        .pixel-btn-amber {
+            background: #281b05;
+            border-color: var(--hud-amber);
+            color: var(--hud-amber);
+        }
+        .pixel-btn-amber:hover:not(:disabled) {
+            background: var(--hud-amber);
+            color: #140d00;
+        }
+
+        .pixel-btn-cyan {
+            background: #062129;
+            border-color: var(--hud-cyan);
+            color: var(--hud-cyan);
+        }
+        .pixel-btn-cyan:hover:not(:disabled) {
+            background: var(--hud-cyan);
+            color: #021217;
+        }
+
+        /* Custom Scrollbar for Threat Log */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #041109;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--hud-green);
+        }
+
+        /* Blinking alert animation */
+        @keyframes blink-alert {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0.15; }
+        }
+        .animate-blink {
+            animation: blink-alert 0.7s infinite;
+        }
+
+        /* Crosshair cursor when in manual fire mode */
+        .manual-cursor {
+            cursor: crosshair !important;
+        }
+
+        /* Target Lock 2D Floating Brackets */
+        .target-bracket {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            margin-left: -17px;
+            margin-top: -17px;
+            border: 2px dashed rgba(255, 42, 42, 0.85);
+            pointer-events: none;
+            z-index: 8;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            font-size: 11px;
+            color: #ff4d4d;
+            text-shadow: 1px 1px 0 #000;
+            transition: transform 0.05s linear;
+        }
+        .target-bracket.priority {
+            border: 2px solid #00e5ff;
+            box-shadow: 0 0 10px #00e5ff;
+            color: #00e5ff;
+        }
+    </style>
+</head>
+<body class="select-none">
+
+    <!-- 3D Pixelated Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Dynamic 2D Target Lock Overlay Container -->
+    <div id="target-overlay-container" class="fixed inset-0 pointer-events-none z-10 overflow-hidden"></div>
+
+    <!-- Night Vision Overlay -->
+    <div id="nvg-overlay" class="night-vision-filter"></div>
+
+    <!-- Retro CRT Scanlines Overlay -->
+    <div id="crt-layer" class="crt-overlay"></div>
+
+    <!-- Red Alert Banner (Top Center when high threats) -->
+    <div id="red-alert-banner" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-30 pixel-panel-red px-4 py-1.5 text-center pointer-events-none">
+        <div class="font-pixel text-xs md:text-sm tracking-widest animate-blink flex items-center gap-2">
+            <span>⚠</span> PERINGATAN: SERANGAN MASIF TERDETEKSI! PERTAHANKAN KAPAL INDUK! <span>⚠</span>
+        </div>
+    </div>
+
+    <!-- HUD LAYER -->
+    <div class="fixed inset-0 pointer-events-none z-20 flex flex-col justify-between p-2 sm:p-3 md:p-4">
+
+        <!-- TOP BAR: Title, Systems Status, Resolution & Env Controls -->
+        <div class="flex flex-wrap items-start justify-between gap-2 pointer-events-auto">
+            
+            <!-- Brand / Command Header -->
+            <div class="pixel-panel px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-block w-3 h-3 bg-[#00ff66] animate-pulse"></span>
+                        <h1 class="font-pixel text-xs sm:text-sm md:text-base tracking-wider text-[#00ff66] drop-shadow">
+                            KRI GARUDA-01 // KOMANDO PERTAHANAN
+                        </h1>
+                    </div>
+                    <p class="text-xs sm:text-sm text-emerald-300/80 tracking-wide">
+                        VISUALISASI PERTAHANAN KAPAL INDUK 3D RETRO PIXEL • SISTEM AEGIS NUSANTARA v4.2
+                    </p>
+                </div>
+
+                <!-- Quick Stats Pill -->
+                <div class="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-emerald-500/40 pt-1 sm:pt-0 sm:pl-3 text-sm">
+                    <div>
+                        <span class="text-emerald-400/70">ANCAMAN:</span>
+                        <span id="stat-threats" class="font-bold text-red-400 text-lg ml-1">0</span>
+                    </div>
+                    <div>
+                        <span class="text-emerald-400/70">HANCUR:</span>
+                        <span id="stat-kills" class="font-bold text-amber-300 text-lg ml-1">0</span>
+                    </div>
+                    <div>
+                        <span class="text-emerald-400/70">JET TEMPUR:</span>
+                        <span id="stat-jets" class="font-bold text-cyan-300 text-lg ml-1">2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Right Controls: Pixel Scale, CRT, Environment, Audio -->
+            <div class="pixel-panel px-2.5 py-2 flex flex-wrap items-center gap-1.5 text-xs sm:text-sm">
+                <button id="btn-pixel-scale" class="pixel-btn text-xs" title="Ubah Resolusi Pixel Retro">
+                    🕹️ PIXEL: 3x (PS1)
+                </button>
+                <button id="btn-crt" class="pixel-btn active-mode text-xs" title="Toggle Efekt Layar Tabung CRT">
+                    📺 CRT: ON
+                </button>
+                <button id="btn-weather" class="pixel-btn pixel-btn-amber text-xs" title="Ubah Cuaca & Waktu">
+                    🌅 CUACA: SENJA
+                </button>
+                <button id="btn-audio" class="pixel-btn pixel-btn-cyan text-xs" title="Toggle Suara Synthesizer 8-Bit">
+                    🔊 SFX: ON
+                </button>
+                <button id="btn-help" class="pixel-btn text-xs" title="Panduan Komando">
+                    ❓ INFO
+                </button>
+            </div>
+        </div>
+
+        <!-- MIDDLE AREA: Left Radar & Integrity | Right Attack Wave Spawner & Logs -->
+        <div class="flex-1 flex flex-col md:flex-row items-stretch justify-between my-2 gap-2 overflow-hidden pointer-events-none">
+            
+            <!-- LEFT COLUMN: Radar Minimap & Ship Status Bars -->
+            <div class="flex flex-row md:flex-col justify-between md:justify-start gap-2 pointer-events-auto w-full md:w-64 shrink-0">
+                
+                <!-- Tactical Radar Box -->
+                <div class="pixel-panel p-2.5 flex flex-col items-center shrink-0">
+                    <div class="w-full flex justify-between items-center text-xs border-b border-emerald-500/40 pb-1 mb-1.5">
+                        <span class="font-pixel text-[10px]">RADAR TAKTIS 360°</span>
+                        <span id="radar-range-label" class="text-emerald-300">RNG: 1.5KM</span>
+                    </div>
+                    <div class="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full border-2 border-[#00ff66] bg-[#021208] overflow-hidden shadow-inner">
+                        <canvas id="radar-canvas" width="160" height="160" class="w-full h-full block"></canvas>
+                    </div>
+                    <div class="w-full grid grid-cols-3 gap-1 mt-2 text-[11px] text-center">
+                        <span class="text-red-400">● UDARA</span>
+                        <span class="text-amber-300">▲ RUDAL</span>
+                        <span class="text-cyan-300">◆ LAUT/TORP</span>
+                    </div>
+                </div>
+
+                <!-- Carrier Hull & Defense Weapons Status -->
+                <div class="pixel-panel p-2.5 flex-1 flex flex-col justify-between gap-2 text-xs sm:text-sm">
+                    <div class="font-pixel text-[10px] border-b border-emerald-500/40 pb-1 flex justify-between">
+                        <span>STATUS KAPAL INDUK</span>
+                        <span id="hull-percent-text" class="text-[#00ff66]">100%</span>
+                    </div>
+
+                    <!-- Hull Bar -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-0.5">
+                            <span>INTEGRITAS LAMBUNG (HULL)</span>
+                            <span id="hull-state-badge" class="text-emerald-300">OPTIMAL</span>
+                        </div>
+                        <div class="w-full h-3.5 bg-black border border-emerald-500 p-0.5">
+                            <div id="hull-bar" class="h-full bg-[#00ff66] transition-all duration-150" style="width: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Phalanx CIWS Overheat / Ammo -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-0.5">
+                            <span>4x PHALANX CIWS 20MM</span>
+                            <span id="ciws-status-text" class="text-amber-300">SIAGA</span>
+                        </div>
+                        <div class="w-full h-3 bg-black border border-amber-500/80 p-0.5">
+                            <div id="ciws-heat-bar" class="h-full bg-amber-400 transition-all duration-75" style="width: 8%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- SAM VLS Cells -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-0.5">
+                            <span>VLS SAM INTERCEPTOR</span>
+                            <span id="sam-count-text" class="text-cyan-300">24 / 24</span>
+                        </div>
+                        <div id="sam-cells-grid" class="grid grid-cols-12 gap-0.5 bg-black p-1 border border-cyan-500/60">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Anti-Torpedo Countermeasures -->
+                    <div class="flex justify-between items-center text-xs pt-1 border-t border-emerald-500/30">
+                        <span>MERIAM DEK & ANTI-TORPEDO:</span>
+                        <span class="text-emerald-300 font-bold">AKTIF OTOMATIS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Wave Spawners & Threat Log -->
+            <div class="flex flex-col justify-between md:justify-start gap-2 pointer-events-auto w-full md:w-72 shrink-0">
+                
+                <!-- Spawn Incoming Attacks Panel -->
+                <div class="pixel-panel-red p-2.5 flex flex-col gap-1.5">
+                    <div class="font-pixel text-[10px] text-red-400 border-b border-red-500/40 pb-1 flex justify-between items-center">
+                        <span>SIMULASI SERANGAN MUSUH</span>
+                        <span class="text-[9px] bg-red-900/80 px-1.5 py-0.5 text-red-200">UJI PERTAHANAN</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-1 gap-1.5">
+                        <button id="spawn-drones" class="pixel-btn pixel-btn-red text-xs justify-between">
+                            <span>🛩️ DRONE SWARM & JET</span>
+                            <span class="text-[11px] opacity-80">+8 UDARA</span>
+                        </button>
+                        <button id="spawn-missiles" class="pixel-btn pixel-btn-red text-xs justify-between">
+                            <span>🚀 HUJAN RUDAL BALISTIK</span>
+                            <span class="text-[11px] opacity-80">+6 RUDAL</span>
+                        </button>
+                        <button id="spawn-naval" class="pixel-btn pixel-btn-red text-xs justify-between">
+                            <span>🚤 KAPAL CEPAT & TORPEDO</span>
+                            <span class="text-[11px] opacity-80">+6 LAUT</span>
+                        </button>
+                        <button id="spawn-allout" class="pixel-btn pixel-btn-amber font-bold text-xs justify-center py-1.5">
+                            🔥 SERANGAN TOTAL (ALL-OUT WAVE)
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs pt-1 border-t border-red-500/30 text-red-200">
+                        <label for="chk-autowave" class="cursor-pointer flex items-center gap-1.5">
+                            <input type="checkbox" id="chk-autowave" checked class="accent-red-500 cursor-pointer">
+                            <span>GELOMBANG SERANGAN OTOMATIS</span>
+                        </label>
+                        <span id="wave-timer" class="text-amber-300 font-bold">08s</span>
+                    </div>
+                </div>
+
+                <!-- Tactical Combat Log (Hidden on tiny screens to save space, visible on sm/md+) -->
+                <div class="hidden sm:flex pixel-panel p-2.5 flex-col flex-1 min-h-[120px] max-h-[210px]">
+                    <div class="font-pixel text-[10px] border-b border-emerald-500/40 pb-1 mb-1 flex justify-between">
+                        <span>LOG KOMANDO TEMPUR</span>
+                        <span class="text-emerald-400 animate-pulse">● LIVE</span>
+                    </div>
+                    <div id="combat-log" class="flex-1 overflow-y-auto space-y-1 text-xs pr-1 font-mono leading-tight">
+                        <!-- Log entries injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM BAR: Camera Switcher, Defense Mode, and Active Countermeasures -->
+        <div class="flex flex-col lg:flex-row items-stretch lg:items-end justify-between gap-2 pointer-events-auto">
+            
+            <!-- Camera Views & Targeting Mode -->
+            <div class="pixel-panel p-2 flex flex-wrap items-center gap-1.5">
+                <span class="font-pixel text-[9px] text-emerald-300 mr-1 hidden sm:inline">KAMERA:</span>
+                <button data-cam="tactical" class="cam-btn pixel-btn active-mode text-xs">🎥 ORBIT BEBAS</button>
+                <button data-cam="isometric" class="cam-btn pixel-btn text-xs">📐 ISOMETRIK</button>
+                <button data-cam="bridge" class="cam-btn pixel-btn text-xs">⚓ ANJUNGAN</button>
+                <button data-cam="ciws" class="cam-btn pixel-btn text-xs">🔫 POV CIWS</button>
+                <button data-cam="cinematic" class="cam-btn pixel-btn text-xs">🎬 SINEMATIK</button>
+
+                <div class="h-5 w-[2px] bg-emerald-500/40 mx-1 hidden sm:block"></div>
+
+                <button id="btn-defense-mode" class="pixel-btn pixel-btn-cyan text-xs" title="Klik musuh di layar untuk tembakan prioritas / Manual Aim">
+                    🤖 PERTAHANAN: AI OTOMATIS + KLIK TARGET
+                </button>
+            </div>
+
+            <!-- Emergency Tactical Abilities -->
+            <div class="pixel-panel p-2 flex flex-wrap items-center justify-between lg:justify-end gap-1.5">
+                <span class="font-pixel text-[9px] text-amber-300 mr-1 hidden sm:inline">TINDAKAN DARURAT:</span>
+                
+                <button id="ability-flares" class="pixel-btn pixel-btn-amber text-xs">
+                    ✨ FLARE & CHAFF <span id="cd-flares" class="text-[11px] opacity-80">[SIAP]</span>
+                </button>
+                
+                <button id="ability-emp" class="pixel-btn pixel-btn-cyan text-xs">
+                    ⚡ PULSA EMP <span id="cd-emp" class="text-[11px] opacity-80">[SIAP]</span>
+                </button>
+                
+                <button id="ability-jets" class="pixel-btn text-xs">
+                    ✈️ SCRAMBLE JET <span id="cd-jets" class="text-[11px] opacity-80">[SIAP]</span>
+                </button>
+
+                <button id="ability-repair" class="pixel-btn text-xs">
+                    🔧 TIM REPARASI <span id="cd-repair" class="text-[11px] opacity-80">[SIAP]</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- INFO / INSTRUCTIONS MODAL -->
+    <div id="info-modal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+        <div class="pixel-panel max-w-lg w-full p-5 space-y-4 text-sm sm:text-base">
+            <div class="flex justify-between items-center border-b border-emerald-500/50 pb-2">
+                <h2 class="font-pixel text-xs sm:text-sm text-[#00ff66]">PANDUAN KOMANDO PERTAHANAN KAPAL INDUK</h2>
+                <button id="close-info-modal" class="pixel-btn pixel-btn-red text-xs px-2 py-1">X</button>
+            </div>
+            <div class="space-y-2 text-emerald-100 leading-relaxed">
+                <p>Selamat datang di simulasi 3D Retro Pixel <strong>KRI GARUDA-01</strong>. Kapal induk berada di tengah lautan dan sedang menghadapi serangan udara, rudal balistik, kapal cepat, serta torpedo bawah air.</p>
+                <ul class="list-disc pl-5 space-y-1 text-emerald-200 text-sm">
+                    <li><strong>Kontrol Kamera 3D:</strong> Geser (Drag Kiri) untuk memutar kamera, Scroll untuk Zoom, atau pilih sudut kamera di panel bawah (Isometrik, Anjungan, POV CIWS).</li>
+                    <li><strong>Klik Musuh / Target Prioritas:</strong> Klik langsung pada pesawat, rudal, atau kapal musuh di layar 3D untuk mengunci target prioritas dan meluncurkan rudal pencegat SAM + rentetan CIWS!</li>
+                    <li><strong>Sistem Pertahanan Aktif:</strong>
+                        <br>• <strong>4x Phalanx CIWS:</strong> Menembak jatuh drone & rudal jarak dekat dengan peluru tracer 20mm.
+                        <br>• <strong>VLS SAM Launcher:</strong> Meluncurkan rudal pencegat vertikal dari dek kapal.
+                        <br>• <strong>Anti-Torpedo & Meriam Dek:</strong> Menghancurkan kapal cepat dan torpedo di permukaan air.
+                    </li>
+                    <li><strong>Tindakan Darurat:</strong> Gunakan <em>Flare & Chaff</em> untuk mengecoh rudal, <em>Pulsa EMP</em> untuk melumpuhkan drone swarm, atau <em>Scramble Jet</em> untuk menerbangkan pesawat tempur F-16 Pixel dari landasan pacu!</li>
+                </ul>
+            </div>
+            <div class="text-right pt-2">
+                <button id="ack-info-modal" class="pixel-btn font-pixel text-xs px-4 py-2">SIAP LAKSANAKAN!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**************************************************************************
+         * 1. RETRO 8-BIT / 16-BIT SYNTHESIZER SOUND ENGINE (Web Audio API)
+         **************************************************************************/
+        class RetroSoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+                this.initialized = false;
+            }
+
+            init() {
+                if (this.initialized) return;
+                try {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                    this.initialized = true;
+                } catch (e) {
+                    console.warn("Web Audio API tidak didukung:", e);
+                }
+            }
+
+            ensureContext() {
+                if (!this.enabled) return false;
+                if (!this.initialized) this.init();
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                return !!this.ctx;
+            }
+
+            // Phalanx CIWS "BRRRRRRT" Gatling Burst
+            playCIWSBurst() {
+                if (!this.ensureContext()) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(115, now);
+                osc.frequency.linearRampToValueAtTime(75, now + 0.065);
+
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.005, now + 0.065);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.07);
+            }
+
+            // SAM Missile Launch Whoosh
+            playSAMLaunch() {
+                if (!this.ensureContext()) return;
+                const now = this.ctx.currentTime;
+                // White noise buffer for rocket thrust
+                const bufferSize = this.ctx.sampleRate * 0.28;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(900, now);
+                filter.frequency.exponentialRampToValueAtTime(2400, now + 0.25);
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.14, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                noise.start(now);
+            }
+
+            // Retro 8-bit Explosion
+            playExplosion(isBig = false) {
+                if (!this.ensureContext()) return;
+                const now = this.ctx.currentTime;
+                const duration = isBig ? 0.55 : 0.28;
+                const bufferSize = Math.floor(this.ctx.sampleRate * duration);
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                // Step-quantized noise for crunchy retro explosion
+                let lastVal = 0;
+                const step = isBig ? 14 : 8;
+                for (let i = 0; i < bufferSize; i++) {
+                    if (i % step === 0) lastVal = (Math.random() * 2 - 1);
+                    data[i] = lastVal;
+                }
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(isBig ? 420 : 680, now);
+                filter.frequency.exponentialRampToValueAtTime(80, now + duration);
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(isBig ? 0.26 : 0.14, now);
+                gain.gain.exponentialRampToValueAtTime(0.008, now + duration);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                noise.start(now);
+            }
+
+            // EMP Pulse Sound
+            playEMP() {
+                if (!this.ensureContext()) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(120, now);
+                osc.frequency.exponentialRampToValueAtTime(1600, now + 0.35);
+                osc.frequency.exponentialRampToValueAtTime(60, now + 0.8);
+
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.005, now + 0.8);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.82);
+            }
+
+            // Radar lock / UI Beep
+            playBeep(freq = 880, dur = 0.08) {
+                if (!this.ensureContext()) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.07, now);
+                gain.gain.exponentialRampToValueAtTime(0.005, now + dur);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + dur);
+            }
+
+            // Klaxon Red Alert Siren
+            playAlarm() {
+                if (!this.ensureContext()) return;
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.linearRampToValueAtTime(820, now + 0.25);
+                osc.frequency.linearRampToValueAtTime(440, now + 0.45);
+                gain.gain.setValueAtTime(0.09, now);
+                gain.gain.exponentialRampToValueAtTime(0.005, now + 0.48);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            }
+        }
+
+        const sfx = new RetroSoundEngine();
+
+        /**************************************************************************
+         * 2. GLOBAL SIMULATION STATE & CONFIGURATION
+         **************************************************************************/
+        const STATE = {
+            pixelScale: 3, // 1 = HD, 3 = Retro PS1, 5 = Ultra Chunky Voxel
+            crtEnabled: true,
+            weatherIndex: 0, // 0: Dusk (Senja), 1: Day (Siang), 2: Stormy Night (Malam Badai), 3: Green NVG
+            cameraMode: 'tactical', // tactical, isometric, bridge, ciws, cinematic
+            autoDefense: true,
+            autoWave: true,
+            waveCountdown: 8.0,
+            waveNumber: 1,
+
+            // Carrier Stats
+            hull: 100,
+            maxHull: 100,
+            ciwsHeat: 0,
+            ciwsOverheated: false,
+            samAmmo: 24,
+            maxSamAmmo: 24,
+            samReloadTimer: 0,
+            kills: 0,
+
+            // Cooldowns
+            cdFlares: 0,
+            cdEmp: 0,
+            cdJets: 0,
+            cdRepair: 0,
+
+            // Screen Shake
+            shakeIntensity: 0,
+
+            // Priority Locked Threat
+            priorityTarget: null
+        };
+
+        const WEATHER_PRESETS = [
+            {
+                name: '🌅 CUACA: SENJA',
+                skyColor: 0x241734,
+                fogColor: 0x3b213d,
+                hemiSky: 0xff8c5a,
+                hemiGround: 0x192a45,
+                dirColor: 0xff9e44,
+                dirIntensity: 1.25,
+                waterColor: 0x0f3b5c,
+                nvg: false
+            },
+            {
+                name: '☀️ CUACA: SIANG CERAH',
+                skyColor: 0x4ca6ff,
+                fogColor: 0x7ec0ee,
+                hemiSky: 0xffffff,
+                hemiGround: 0x1f4e78,
+                dirColor: 0xfff5db,
+                dirIntensity: 1.35,
+                waterColor: 0x155b8a,
+                nvg: false
+            },
+            {
+                name: '⛈️ CUACA: MALAM BADAI',
+                skyColor: 0x060b14,
+                fogColor: 0x09111e,
+                hemiSky: 0x2d466b,
+                hemiGround: 0x050912,
+                dirColor: 0x6ea8ff,
+                dirIntensity: 0.7,
+                waterColor: 0x071d30,
+                nvg: false
+            },
+            {
+                name: '🟢 MODE: NIGHT VISION',
+                skyColor: 0x021407,
+                fogColor: 0x04210c,
+                hemiSky: 0x3cff78,
+                hemiGround: 0x021708,
+                dirColor: 0x5eff8f,
+                dirIntensity: 1.1,
+                waterColor: 0x052e14,
+                nvg: true
+            }
+        ];
+
+        /**************************************************************************
+         * 3. THREE.JS SCENE, RENDERER & RETRO PIXEL SETUP
+         **************************************************************************/
+        const canvas = document.getElementById('game-canvas');
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            antialias: false, // Disabled for crisp retro pixel edges
+            powerPreference: 'high-performance'
+        });
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.BasicShadowMap; // Crisp pixel shadows
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(WEATHER_PRESETS[0].skyColor);
+        scene.fog = new THREE.FogExp2(WEATHER_PRESETS[0].fogColor, 0.0028);
+
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 1, 1200);
+
+        // Orbit Camera Controller Variables
+        const camOrbit = {
+            theta: -0.65,
+            phi: 0.45,
+            radius: 135,
+            target: new THREE.Vector3(0, 6, 0),
+            isDragging: false,
+            prevX: 0,
+            prevY: 0
+        };
+
+        // Resize & Retro Pixel Resolution Scaling
+        function updateRendererSize() {
+            const w = Math.max(1, Math.floor(window.innerWidth / STATE.pixelScale));
+            const h = Math.max(1, Math.floor(window.innerHeight / STATE.pixelScale));
+            renderer.setSize(w, h, false);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        }
+        window.addEventListener('resize', updateRendererSize);
+        updateRendererSize();
+
+        // Lighting
+        const hemiLight = new THREE.HemisphereLight(
+            WEATHER_PRESETS[0].hemiSky,
+            WEATHER_PRESETS[0].hemiGround,
+            0.75
+        );
+        scene.add(hemiLight);
+
+        const dirLight = new THREE.DirectionalLight(
+            WEATHER_PRESETS[0].dirColor,
+            WEATHER_PRESETS[0].dirIntensity
+        );
+        dirLight.position.set(110, 140, 85);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 1024;
+        dirLight.shadow.mapSize.height = 1024;
+        dirLight.shadow.camera.near = 10;
+        dirLight.shadow.camera.far = 400;
+        const d = 110;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
+        scene.add(dirLight);
+
+        // Helper for flat-shaded voxel/low-poly materials
+        function makePixelMat(color, emissive = 0x000000, shininess = 10, transparent = false, opacity = 1.0) {
+            return new THREE.MeshPhongMaterial({
+                color,
+                emissive,
+                shininess,
+                flatShading: true,
+                transparent,
+                opacity
+            });
+        }
+
+        /**************************************************************************
+         * 4. DYNAMIC PIXEL OCEAN & FOAM WAKE
+         **************************************************************************/
+        const oceanGeo = new THREE.PlaneGeometry(900, 900, 68, 68);
+        oceanGeo.rotateX(-Math.PI / 2);
+        const oceanPosAttr = oceanGeo.attributes.position;
+        const oceanBaseY = new Float32Array(oceanPosAttr.count);
+        for (let i = 0; i < oceanPosAttr.count; i++) {
+            oceanBaseY[i] = (Math.random() - 0.5) * 0.6;
+        }
+
+        const oceanMat = new THREE.MeshPhongMaterial({
+            color: WEATHER_PRESETS[0].waterColor,
+            emissive: 0x03111f,
+            specular: 0x66aaff,
+            shininess: 28,
+            flatShading: true
+        });
+        const oceanMesh = new THREE.Mesh(oceanGeo, oceanMat);
+        oceanMesh.receiveShadow = true;
+        scene.add(oceanMesh);
+
+        // Retro Grid Overlay on Ocean for Tactical Feel
+        const seaGrid = new THREE.GridHelper(900, 60, 0x00ff66, 0x0d4035);
+        seaGrid.position.y = 0.15;
+        seaGrid.material.transparent = true;
+        seaGrid.material.opacity = 0.16;
+        scene.add(seaGrid);
+
+        /**************************************************************************
+         * 5. PROCEDURAL VOXEL AIRCRAFT CARRIER (KAPAL INDUK "KRI GARUDA-01")
+         **************************************************************************/
+        const carrierGroup = new THREE.Group();
+        scene.add(carrierGroup);
+
+        const ciwsTurrets = []; // Stores 4x Phalanx CIWS turrets
+        const vlsLaunchPoints = []; // Coordinates for vertical SAM launches
+        const deckGuns = []; // Anti-boat/torpedo deck turrets
+        let mainRadarDish = null;
+        let secondaryRadarDish = null;
+
+        // Generate Pixel-Art Runway Texture Procedurally
+        function createFlightDeckTexture() {
+            const c = document.createElement('canvas');
+            c.width = 256;
+            c.height = 512;
+            const ctx = c.getContext('2d');
+
+            // Base dark asphalt gray
+            ctx.fillStyle = '#262b33';
+            ctx.fillRect(0, 0, c.width, c.height);
+
+            // Pixel noise grit
+            for (let y = 0; y < c.height; y += 4) {
+                for (let x = 0; x < c.width; x += 4) {
+                    if (Math.random() < 0.25) {
+                        ctx.fillStyle = Math.random() > 0.5 ? '#20242b' : '#2d333d';
+                        ctx.fillRect(x, y, 4, 4);
+                    }
+                }
+            }
+
+            // Perimeter safety yellow stripe
+            ctx.strokeStyle = '#e5a918';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(8, 8, c.width - 16, c.height - 16);
+
+            // Angled landing strip lines
+            ctx.strokeStyle = '#e8edf2';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(45, 480);
+            ctx.lineTo(130, 20);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(115, 480);
+            ctx.lineTo(200, 20);
+            ctx.stroke();
+
+            // Center dashed runway line
+            ctx.strokeStyle = '#ffcf33';
+            ctx.setLineDash([18, 14]);
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(80, 475);
+            ctx.lineTo(165, 25);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Catapult launch tracks (Bow)
+            ctx.strokeStyle = '#7cd4ff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(75, 220);
+            ctx.lineTo(75, 18);
+            ctx.moveTo(145, 220);
+            ctx.lineTo(145, 18);
+            ctx.stroke();
+
+            // Hull Number "01" at Bow
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 38px monospace';
+            ctx.fillText('01', 92, 62);
+
+            const tex = new THREE.CanvasTexture(c);
+            tex.magFilter = THREE.NearestFilter;
+            tex.minFilter = THREE.NearestFilter;
+            return tex;
+        }
+
+        // Small helper to build parked/flying pixel fighter jets
+        function createPixelJetMesh(colorHex = 0x738294) {
+            const jet = new THREE.Group();
+            const bodyMat = makePixelMat(colorHex);
+            const canopyMat = makePixelMat(0x00e5ff, 0x004466);
+            const afterburnerMat = makePixelMat(0xff6600, 0xff4400);
+
+            // Fuselage
+            const fuse = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.9, 6.2), bodyMat);
+            jet.add(fuse);
+
+            // Nose cone
+            const nose = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.6, 2.2), bodyMat);
+            nose.position.set(0, -0.05, -3.8);
+            jet.add(nose);
+
+            // Delta Wings
+            const wings = new THREE.Mesh(new THREE.BoxGeometry(6.6, 0.25, 2.6), bodyMat);
+            wings.position.set(0, 0, 0.4);
+            jet.add(wings);
+
+            // Twin Tail Fins
+            const tailL = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.4, 1.4), bodyMat);
+            tailL.position.set(-0.9, 0.7, 2.2);
+            jet.add(tailL);
+            const tailR = tailL.clone();
+            tailR.position.x = 0.9;
+            jet.add(tailR);
+
+            // Cockpit Canopy
+            const canopy = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.6, 1.8), canopyMat);
+            canopy.position.set(0, 0.55, -1.5);
+            jet.add(canopy);
+
+            // Engine Glow
+            const thruster = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.6, 0.5), afterburnerMat);
+            thruster.position.set(0, 0, 3.2);
+            jet.add(thruster);
+
+            return jet;
+        }
+
+        function buildAircraftCarrier() {
+            const hullMat = makePixelMat(0x414a57);
+            const lowerHullMat = makePixelMat(0x6e1e1e); // Anti-fouling red lower hull
+            const islandMat = makePixelMat(0x525e6e);
+            const darkMetalMat = makePixelMat(0x222730);
+            const whiteDomeMat = makePixelMat(0xe8eef5);
+            const bridgeGlassMat = makePixelMat(0x00ffaa, 0x006644);
+
+            // 1. Lower Red Waterline Hull
+            const lowerHull = new THREE.Mesh(new THREE.BoxGeometry(22, 4, 92), lowerHullMat);
+            lowerHull.position.set(0, 1.2, 0);
+            lowerHull.castShadow = true;
+            lowerHull.receiveShadow = true;
+            carrierGroup.add(lowerHull);
+
+            // 2. Main Gray Hangar Hull
+            const midHull = new THREE.Mesh(new THREE.BoxGeometry(25, 6.5, 98), hullMat);
+            midHull.position.set(0, 5.5, 0);
+            midHull.castShadow = true;
+            midHull.receiveShadow = true;
+            carrierGroup.add(midHull);
+
+            // Bow Tapered Block
+            const bowBlock = new THREE.Mesh(new THREE.BoxGeometry(18, 6.2, 12), hullMat);
+            bowBlock.position.set(0, 5.6, -52);
+            carrierGroup.add(bowBlock);
+
+            // 3. Flight Deck with Procedural Pixel Runway Texture
+            const deckTex = createFlightDeckTexture();
+            const deckMat = new THREE.MeshPhongMaterial({
+                map: deckTex,
+                flatShading: true
+            });
+            const mainDeck = new THREE.Mesh(new THREE.BoxGeometry(34, 1.4, 114), deckMat);
+            mainDeck.position.set(0, 9.2, -2);
+            mainDeck.receiveShadow = true;
+            mainDeck.castShadow = true;
+            carrierGroup.add(mainDeck);
+
+            // Angled Flight Deck Overhang (Port Side)
+            const angledDeck = new THREE.Mesh(new THREE.BoxGeometry(10, 1.2, 64), makePixelMat(0x292f38));
+            angledDeck.position.set(-17.5, 9.1, 6);
+            angledDeck.rotation.y = 0.11;
+            carrierGroup.add(angledDeck);
+
+            // 4. Island Superstructure (Starboard Side)
+            const islandGroup = new THREE.Group();
+            islandGroup.position.set(12.5, 9.8, 10);
+            carrierGroup.add(islandGroup);
+
+            const baseTower = new THREE.Mesh(new THREE.BoxGeometry(6.5, 11, 22), islandMat);
+            baseTower.position.set(0, 5.5, 0);
+            baseTower.castShadow = true;
+            islandGroup.add(baseTower);
+
+            const upperBridge = new THREE.Mesh(new THREE.BoxGeometry(7.2, 4.5, 14), islandMat);
+            upperBridge.position.set(-0.4, 13, -2);
+            islandGroup.add(upperBridge);
+
+            // Glowing Bridge Windows
+            const bridgeWindows = new THREE.Mesh(new THREE.BoxGeometry(7.4, 1.4, 10), bridgeGlassMat);
+            bridgeWindows.position.set(-0.6, 13.5, -3);
+            islandGroup.add(bridgeWindows);
+
+            // Radar Mast & Rotating Radar Arrays
+            const mast = new THREE.Mesh(new THREE.BoxGeometry(2.5, 11, 3.5), darkMetalMat);
+            mast.position.set(0, 20, 1);
+            islandGroup.add(mast);
+
+            mainRadarDish = new THREE.Group();
+            mainRadarDish.position.set(0, 26, 1);
+            const radarBar = new THREE.Mesh(new THREE.BoxGeometry(9.5, 1.8, 1.2), whiteDomeMat);
+            const radarEnds = new THREE.Mesh(new THREE.BoxGeometry(10.2, 0.6, 2.0), makePixelMat(0x00ff66, 0x004422));
+            mainRadarDish.add(radarBar, radarEnds);
+            islandGroup.add(mainRadarDish);
+
+            secondaryRadarDish = new THREE.Mesh(new THREE.BoxGeometry(5.5, 1.2, 1.0), whiteDomeMat);
+            secondaryRadarDish.position.set(0, 21.5, -3.5);
+            islandGroup.add(secondaryRadarDish);
+
+            // 5. Four Phalanx CIWS 20mm Turrets (2 Forward, 2 Aft/Island)
+            const ciwsPositions = [
+                new THREE.Vector3(-14.5, 9.9, -46), // Front Port
+                new THREE.Vector3(14.5, 9.9, -46),  // Front Starboard
+                new THREE.Vector3(-19.5, 9.9, 28),  // Aft Port
+                new THREE.Vector3(15.5, 10.2, 44)   // Aft Starboard
+            ];
+
+            ciwsPositions.forEach((pos) => {
+                const spos = new THREE.Mesh(new THREE.BoxGeometry(5, 2.5, 5), hullMat);
+                spos.position.set(pos.x, pos.y - 1.4, pos.z);
+                carrierGroup.add(spos);
+
+                const turretBase = new THREE.Group();
+                turretBase.position.copy(pos);
+                carrierGroup.add(turretBase);
+
+                const mount = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.8, 2.4), darkMetalMat);
+                mount.position.y = 0.9;
+                turretBase.add(mount);
+
+                const headGroup = new THREE.Group();
+                headGroup.position.y = 2.2;
+                turretBase.add(headGroup);
+
+                // Iconic White Radome "R2-D2" Phalanx dome
+                const radome = new THREE.Mesh(new THREE.BoxGeometry(2.0, 2.8, 2.0), whiteDomeMat);
+                radome.position.y = 1.0;
+                headGroup.add(radome);
+
+                // 20mm Gatling Barrel
+                const barrel = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 3.6), darkMetalMat);
+                barrel.position.set(0, 0.2, -1.8);
+                headGroup.add(barrel);
+
+                ciwsTurrets.push({
+                    root: turretBase,
+                    head: headGroup,
+                    barrelTip: new THREE.Vector3(0, 0.2, -3.6),
+                    cooldown: 0
+                });
+            });
+
+            // 6. VLS SAM Launch Cells (Bow & Stern Vertical Launch System)
+            const vlsPositions = [
+                new THREE.Vector3(11, 10.0, -34),
+                new THREE.Vector3(-12, 10.0, 48)
+            ];
+            vlsPositions.forEach(p => {
+                const vlsBox = new THREE.Mesh(new THREE.BoxGeometry(5, 0.6, 7), darkMetalMat);
+                vlsBox.position.copy(p);
+                carrierGroup.add(vlsBox);
+                vlsLaunchPoints.push(p.clone());
+            });
+
+            // 7. Anti-Surface / Anti-Torpedo Deck Guns
+            const deckGunCoords = [
+                new THREE.Vector3(-15, 9.9, -15),
+                new THREE.Vector3(15, 9.9, -12),
+                new THREE.Vector3(-15, 9.9, 46)
+            ];
+            deckGunCoords.forEach(p => {
+                const gMount = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.6, 2.6), islandMat);
+                gMount.position.copy(p);
+                const gBarrel = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 3.8), darkMetalMat);
+                gBarrel.position.set(0, 0.5, -1.8);
+                gMount.add(gBarrel);
+                carrierGroup.add(gMount);
+                deckGuns.push({ mesh: gMount, cooldown: 0 });
+            });
+
+            // 8. Parked Pixel Fighter Jets on the Flight Deck
+            const parkedCoords = [
+                { x: 9, z: -18, rot: 0.35, color: 0x67778a },
+                { x: 9, z: -6, rot: 0.35, color: 0x5c6b7d },
+                { x: -12, z: -2, rot: -0.45, color: 0x67778a },
+                { x: -13, z: 12, rot: -0.45, color: 0x7a8b9e },
+                { x: 6, z: 36, rot: 0.1, color: 0x5c6b7d }
+            ];
+            parkedCoords.forEach(cfg => {
+                const jet = createPixelJetMesh(cfg.color);
+                jet.position.set(cfg.x, 10.4, cfg.z);
+                jet.rotation.y = cfg.rot;
+                carrierGroup.add(jet);
+            });
+        }
+
+        buildAircraftCarrier();
+
+        // Carrier Foam Wake Rings
+        const wakeRings = [];
+        const wakeMat = makePixelMat(0xd9f7ff, 0x225566, 5, true, 0.45);
+        for (let i = 0; i < 8; i++) {
+            const ring = new THREE.Mesh(new THREE.BoxGeometry(28 + i * 2, 0.25, 4), wakeMat);
+            ring.position.set(0, 0.1, 56 + i * 9);
+            scene.add(ring);
+            wakeRings.push({ mesh: ring, offset: i * 0.125 });
+        }
+
+        /**************************************************************************
+         * 6. PATROLLING FRIENDLY FIGHTER JETS (CAP - Combat Air Patrol)
+         **************************************************************************/
+        const friendlyJets = [];
+        const threats = [];
+        const projectiles = []; // CIWS tracers, SAM missiles, Flares, Depth charges
+        const particles = [];   // Voxel explosions, smoke plumes, water splashes
+
+        function spawnFriendlyJet(fromDeck = false) {
+            const jetMesh = createPixelJetMesh(0x38bdf8);
+            const startAngle = Math.random() * Math.PI * 2;
+            if (fromDeck) {
+                jetMesh.position.set(0, 11, -15);
+            } else {
+                jetMesh.position.set(Math.cos(startAngle) * 85, 42, Math.sin(startAngle) * 85);
+            }
+            scene.add(jetMesh);
+
+            friendlyJets.push({
+                mesh: jetMesh,
+                angle: startAngle,
+                radius: 85 + Math.random() * 25,
+                altitude: 38 + Math.random() * 14,
+                speed: 0.65 + Math.random() * 0.2,
+                takingOff: fromDeck,
+                takeoffProgress: 0,
+                fireCooldown: 0,
+                life: fromDeck ? 35 : 9999 // Scrambled jets stay for 35 seconds
+            });
+            updateHUDStats();
+        }
+
+        // Start with 2 permanent Combat Air Patrol jets
+        spawnFriendlyJet(false);
+        spawnFriendlyJet(false);
+
+        /**************************************************************************
+         * 7. INCOMING ENEMY THREATS SYSTEM (UDARA, RUDAL, LAUT & TORPEDO)
+         **************************************************************************/
+        // Create Enemy Mesh by Type
+        function createThreatMesh(type) {
+            const group = new THREE.Group();
+
+            if (type === 'drone') {
+                // Kamikaze Delta-Wing Drone (Red/Orange Accent)
+                const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.6, 3.6), makePixelMat(0x3a3a42));
+                const wing = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.2, 2.2), makePixelMat(0xb91c1c));
+                const glow = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 0.7), makePixelMat(0xff3300, 0xff2200));
+                glow.position.z = 1.9;
+                group.add(body, wing, glow);
+            } else if (type === 'jet') {
+                // Hostile Supersonic Strike Jet
+                const jet = createPixelJetMesh(0x7f1d1d);
+                jet.scale.set(1.15, 1.15, 1.15);
+                group.add(jet);
+            } else if (type === 'missile') {
+                // Ballistic / Anti-Ship Cruise Missile
+                const body = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 5.2), makePixelMat(0xdbe4ee));
+                const warhead = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 1.6), makePixelMat(0xef4444, 0x7f1d1d));
+                warhead.position.z = -3.2;
+                const fins = new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.4, 0.8), makePixelMat(0x334155));
+                fins.position.z = 2.0;
+                const flame = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 1.4), makePixelMat(0xffaa00, 0xff6600));
+                flame.position.z = 3.1;
+                group.add(body, warhead, fins, flame);
+            } else if (type === 'boat') {
+                // Fast Attack Craft (Kapal Cepat Rudal/Kamikaze)
+                const hull = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.6, 8.5), makePixelMat(0x2f3e46));
+                const cabin = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.4, 3.2), makePixelMat(0x52796f));
+                cabin.position.set(0, 1.3, 0.5);
+                const gun = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 2.4), makePixelMat(0xef4444));
+                gun.position.set(0, 1.2, -2.5);
+                group.add(hull, cabin, gun);
+            } else if (type === 'torpedo') {
+                // Heavy Homing Torpedo (Skimming under waterline)
+                const tube = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 4.8), makePixelMat(0x00e5ff, 0x005577));
+                const nose = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 1.2), makePixelMat(0xffcc00, 0x885500));
+                nose.position.z = -2.8;
+                group.add(tube, nose);
+            }
+
+            return group;
+        }
+
+        function spawnThreat(type, customAngle = null) {
+            const angle = customAngle !== null ? customAngle : Math.random() * Math.PI * 2;
+            const spawnDist = 260 + Math.random() * 70;
+            const mesh = createThreatMesh(type);
+
+            let y = 30;
+            let speed = 28;
+            let hp = 25;
+            let damage = 8;
+            let label = 'DRONE';
+
+            if (type === 'drone') {
+                y = 26 + Math.random() * 38;
+                speed = 26 + Math.random() * 10;
+                hp = 22;
+                damage = 6;
+                label = 'DRONE KAMIKAZE';
+            } else if (type === 'jet') {
+                y = 45 + Math.random() * 35;
+                speed = 42 + Math.random() * 12;
+                hp = 55;
+                damage = 14;
+                label = 'JET TEMPUR MUSUH';
+            } else if (type === 'missile') {
+                y = 75 + Math.random() * 55; // High ballistic dive or sea-skimming
+                speed = 52 + Math.random() * 16;
+                hp = 30;
+                damage = 18;
+                label = 'RUDAL BALISTIK';
+            } else if (type === 'boat') {
+                y = 1.2;
+                speed = 20 + Math.random() * 7;
+                hp = 60;
+                damage = 12;
+                label = 'KAPAL CEPAT SERGAP';
+            } else if (type === 'torpedo') {
+                y = 0.25;
+                speed = 25 + Math.random() * 8;
+                hp = 35;
+                damage = 20;
+                label = 'TORPEDO BERPEMANDU';
+            }
+
+            const startX = Math.cos(angle) * spawnDist;
+            const startZ = Math.sin(angle) * spawnDist;
+            mesh.position.set(startX, y, startZ);
+
+            // Aim towards a point on the aircraft carrier
+            const aimPoint = new THREE.Vector3(
+                (Math.random() - 0.5) * 14,
+                type === 'boat' || type === 'torpedo' ? 1.5 : 8.5,
+                (Math.random() - 0.5) * 65
+            );
+            mesh.lookAt(aimPoint);
+            scene.add(mesh);
+
+            // Create 2D HUD Bracket Element
+            const bracket = document.createElement('div');
+            bracket.className = 'target-bracket';
+            bracket.innerHTML = `<span>${type.toUpperCase().slice(0, 4)}</span>`;
+            document.getElementById('target-overlay-container').appendChild(bracket);
+
+            const threatObj = {
+                id: Math.random().toString(36).slice(2, 9),
+                type,
+                label,
+                mesh,
+                bracket,
+                hp,
+                maxHp: hp,
+                speed,
+                damage,
+                aimPoint,
+                wobbleSeed: Math.random() * 100,
+                trailTimer: 0,
+                decoyed: false
+            };
+
+            threats.push(threatObj);
+            updateHUDStats();
+            return threatObj;
+        }
+
+        // Wave Spawner Functions
+        function triggerDroneSwarm() {
+            sfx.playAlarm();
+            addCombatLog('PERINGATAN RADAR: Kawanan Drone Kamikaze & Jet Tempur mendekat!', 'red');
+            const baseAngle = Math.random() * Math.PI * 2;
+            for (let i = 0; i < 6; i++) {
+                spawnThreat('drone', baseAngle + (Math.random() - 0.5) * 0.9);
+            }
+            for (let i = 0; i < 2; i++) {
+                spawnThreat('jet', baseAngle + (Math.random() - 0.5) * 0.6);
+            }
+        }
+
+        function triggerMissileBarrage() {
+            sfx.playAlarm();
+            addCombatLog('PERINGATAN RUDAL: Peluncuran Rudal Balistik Anti-Kapal terdeteksi!', 'amber');
+            for (let i = 0; i < 6; i++) {
+                spawnThreat('missile');
+            }
+        }
+
+        function triggerNavalAttack() {
+            sfx.playAlarm();
+            addCombatLog('SONAR AKTIF: Kapal Cepat & Torpedo Bawah Air terdeteksi!', 'cyan');
+            for (let i = 0; i < 3; i++) {
+                spawnThreat('boat');
+            }
+            for (let i = 0; i < 3; i++) {
+                spawnThreat('torpedo');
+            }
+        }
+
+        function triggerAllOutAssault() {
+            sfx.playAlarm();
+            addCombatLog('🔥 BAHAYA MAKSIMUM: SERANGAN TOTAL DARI UDARA, LAUT & BAWAH AIR!', 'red');
+            for (let i = 0; i < 5; i++) spawnThreat('drone');
+            for (let i = 0; i < 2; i++) spawnThreat('jet');
+            for (let i = 0; i < 4; i++) spawnThreat('missile');
+            for (let i = 0; i < 2; i++) spawnThreat('boat');
+            for (let i = 0; i < 3; i++) spawnThreat('torpedo');
+        }
+
+        /**************************************************************************
+         * 8. VOXEL PARTICLES, EXPLOSIONS, WATER SPLASHES & SMOKE PLUMES
+         **************************************************************************/
+        const unitBoxGeo = new THREE.BoxGeometry(1, 1, 1);
+
+        function spawnVoxelParticle(pos, vel, colorHex, size, life, gravity = 0) {
+            const mat = new THREE.MeshBasicMaterial({ color: colorHex });
+            const mesh = new THREE.Mesh(unitBoxGeo, mat);
+            mesh.position.copy(pos);
+            mesh.scale.set(size, size, size);
+            scene.add(mesh);
+
+            particles.push({
+                mesh,
+                vel: vel.clone(),
+                life,
+                maxLife: life,
+                size,
+                gravity
+            });
+        }
+
+        function createVoxelExplosion(pos, scale = 1.0, isWaterSplash = false) {
+            sfx.playExplosion(scale > 1.3);
+            STATE.shakeIntensity = Math.min(2.8, STATE.shakeIntensity + 0.55 * scale);
+
+            const count = Math.floor(18 * scale);
+            const colors = isWaterSplash
+                ? [0xffffff, 0x80e5ff, 0x00aaff, 0xffaa00]
+                : [0xffea00, 0xff7700, 0xff2200, 0x444444, 0x222222];
+
+            for (let i = 0; i < count; i++) {
+                const c = colors[Math.floor(Math.random() * colors.length)];
+                const vel = new THREE.Vector3(
+                    (Math.random() - 0.5) * 32 * scale,
+                    (Math.random() * 22 + 4) * scale,
+                    (Math.random() - 0.5) * 32 * scale
+                );
+                const sz = (1.1 + Math.random() * 1.8) * scale;
+                spawnVoxelParticle(pos, vel, c, sz, 0.45 + Math.random() * 0.45, 28);
+            }
+        }
+
+        /**************************************************************************
+         * 9. ACTIVE DEFENSE SYSTEMS (PHALANX CIWS, VLS SAM, DECK GUNS & FLARES)
+         **************************************************************************/
+        function fireCIWSTracer(turret, targetObj) {
+            const worldTip = turret.barrelTip.clone();
+            turret.head.localToWorld(worldTip);
+
+            // Lead target slightly with slight scatter
+            const aimPos = targetObj.mesh.position.clone();
+            aimPos.x += (Math.random() - 0.5) * 2.2;
+            aimPos.y += (Math.random() - 0.5) * 2.2;
+            aimPos.z += (Math.random() - 0.5) * 2.2;
+
+            const dir = aimPos.sub(worldTip).normalize();
+
+            const tracerMesh = new THREE.Mesh(
+                new THREE.BoxGeometry(0.45, 0.45, 3.2),
+                new THREE.MeshBasicMaterial({ color: 0xffe600 })
+            );
+            tracerMesh.position.copy(worldTip);
+            tracerMesh.lookAt(worldTip.clone().add(dir));
+            scene.add(tracerMesh);
+
+            projectiles.push({
+                kind: 'tracer',
+                mesh: tracerMesh,
+                vel: dir.multiplyScalar(210),
+                target: targetObj,
+                damage: 5.5,
+                life: 1.25
+            });
+        }
+
+        function launchSAMInterceptor(targetObj) {
+            if (STATE.samAmmo <= 0 || !targetObj) return false;
+            STATE.samAmmo--;
+            updateSAMGridUI();
+            sfx.playSAMLaunch();
+
+            const launchOrigin = vlsLaunchPoints[Math.floor(Math.random() * vlsLaunchPoints.length)].clone();
+            launchOrigin.y += 1.5;
+
+            // Upward VLS smoke puff
+            for (let i = 0; i < 6; i++) {
+                spawnVoxelParticle(
+                    launchOrigin,
+                    new THREE.Vector3((Math.random() - 0.5) * 8, 12 + Math.random() * 10, (Math.random() - 0.5) * 8),
+                    0xdbe4ee,
+                    1.6,
+                    0.5,
+                    5
+                );
+            }
+
+            const samMesh = new THREE.Group();
+            const rocketBody = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.65, 3.8), makePixelMat(0xffffff));
+            const booster = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.75, 1.2), makePixelMat(0x00e5ff, 0x0088aa));
+            booster.position.z = 1.9;
+            samMesh.add(rocketBody, booster);
+            samMesh.position.copy(launchOrigin);
+            scene.add(samMesh);
+
+            projectiles.push({
+                kind: 'sam',
+                mesh: samMesh,
+                vel: new THREE.Vector3(0, 68, 0), // Launches vertically first!
+                target: targetObj,
+                speed: 95,
+                damage: 65,
+                life: 5.0,
+                age: 0
+            });
+            return true;
+        }
+
+        function fireDeckShell(gunPos, targetObj) {
+            const dir = targetObj.mesh.position.clone().sub(gunPos).normalize();
+            const shellMesh = new THREE.Mesh(
+                new THREE.BoxGeometry(0.9, 0.9, 2.2),
+                new THREE.MeshBasicMaterial({ color: 0x00ffaa })
+            );
+            shellMesh.position.copy(gunPos).add(new THREE.Vector3(0, 1.5, 0));
+            shellMesh.lookAt(targetObj.mesh.position);
+            scene.add(shellMesh);
+
+            projectiles.push({
+                kind: 'shell',
+                mesh: shellMesh,
+                vel: dir.multiplyScalar(135),
+                target: targetObj,
+                damage: 24,
+                life: 2.2
+            });
+        }
+
+        /**************************************************************************
+         * 10. EMERGENCY COUNTERMEASURES (FLARES/CHAFF, EMP, SCRAMBLE, REPAIR)
+         **************************************************************************/
+        function deployFlaresAndChaff() {
+            if (STATE.cdFlares > 0) return;
+            STATE.cdFlares = 12;
+            sfx.playSAMLaunch();
+            addCombatLog('✨ FLARE & CHAFF DILUNCURKAN! Mengacaukan kunci radar rudal musuh!', 'amber');
+
+            // Launch 24 bright decoy flares around carrier
+            for (let i = 0; i < 24; i++) {
+                const angle = (i / 24) * Math.PI * 2;
+                const pos = new THREE.Vector3((Math.random() - 0.5) * 20, 12, (Math.random() - 0.5) * 70);
+                const vel = new THREE.Vector3(Math.cos(angle) * 28, 25 + Math.random() * 18, Math.sin(angle) * 28);
+                spawnVoxelParticle(pos, vel, 0xfff066, 2.2, 2.6, 12);
+            }
+
+            // Divert incoming missiles and drones
+            threats.forEach(t => {
+                if (t.type === 'missile' || t.type === 'drone') {
+                    t.decoyed = true;
+                    t.aimPoint.set(
+                        (Math.random() > 0.5 ? 1 : -1) * (95 + Math.random() * 60),
+                        25 + Math.random() * 30,
+                        (Math.random() - 0.5) * 160
+                    );
+                }
+            });
+        }
+
+        function triggerEMPPulse() {
+            if (STATE.cdEmp > 0) return;
+            STATE.cdEmp = 20;
+            sfx.playEMP();
+            addCombatLog('⚡ GELOMBANG PERISAI EMP AKTIF! Melumpuhkan sistem elektronik musuh!', 'cyan');
+
+            // Expanding Cyan Voxel Ring
+            const empGeo = new THREE.RingGeometry(2, 6, 24);
+            empGeo.rotateX(-Math.PI / 2);
+            const empMat = new THREE.MeshBasicMaterial({
+                color: 0x00e5ff,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.85
+            });
+            const empRing = new THREE.Mesh(empGeo, empMat);
+            empRing.position.y = 8;
+            scene.add(empRing);
+
+            let scale = 1;
+            const empInterval = setInterval(() => {
+                scale += 4.5;
+                empRing.scale.set(scale, scale, scale);
+                empMat.opacity = Math.max(0, 0.85 - scale / 65);
+                if (scale >= 65) {
+                    clearInterval(empInterval);
+                    scene.remove(empRing);
+                }
+            }, 25);
+
+            // Destroy or heavily damage threats within 190m
+            for (let i = threats.length - 1; i >= 0; i--) {
+                const t = threats[i];
+                if (t.mesh.position.length() < 210) {
+                    destroyThreat(i, true);
+                }
+            }
+        }
+
+        function scrambleFighterSquadron() {
+            if (STATE.cdJets > 0) return;
+            STATE.cdJets = 18;
+            sfx.playSAMLaunch();
+            addCombatLog('✈️ SCRAMBLE! 2x Jet Tempur F-16 Pixel lepas landas dari dek kapal induk!', 'green');
+            spawnFriendlyJet(true);
+            setTimeout(() => spawnFriendlyJet(true), 600);
+        }
+
+        function triggerEmergencyRepair() {
+            if (STATE.cdRepair > 0) return;
+            STATE.cdRepair = 16;
+            sfx.playBeep(660, 0.15);
+            STATE.hull = Math.min(STATE.maxHull, STATE.hull + 35);
+            updateHullUI();
+            addCombatLog('🔧 TIM REPARASI DARURAT: Integritas lambung kapal dipulihkan +35%!', 'green');
+        }
+
+        /**************************************************************************
+         * 11. INTERACTIVE 3D RAYCASTING (CLICK ON ENEMY TO PRIORITIZE & FIRE SAM)
+         **************************************************************************/
+        const raycaster = new THREE.Raycaster();
+        const mouseNDC = new THREE.Vector2();
+
+        function handleCanvasTapOrClick(clientX, clientY) {
+            const rect = canvas.getBoundingClientRect();
+            mouseNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+            mouseNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouseNDC, camera);
+
+            // Find closest threat to click ray
+            let bestThreat = null;
+            let bestDist = 18; // Generous hitbox radius in 3D space
+
+            threats.forEach(t => {
+                const distToRay = raycaster.ray.distanceToPoint(t.mesh.position);
+                if (distToRay < bestDist) {
+                    bestDist = distToRay;
+                    bestThreat = t;
+                }
+            });
+
+            if (bestThreat) {
+                STATE.priorityTarget = bestThreat;
+                sfx.playBeep(1120, 0.09);
+                addCombatLog(`🎯 TARGET TERKUNCI: ${bestThreat.label} — Meluncurkan salvo pencegat!`, 'cyan');
+                launchSAMInterceptor(bestThreat);
+                // Also fire a rapid burst from all CIWS turrets toward clicked target
+                ciwsTurrets.forEach(turret => fireCIWSTracer(turret, bestThreat));
+            }
+        }
+
+        // Mouse & Touch Camera Orbit + Click Detection
+        let pointerDownPos = { x: 0, y: 0 };
+        canvas.addEventListener('pointerdown', (e) => {
+            camOrbit.isDragging = true;
+            camOrbit.prevX = e.clientX;
+            camOrbit.prevY = e.clientY;
+            pointerDownPos = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('pointermove', (e) => {
+            if (!camOrbit.isDragging) return;
+            const dx = e.clientX - camOrbit.prevX;
+            const dy = e.clientY - camOrbit.prevY;
+            camOrbit.prevX = e.clientX;
+            camOrbit.prevY = e.clientY;
+
+            if (STATE.cameraMode === 'tactical' || STATE.cameraMode === 'isometric') {
+                camOrbit.theta -= dx * 0.007;
+                camOrbit.phi = Math.max(0.12, Math.min(1.42, camOrbit.phi + dy * 0.006));
+            }
+        });
+
+        window.addEventListener('pointerup', (e) => {
+            if (!camOrbit.isDragging) return;
+            camOrbit.isDragging = false;
+            const moveDist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+            if (moveDist < 6) {
+                handleCanvasTapOrClick(e.clientX, e.clientY);
+            }
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            camOrbit.radius = Math.max(45, Math.min(280, camOrbit.radius + e.deltaY * 0.09));
+        }, { passive: false });
+
+        /**************************************************************************
+         * 12. HUD UPDATES, TACTICAL RADAR & COMBAT LOG
+         **************************************************************************/
+        const combatLogEl = document.getElementById('combat-log');
+
+        function addCombatLog(msg, color = 'green') {
+            if (!combatLogEl) return;
+            const entry = document.createElement('div');
+            const timeStr = new Date().toLocaleTimeString('id-ID', { hour12: false });
+            const colorMap = {
+                green: 'text-[#00ff66]',
+                amber: 'text-amber-300',
+                red: 'text-red-400 font-bold',
+                cyan: 'text-cyan-300'
+            };
+            entry.className = `${colorMap[color] || 'text-[#00ff66]'}`;
+            entry.textContent = `[${timeStr}] ${msg}`;
+            combatLogEl.prepend(entry);
+
+            while (combatLogEl.children.length > 25) {
+                combatLogEl.removeChild(combatLogEl.lastChild);
+            }
+        }
+
+        function initSAMGridUI() {
+            const grid = document.getElementById('sam-cells-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < STATE.maxSamAmmo; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'h-2.5 bg-cyan-400 transition-colors';
+                grid.appendChild(cell);
+            }
+        }
+        initSAMGridUI();
+
+        function updateSAMGridUI() {
+            const grid = document.getElementById('sam-cells-grid');
+            const cells = grid.children;
+            for (let i = 0; i < cells.length; i++) {
+                cells[i].className = i < STATE.samAmmo
+                    ? 'h-2.5 bg-cyan-400'
+                    : 'h-2.5 bg-cyan-950/60';
+            }
+            document.getElementById('sam-count-text').textContent = `${STATE.samAmmo} / ${STATE.maxSamAmmo}`;
+        }
+
+        function updateHullUI() {
+            const pct = Math.max(0, Math.round((STATE.hull / STATE.maxHull) * 100));
+            const bar = document.getElementById('hull-bar');
+            const pctText = document.getElementById('hull-percent-text');
+            const badge = document.getElementById('hull-state-badge');
+
+            bar.style.width = `${pct}%`;
+            pctText.textContent = `${pct}%`;
+
+            if (pct > 65) {
+                bar.className = 'h-full bg-[#00ff66] transition-all duration-150';
+                badge.textContent = 'OPTIMAL';
+                badge.className = 'text-emerald-300';
+            } else if (pct > 30) {
+                bar.className = 'h-full bg-amber-400 transition-all duration-150';
+                badge.textContent = 'WASPADA';
+                badge.className = 'text-amber-300';
+            } else {
+                bar.className = 'h-full bg-red-500 transition-all duration-150';
+                badge.textContent = 'KRITIS!';
+                badge.className = 'text-red-400 animate-blink';
+            }
+        }
+
+        function updateHUDStats() {
+            document.getElementById('stat-threats').textContent = threats.length;
+            document.getElementById('stat-kills').textContent = STATE.kills;
+            document.getElementById('stat-jets').textContent = friendlyJets.length;
+
+            const banner = document.getElementById('red-alert-banner');
+            if (threats.length >= 6) {
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        // 2D Tactical Radar Minimap Renderer
+        const radarCanvas = document.getElementById('radar-canvas');
+        const radarCtx = radarCanvas.getContext('2d');
+        let radarSweepAngle = 0;
+
+        function renderTacticalRadar(dt) {
+            const w = radarCanvas.width;
+            const h = radarCanvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+
+            // Fade background for phosphor trail effect
+            radarCtx.fillStyle = 'rgba(2, 18, 8, 0.28)';
+            radarCtx.fillRect(0, 0, w, h);
+
+            // Range rings & crosshairs
+            radarCtx.strokeStyle = 'rgba(0, 255, 102, 0.28)';
+            radarCtx.lineWidth = 1;
+            [24, 48, 72].forEach(r => {
+                radarCtx.beginPath();
+                radarCtx.arc(cx, cy, r, 0, Math.PI * 2);
+                radarCtx.stroke();
+            });
+
+            radarCtx.beginPath();
+            radarCtx.moveTo(0, cy);
+            radarCtx.lineTo(w, cy);
+            radarCtx.moveTo(cx, 0);
+            radarCtx.lineTo(cx, h);
+            radarCtx.stroke();
+
+            // Carrier icon in center
+            radarCtx.fillStyle = '#00ff66';
+            radarCtx.fillRect(cx - 2, cy - 5, 4, 10);
+
+            // Rotating Radar Sweep Line
+            radarSweepAngle = (radarSweepAngle + dt * 3.0) % (Math.PI * 2);
+            radarCtx.strokeStyle = '#00ff66';
+            radarCtx.lineWidth = 2;
+            radarCtx.beginPath();
+            radarCtx.moveTo(cx, cy);
+            radarCtx.lineTo(cx + Math.cos(radarSweepAngle) * 78, cy + Math.sin(radarSweepAngle) * 78);
+            radarCtx.stroke();
+
+            // Draw Friendly Jets
+            radarCtx.fillStyle = '#38bdf8';
+            friendlyJets.forEach(fj => {
+                const rx = cx + (fj.mesh.position.x / 320) * 75;
+                const ry = cy + (fj.mesh.position.z / 320) * 75;
+                radarCtx.fillRect(rx - 2, ry - 2, 4, 4);
+            });
+
+            // Draw Threats
+            threats.forEach(t => {
+                const rx = cx + (t.mesh.position.x / 320) * 75;
+                const ry = cy + (t.mesh.position.z / 320) * 75;
+
+                if (t.type === 'missile') {
+                    radarCtx.fillStyle = '#ffb000';
+                } else if (t.type === 'boat' || t.type === 'torpedo') {
+                    radarCtx.fillStyle = '#00e5ff';
+                } else {
+                    radarCtx.fillStyle = '#ff2a2a';
+                }
+                radarCtx.fillRect(rx - 2.5, ry - 2.5, 5, 5);
+            });
+        }
+
+        /**************************************************************************
+         * 13. MAIN SIMULATION & PHYSICS UPDATE LOOP
+         **************************************************************************/
+        function destroyThreat(index, byPlayerDefense = true) {
+            const t = threats[index];
+            if (!t) return;
+
+            const isWater = t.type === 'boat' || t.type === 'torpedo';
+            createVoxelExplosion(t.mesh.position, t.type === 'jet' || t.type === 'boat' ? 1.4 : 1.0, isWater);
+
+            scene.remove(t.mesh);
+            if (t.bracket && t.bracket.parentNode) {
+                t.bracket.parentNode.removeChild(t.bracket);
+            }
+            if (STATE.priorityTarget === t) {
+                STATE.priorityTarget = null;
+            }
+
+            threats.splice(index, 1);
+            if (byPlayerDefense) {
+                STATE.kills++;
+            }
+            updateHUDStats();
+        }
+
+        let clock = new THREE.Clock();
+
+        function updateSimulation(dt, elapsed) {
+            // 1. Animate Pixel Ocean Waves & Carrier Pitch/Roll
+            for (let i = 0; i < oceanPosAttr.count; i++) {
+                const vx = oceanPosAttr.getX(i);
+                const vz = oceanPosAttr.getZ(i);
+                const wave = Math.sin(vx * 0.045 + elapsed * 2.1) * 1.15 +
+                             Math.cos(vz * 0.055 + elapsed * 1.7) * 0.95 +
+                             oceanBaseY[i];
+                // Quantize wave height slightly for retro stepped voxel feel
+                oceanPosAttr.setY(i, Math.round(wave * 3) / 3);
+            }
+            oceanPosAttr.needsUpdate = true;
+
+            // Gentle carrier pitching in waves
+            carrierGroup.rotation.z = Math.sin(elapsed * 0.9) * 0.018;
+            carrierGroup.rotation.x = Math.cos(elapsed * 0.65) * 0.012;
+
+            // Rotate Island Radars
+            if (mainRadarDish) mainRadarDish.rotation.y += dt * 2.4;
+            if (secondaryRadarDish) secondaryRadarDish.rotation.y -= dt * 3.8;
+
+            // Animate Carrier Wake Rings
+            wakeRings.forEach((w) => {
+                const prog = (elapsed * 0.35 + w.offset) % 1;
+                w.mesh.position.z = 54 + prog * 75;
+                w.mesh.scale.x = 1 + prog * 0.65;
+            });
+
+            // 2. Cooldowns & Auto-Reloads
+            STATE.cdFlares = Math.max(0, STATE.cdFlares - dt);
+            STATE.cdEmp = Math.max(0, STATE.cdEmp - dt);
+            STATE.cdJets = Math.max(0, STATE.cdJets - dt);
+            STATE.cdRepair = Math.max(0, STATE.cdRepair - dt);
+
+            document.getElementById('cd-flares').textContent = STATE.cdFlares > 0 ? `[${Math.ceil(STATE.cdFlares)}s]` : '[SIAP]';
+            document.getElementById('cd-emp').textContent = STATE.cdEmp > 0 ? `[${Math.ceil(STATE.cdEmp)}s]` : '[SIAP]';
+            document.getElementById('cd-jets').textContent = STATE.cdJets > 0 ? `[${Math.ceil(STATE.cdJets)}s]` : '[SIAP]';
+            document.getElementById('cd-repair').textContent = STATE.cdRepair > 0 ? `[${Math.ceil(STATE.cdRepair)}s]` : '[SIAP]';
+
+            // Reload VLS SAM cells gradually
+            if (STATE.samAmmo < STATE.maxSamAmmo) {
+                STATE.samReloadTimer += dt;
+                if (STATE.samReloadTimer >= 1.6) {
+                    STATE.samReloadTimer = 0;
+                    STATE.samAmmo++;
+                    updateSAMGridUI();
+                }
+            }
+
+            // Cool down CIWS barrels
+            STATE.ciwsHeat = Math.max(0, STATE.ciwsHeat - dt * 18);
+            if (STATE.ciwsOverheated && STATE.ciwsHeat < 25) {
+                STATE.ciwsOverheated = false;
+            }
+            document.getElementById('ciws-heat-bar').style.width = `${Math.min(100, STATE.ciwsHeat)}%`;
+            document.getElementById('ciws-status-text').textContent = STATE.ciwsOverheated
+                ? 'OVERHEAT!'
+                : (threats.length > 0 ? 'MENEMBAK' : 'SIAGA');
+
+            // Auto Wave Spawner
+            if (STATE.autoWave) {
+                STATE.waveCountdown -= dt;
+                document.getElementById('wave-timer').textContent = `${Math.max(0, Math.ceil(STATE.waveCountdown))}s`;
+                if (STATE.waveCountdown <= 0) {
+                    STATE.waveCountdown = 13.0;
+                    STATE.waveNumber++;
+                    const roll = STATE.waveNumber % 4;
+                    if (roll === 1) triggerDroneSwarm();
+                    else if (roll === 2) triggerMissileBarrage();
+                    else if (roll === 3) triggerNavalAttack();
+                    else triggerAllOutAssault();
+                }
+            } else {
+                document.getElementById('wave-timer').textContent = 'OFF';
+            }
+
+            // 3. Update Friendly Combat Air Patrol Jets
+            for (let i = friendlyJets.length - 1; i >= 0; i--) {
+                const fj = friendlyJets[i];
+                fj.life -= dt;
+                if (fj.life <= 0) {
+                    scene.remove(fj.mesh);
+                    friendlyJets.splice(i, 1);
+                    updateHUDStats();
+                    continue;
+                }
+
+                if (fj.takingOff) {
+                    fj.takeoffProgress += dt * 48;
+                    fj.mesh.position.z -= dt * 52;
+                    if (fj.takeoffProgress > 32) {
+                        fj.mesh.position.y += dt * 18;
+                    }
+                    if (fj.mesh.position.y >= fj.altitude) {
+                        fj.takingOff = false;
+                        fj.angle = Math.atan2(fj.mesh.position.z, fj.mesh.position.x);
+                    }
+                } else {
+                    fj.angle += fj.speed * dt;
+                    const nx = Math.cos(fj.angle) * fj.radius;
+                    const nz = Math.sin(fj.angle) * fj.radius;
+                    const ny = fj.altitude + Math.sin(elapsed * 2 + i) * 3;
+                    fj.mesh.lookAt(nx, ny, nz);
+                    fj.mesh.position.set(nx, ny, nz);
+                    fj.mesh.rotation.z = -0.38; // Banking turn
+                }
+
+                // Friendly Jet fires Air-to-Air missiles at airborne threats
+                fj.fireCooldown -= dt;
+                if (fj.fireCooldown <= 0 && threats.length > 0) {
+                    const airThreats = threats.filter(t => t.type === 'drone' || t.type === 'jet' || t.type === 'missile');
+                    if (airThreats.length > 0) {
+                        const target = airThreats[Math.floor(Math.random() * airThreats.length)];
+                        fj.fireCooldown = 2.8;
+                        fireDeckShell(fj.mesh.position, target);
+                    }
+                }
+            }
+
+            // 4. Update Incoming Threats & 2D HUD Target Brackets
+            for (let i = threats.length - 1; i >= 0; i--) {
+                const t = threats[i];
+                const pos = t.mesh.position;
+
+                // Direction toward aimPoint
+                const toTarget = t.aimPoint.clone().sub(pos);
+                const dist = toTarget.length();
+                const dir = toTarget.normalize();
+
+                // Evasive weave for drones & jets
+                if (t.type === 'drone' || t.type === 'jet') {
+                    dir.x += Math.sin(elapsed * 3.5 + t.wobbleSeed) * 0.08;
+                    dir.y += Math.cos(elapsed * 4.0 + t.wobbleSeed) * 0.04;
+                    dir.normalize();
+                }
+
+                pos.addScaledVector(dir, t.speed * dt);
+                t.mesh.lookAt(pos.clone().add(dir));
+
+                // Smoke or Foam Wake Trails
+                t.trailTimer += dt;
+                if (t.trailTimer > 0.06) {
+                    t.trailTimer = 0;
+                    if (t.type === 'missile' || t.type === 'jet') {
+                        spawnVoxelParticle(pos, new THREE.Vector3(0, 1, 0), 0xcbd5e1, 1.1, 0.35, 0);
+                    } else if (t.type === 'torpedo' || t.type === 'boat') {
+                        // White foaming wake trail in the ocean
+                        spawnVoxelParticle(
+                            new THREE.Vector3(pos.x, 0.3, pos.z),
+                            new THREE.Vector3((Math.random() - 0.5) * 2, 0.5, (Math.random() - 0.5) * 2),
+                            0xe0f7ff,
+                            1.3,
+                            0.55,
+                            0
+                        );
+                    }
+                }
+
+                // Update 2D Screen-Space HUD Target Bracket
+                const screenPos = pos.clone().project(camera);
+                if (screenPos.z < 1 && screenPos.x >= -1 && screenPos.x <= 1 && screenPos.y >= -1 && screenPos.y <= 1) {
+                    const sx = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
+                    const sy = (-screenPos.y * 0.5 + 0.5) * window.innerHeight;
+                    t.bracket.style.display = 'flex';
+                    t.bracket.style.transform = `translate(${sx}px, ${sy}px)`;
+                    t.bracket.className = STATE.priorityTarget === t ? 'target-bracket priority' : 'target-bracket';
+                } else {
+                    t.bracket.style.display = 'none';
+                }
+
+                // Check Impact with Carrier or Decoy Expiration
+                if (dist < 10) {
+                    if (!t.decoyed) {
+                        STATE.hull = Math.max(0, STATE.hull - t.damage);
+                        if (STATE.hull <= 15) {
+                            addCombatLog(`⚠️ DARURAT: Lambung Kapal Induk rusak parah! Segera gunakan Tim Reparasi!`, 'red');
+                        } else {
+                            addCombatLog(`💥 HANTAMAN: ${t.label} mengenai dek kapal (-${t.damage}% Hull)!`, 'red');
+                        }
+                        updateHullUI();
+                    }
+                    destroyThreat(i, false);
+                }
+            }
+
+            // Auto-recover Hull if hits 0 so simulation continues seamlessly
+            if (STATE.hull <= 0) {
+                STATE.hull = 100;
+                updateHullUI();
+                createVoxelExplosion(new THREE.Vector3(0, 12, 0), 2.5, false);
+                addCombatLog('🛠️ SISTEM DARURAT AKTIF: Kapal Induk berhasil distabilkan kembali!', 'amber');
+            }
+
+            // 5. AI Auto-Defense Systems (CIWS, SAM & Deck Guns)
+            if (STATE.autoDefense && threats.length > 0) {
+                // 5a. Phalanx CIWS Turrets track & fire rapid tracer streams
+                ciwsTurrets.forEach((turret) => {
+                    turret.cooldown -= dt;
+
+                    // Pick priority target or closest threat
+                    let target = STATE.priorityTarget;
+                    let minDist = Infinity;
+                    if (!target) {
+                        threats.forEach(t => {
+                            const d = t.mesh.position.distanceTo(turret.root.position);
+                            if (d < minDist) {
+                                minDist = d;
+                                target = t;
+                            }
+                        });
+                    } else {
+                        minDist = target.mesh.position.distanceTo(turret.root.position);
+                    }
+
+                    if (target && minDist < 230) {
+                        turret.head.lookAt(target.mesh.position);
+                        if (turret.cooldown <= 0 && !STATE.ciwsOverheated) {
+                            turret.cooldown = 0.075;
+                            STATE.ciwsHeat += 1.1;
+                            if (STATE.ciwsHeat >= 100) {
+                                STATE.ciwsOverheated = true;
+                            }
+                            fireCIWSTracer(turret, target);
+                            if (Math.random() < 0.28) sfx.playCIWSBurst();
+                        }
+                    }
+                });
+
+                // 5b. Auto SAM VLS Launch against high-value airborne missiles/jets
+                if (Math.random() < dt * 1.4 && STATE.samAmmo > 0) {
+                    const airTargets = threats.filter(t => t.type === 'missile' || t.type === 'jet' || t.type === 'drone');
+                    if (airTargets.length > 0) {
+                        const chosen = STATE.priorityTarget || airTargets[Math.floor(Math.random() * airTargets.length)];
+                        launchSAMInterceptor(chosen);
+                    }
+                }
+
+                // 5c. Deck Guns & Anti-Torpedo Mortars engage surface boats & torpedoes
+                deckGuns.forEach(dg => {
+                    dg.cooldown -= dt;
+                    if (dg.cooldown <= 0) {
+                        const seaThreats = threats.filter(t => t.type === 'boat' || t.type === 'torpedo');
+                        if (seaThreats.length > 0) {
+                            const chosen = seaThreats[Math.floor(Math.random() * seaThreats.length)];
+                            dg.mesh.lookAt(chosen.mesh.position);
+                            dg.cooldown = 0.65;
+                            fireDeckShell(dg.mesh.position, chosen);
+                        }
+                    }
+                });
+            }
+
+            // 6. Update Projectiles (CIWS Tracers, SAM Missiles, Deck Shells)
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                const p = projectiles[i];
+                p.life -= dt;
+                if (p.life <= 0) {
+                    scene.remove(p.mesh);
+                    projectiles.splice(i, 1);
+                    continue;
+                }
+
+                if (p.kind === 'sam') {
+                    p.age += dt;
+                    // Vertical climb for first 0.35s, then home in on target
+                    if (p.age > 0.32 && p.target && threats.includes(p.target)) {
+                        const desired = p.target.mesh.position.clone().sub(p.mesh.position).normalize().multiplyScalar(p.speed);
+                        p.vel.lerp(desired, dt * 7.5);
+                    }
+                    p.mesh.position.addScaledVector(p.vel, dt);
+                    p.mesh.lookAt(p.mesh.position.clone().add(p.vel));
+
+                    // Smoke trail for SAM
+                    if (Math.random() < 0.6) {
+                        spawnVoxelParticle(p.mesh.position, new THREE.Vector3(0, 0, 0), 0x00e5ff, 0.9, 0.25, 0);
+                    }
+                } else {
+                    p.mesh.position.addScaledVector(p.vel, dt);
+                }
+
+                // Check proximity hit against threats
+                for (let j = threats.length - 1; j >= 0; j--) {
+                    const t = threats[j];
+                    const hitRadius = p.kind === 'sam' ? 8.5 : 5.2;
+                    if (p.mesh.position.distanceTo(t.mesh.position) < hitRadius) {
+                        t.hp -= p.damage;
+                        if (p.kind === 'sam' || p.kind === 'shell') {
+                            createVoxelExplosion(p.mesh.position, 0.7, t.type === 'torpedo');
+                        } else {
+                            // Small spark on tracer hit
+                            spawnVoxelParticle(p.mesh.position, new THREE.Vector3(0, 8, 0), 0xffaa00, 0.9, 0.18, 0);
+                        }
+
+                        if (t.hp <= 0) {
+                            destroyThreat(j, true);
+                        }
+
+                        scene.remove(p.mesh);
+                        projectiles.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+
+            // 7. Update Voxel Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const pt = particles[i];
+                pt.life -= dt;
+                if (pt.life <= 0) {
+                    scene.remove(pt.mesh);
+                    particles.splice(i, 1);
+                    continue;
+                }
+                pt.vel.y -= pt.gravity * dt;
+                pt.mesh.position.addScaledVector(pt.vel, dt);
+                const s = pt.size * (pt.life / pt.maxLife);
+                pt.mesh.scale.set(s, s, s);
+            }
+
+            // 8. Update Camera Modes + Screen Shake
+            updateCameraTransform(dt, elapsed);
+        }
+
+        function updateCameraTransform(dt, elapsed) {
+            if (STATE.cameraMode === 'tactical') {
+                const x = camOrbit.radius * Math.sin(camOrbit.phi) * Math.sin(camOrbit.theta);
+                const y = camOrbit.radius * Math.cos(camOrbit.phi) + 8;
+                const z = camOrbit.radius * Math.sin(camOrbit.phi) * Math.cos(camOrbit.theta);
+                camera.position.set(x, Math.max(5, y), z);
+                camera.lookAt(camOrbit.target);
+            } else if (STATE.cameraMode === 'isometric') {
+                camera.position.set(115, 95, 115);
+                camera.lookAt(0, 6, 0);
+            } else if (STATE.cameraMode === 'bridge') {
+                // View from Carrier Island Bridge overlooking the Flight Deck
+                camera.position.set(11.5, 24.5, 8);
+                camera.lookAt(-4, 11, -60);
+            } else if (STATE.cameraMode === 'ciws') {
+                // Forward Phalanx CIWS Turret POV
+                const frontCiws = ciwsTurrets[0];
+                camera.position.set(-14.5, 15.2, -43);
+                if (threats.length > 0) {
+                    camera.lookAt(threats[0].mesh.position);
+                } else {
+                    camera.lookAt(-20, 22, -120);
+                }
+            } else if (STATE.cameraMode === 'cinematic') {
+                const angle = elapsed * 0.28;
+                camera.position.set(Math.cos(angle) * 125, 32 + Math.sin(elapsed * 0.5) * 14, Math.sin(angle) * 125);
+                camera.lookAt(0, 10, 0);
+            }
+
+            // Apply Screen Shake when explosions occur
+            if (STATE.shakeIntensity > 0.01) {
+                camera.position.x += (Math.random() - 0.5) * STATE.shakeIntensity;
+                camera.position.y += (Math.random() - 0.5) * STATE.shakeIntensity;
+                camera.position.z += (Math.random() - 0.5) * STATE.shakeIntensity;
+                STATE.shakeIntensity = Math.max(0, STATE.shakeIntensity - dt * 4.5);
+            }
+        }
+
+        /**************************************************************************
+         * 14. UI BUTTON BINDINGS & INITIALIZATION
+         **************************************************************************/
+        // Pixel Scale Resolution Switcher
+        document.getElementById('btn-pixel-scale').addEventListener('click', (e) => {
+            sfx.playBeep(700, 0.06);
+            if (STATE.pixelScale === 3) {
+                STATE.pixelScale = 5;
+                e.currentTarget.textContent = '🕹️ PIXEL: 5x (VOXEL)';
+            } else if (STATE.pixelScale === 5) {
+                STATE.pixelScale = 1;
+                e.currentTarget.textContent = '🕹️ PIXEL: 1x (TAJAM)';
+            } else {
+                STATE.pixelScale = 3;
+                e.currentTarget.textContent = '🕹️ PIXEL: 3x (PS1)';
+            }
+            updateRendererSize();
+        });
+
+        // CRT Scanlines Toggle
+        document.getElementById('btn-crt').addEventListener('click', (e) => {
+            sfx.playBeep(780, 0.06);
+            STATE.crtEnabled = !STATE.crtEnabled;
+            document.getElementById('crt-layer').style.display = STATE.crtEnabled ? 'block' : 'none';
+            e.currentTarget.textContent = STATE.crtEnabled ? '📺 CRT: ON' : '📺 CRT: OFF';
+            e.currentTarget.classList.toggle('active-mode', STATE.crtEnabled);
+        });
+
+        // Weather & Time-of-Day Cycle
+        document.getElementById('btn-weather').addEventListener('click', (e) => {
+            sfx.playBeep(620, 0.08);
+            STATE.weatherIndex = (STATE.weatherIndex + 1) % WEATHER_PRESETS.length;
+            const p = WEATHER_PRESETS[STATE.weatherIndex];
+            e.currentTarget.textContent = p.name;
+
+            scene.background.setHex(p.skyColor);
+            scene.fog.color.setHex(p.fogColor);
+            hemiLight.color.setHex(p.hemiSky);
+            hemiLight.groundColor.setHex(p.hemiGround);
+            dirLight.color.setHex(p.dirColor);
+            dirLight.intensity = p.dirIntensity;
+            oceanMat.color.setHex(p.waterColor);
+            document.getElementById('nvg-overlay').style.display = p.nvg ? 'block' : 'none';
+        });
+
+        // Audio Synthesizer Mute/Unmute
+        document.getElementById('btn-audio').addEventListener('click', (e) => {
+            sfx.enabled = !sfx.enabled;
+            e.currentTarget.textContent = sfx.enabled ? '🔊 SFX: ON' : '🔇 SFX: MUTE';
+            if (sfx.enabled) sfx.playBeep(880, 0.08);
+        });
+
+        // Info Modal
+        const infoModal = document.getElementById('info-modal');
+        document.getElementById('btn-help').addEventListener('click', () => {
+            sfx.playBeep(900, 0.06);
+            infoModal.classList.remove('hidden');
+        });
+        document.getElementById('close-info-modal').addEventListener('click', () => infoModal.classList.add('hidden'));
+        document.getElementById('ack-info-modal').addEventListener('click', () => infoModal.classList.add('hidden'));
+
+        // Spawn Wave Buttons
+        document.getElementById('spawn-drones').addEventListener('click', triggerDroneSwarm);
+        document.getElementById('spawn-missiles').addEventListener('click', triggerMissileBarrage);
+        document.getElementById('spawn-naval').addEventListener('click', triggerNavalAttack);
+        document.getElementById('spawn-allout').addEventListener('click', triggerAllOutAssault);
+
+        document.getElementById('chk-autowave').addEventListener('change', (e) => {
+            STATE.autoWave = e.target.checked;
+        });
+
+        // Camera Mode Switcher
+        document.querySelectorAll('.cam-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                sfx.playBeep(840, 0.06);
+                document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active-mode'));
+                btn.classList.add('active-mode');
+                STATE.cameraMode = btn.getAttribute('data-cam');
+            });
+        });
+
+        // AI Defense vs Manual Target Priority Toggle
+        document.getElementById('btn-defense-mode').addEventListener('click', (e) => {
+            sfx.playBeep(740, 0.08);
+            STATE.autoDefense = !STATE.autoDefense;
+            if (STATE.autoDefense) {
+                e.currentTarget.textContent = '🤖 PERTAHANAN: AI OTOMATIS + KLIK TARGET';
+                canvas.classList.remove('manual-cursor');
+                addCombatLog('Sistem Pertahanan AI Otomatis diaktifkan.', 'green');
+            } else {
+                e.currentTarget.textContent = '🎯 PERTAHANAN: MANUAL (KLIK MUSUH DI LAYAR)';
+                canvas.classList.add('manual-cursor');
+                addCombatLog('Mode Manual aktif: Klik langsung musuh di layar untuk menembak!', 'amber');
+            }
+        });
+
+        // Emergency Abilities
+        document.getElementById('ability-flares').addEventListener('click', deployFlaresAndChaff);
+        document.getElementById('ability-emp').addEventListener('click', triggerEMPPulse);
+        document.getElementById('ability-jets').addEventListener('click', scrambleFighterSquadron);
+        document.getElementById('ability-repair').addEventListener('click', triggerEmergencyRepair);
+
+        // Main Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            const dt = Math.min(0.1, clock.getDelta());
+            const elapsed = clock.getElapsedTime();
+
+            updateSimulation(dt, elapsed);
+            renderTacticalRadar(dt);
+            renderer.render(scene, camera);
+        }
+
+        window.onload = function () {
+            addCombatLog('SISTEM KOMANDO KRI GARUDA-01 ONLINE. Radar 360° aktif.', 'green');
+            addCombatLog('TIPS: Klik target musuh di layar 3D untuk tembakan prioritas SAM & CIWS!', 'cyan');
+            // Spawn an initial patrol wave so the scene is immediately action-packed
+            setTimeout(() => {
+                triggerDroneSwarm();
+                spawnThreat('missile');
+                spawnThreat('torpedo');
+            }, 900);
+            animate();
+        };
+    </script>
+</body>
+</html>
