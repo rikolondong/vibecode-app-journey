@@ -1,0 +1,14 @@
+{
+  "name": "simtrip-3d-driving-simulator",
+  "version": "1.0.0",
+  "description": "Game 3D Simulasi Berkendara dengan Peta Dunia Nyata (OpenStreetMap + OSRM + Three.js)",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "three": "^0.170.0"
+  }
+}

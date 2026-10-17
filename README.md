@@ -18,6 +18,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 9 | [**9_AI VIRTUAL OFFICE**](./9_AI%20VIRTUAL%20OFFICE) | Visualisasi 3D Isometrik AI Multi-Agent Office dengan kru karakter manusia Voxel realistis, tata ruang kantor modern, audio prosedural, dan simulasi alur tugas. | ✅ Selesai |
 | 10 | [**10_ANOTHER WORLD**](./10_ANOTHER%20WORLD) | Game Horor Indonesia bertema acara TV *Dunia Lain* (Uji Nyali) dengan mekanik Five Nights at Freddy's (FNAF), audio prosedural, dan 11 aset gambar pre-render. | ✅ Selesai |
 | 11 | [**11_HOME SURVIVOR**](./11_HOME%20SURVIVOR) | Game Simulasi Realistis 3D Isometric Bertahan Hidup di Rumah saat Serangan Zombie (ala *Project Zomboid*) dengan Three.js, Cutaway Walls, Barikade Papan, Stealth, & Web Audio API. | ✅ Selesai |
+| 12 | [**12_SIMTRIP**](./12_SIMTRIP) | Game 3D Simulasi Berkendara Peta Dunia Nyata (100% OpenStreetMap + OSRM + Overpass 3D Buildings) dengan pengaturan Titik Mulai/Tujuan, Waktu Berangkat, 5 Kendaraan 3D, Plang Nama Jalan Asli, & Autopilot AI. | ✅ Selesai |
 
 ---
 
@@ -205,6 +206,25 @@ Game simulasi realistis bertahan hidup di dalam rumah saat terjadi serangan zomb
 - **Tech Stack**: Three.js (r128 WebGL Orthographic Isometric Camera & Shadows), Pure Procedural Web Audio API, HTML5 & Modern Tactical CSS3.
 
 👉 **[Buka Dokumentasi & Kode Proyek 11](./11_HOME%20SURVIVOR)**
+
+---
+
+## 🚘 Ringkasan Proyek 12: SIMTRIP 3D (Simulator Berkendara Peta Dunia Nyata — OpenStreetMap)
+
+Game simulasi berkendara 3D berbasis peta jalan dunia nyata menggunakan **100% ekosistem OpenStreetMap (OSM, Nominatim, OSRM, & Overpass API)**:
+- **Perencanaan Rute Dunia Nyata & GPS Live**:
+  - Bebas memilih **Titik Mulai (Start)** dan **Titik Tujuan (Destination)** dengan klik langsung di peta, menggeser pin, mencari alamat/kota di seluruh dunia (Nominatim), atau memilih rute ikonik (*Jakarta Monas → Bundaran HI*, *Bandung Gedung Sate → Jl. Braga*, *Yogyakarta Tugu → Malioboro*, *Surabaya*, *Bali*, *Tokyo*, *Paris*).
+  - Terintegrasi dengan **OSRM (Open Source Routing Machine)** untuk menghitung geometri jalan asli, jarak tempuh (`km`), durasi, estimasi waktu tiba (**ETA**), dan instruksi navigasi *turn-by-turn*.
+- **Dunia 3D Berbasis Data OpenStreetMap Asli**:
+  - **Terrain Peta 3D OpenStreetMap**: Merender *slippy tiles* asli OpenStreetMap langsung di permukaan tanah 3D tepat di bawah jalan raya dan kendaraan.
+  - **Bentuk Gedung 3D Menyerupai Dunia Nyata (Overpass API)**: Mengekstrusi poligon tapak bangunan asli (`way["building"]` & `way["building:part"]`) lengkap dengan tinggi gedung (`building:levels`), atap genteng miring (*terracotta roof*), kubah masjid 3D (`mosque`), fasad kaca gedung tinggi, plakat nama gedung, serta *landmark* 3D ikonik (**Monas**, **Bundaran HI**, **Gedung Sate**, **Tugu Jogja**).
+  - **Papan Nama Jalan & Portal RPPJ Otentik**: Tiang papan nama jalan hijau reflektif khas Indonesia di setiap persimpangan jalan asli (`way["highway"]["name"]`) serta portal *gantry* Rambu Pendahulu Petunjuk Jurusan (RPPJ) di atas jalan.
+- **Pengaturan Waktu Berangkat & 5 Kendaraan 3D**:
+  - Pilihan waktu berangkat (*Subuh*, *Pagi*, *Siang*, *Senja*, *Malam*, atau jam kustom) yang mengubah posisi matahari/bulan, warna langit, lampu jalan, lampu gedung, dan lampu utama mobil secara dinamis.
+  - 5 pilihan kendaraan 3D (**Sedan Sport GT**, **SUV Adventure 4x4**, **Motor Sport 1000cc** dengan *lean* tikungan, **Bus Pariwisata Eksekutif**, dan **Truk Kargo Box**) dengan 6 pilihan warna cat, 4 sudut kamera, **Autopilot AI (`[P]`)**, lalu lintas AI, dan audio mesin **Web Audio API**.
+- **Tech Stack**: Three.js (WebGL 3D Engine), Leaflet.js, OpenStreetMap (Slippy Tiles, Overpass API, OSRM, Nominatim), Web Audio API, HTML5 & CSS3 Glassmorphism HUD.
+
+👉 **[Buka Dokumentasi & Kode Proyek 12](./12_SIMTRIP)**
 
 ---
 

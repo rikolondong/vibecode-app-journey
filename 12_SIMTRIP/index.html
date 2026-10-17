@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIMTRIP 3D — Simulator Berkendara Peta Dunia Nyata</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="./src/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.170.0/build/three.module.min.js",
+        "leaflet": "https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- 3D WebGL Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- ==================== TRIP PLANNER / SETUP OVERLAY ==================== -->
+  <div id="planner-modal" class="modal-overlay active">
+    <div class="planner-container">
+      <!-- Header -->
+      <header class="planner-header">
+        <div class="brand">
+          <div class="brand-icon">🚘</div>
+          <div>
+            <h1>SIMTRIP <span class="badge-3d">3D REAL MAP</span></h1>
+            <p>Simulasi Berkendara 3D Berbasis Peta Jalan Dunia Nyata (OpenStreetMap &amp; OSRM)</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="btn-resume-drive" class="btn-secondary hidden">Kembali ke Jalan</button>
+        </div>
+      </header>
+
+      <!-- Main Grid: Left Config + Right Interactive Real World Map -->
+      <div class="planner-body">
+        <!-- Left Column: Settings -->
+        <div class="planner-sidebar">
+          <!-- 1. Lokasi Mulai & Tujuan -->
+          <section class="config-card">
+            <div class="card-title">
+              <span class="step-num">1</span>
+              <h2>Titik Mulai &amp; Tujuan</h2>
+              <span class="hint-text">Cari lokasi atau klik langsung di peta</span>
+            </div>
+
+            <div class="location-inputs">
+              <div class="input-group">
+                <label class="point-label start-label">
+                  <span class="dot start-dot"></span> Titik Mulai (Start)
+                </label>
+                <div class="search-row">
+                  <input type="text" id="input-start" placeholder="Ketik kota / jalan / tempat asal..." autocomplete="off" />
+                  <button type="button" id="btn-search-start" class="btn-icon" title="Cari Lokasi Mulai">🔍</button>
+                  <button type="button" id="btn-pick-start" class="btn-pick active" title="Klik di Peta untuk Titik Mulai">📍 Peta</button>
+                </div>
+                <div id="results-start" class="search-results hidden"></div>
+              </div>
+
+              <div class="route-swap-row">
+                <button type="button" id="btn-swap-points" class="btn-small" title="Tukar Titik Mulai & Tujuan">⇅ Tukar Arah</button>
+                <div class="preset-selector">
+                  <select id="select-preset-route">
+                    <option value="">★ Pilih Rute Populer...</option>
+                    <option value="jakarta">Jakarta: Monas → Bundaran HI (Thamrin)</option>
+                    <option value="bandung">Bandung: Gedung Sate → Jl. Braga</option>
+                    <option value="jogja">Yogyakarta: Tugu Jogja → Titik Nol Malioboro</option>
+                    <option value="surabaya">Surabaya: Tugu Pahlawan → Taman Bungkul</option>
+                    <option value="bali">Bali: Pantai Kuta → Garuda Wisnu Kencana</option>
+                    <option value="tokyo">Tokyo: Shibuya Crossing → Tokyo Tower</option>
+                    <option value="paris">Paris: Arc de Triomphe → Menara Eiffel</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label class="point-label end-label">
+                  <span class="dot end-dot"></span> Titik Tujuan (Destination)
+                </label>
+                <div class="search-row">
+                  <input type="text" id="input-end" placeholder="Ketik kota / jalan / tempat tujuan..." autocomplete="off" />
+                  <button type="button" id="btn-search-end" class="btn-icon" title="Cari Lokasi Tujuan">🔍</button>
+                  <button type="button" id="btn-pick-end" class="btn-pick" title="Klik di Peta untuk Titik Tujuan">🏁 Peta</button>
+                </div>
+                <div id="results-end" class="search-results hidden"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. Waktu Berangkat & Kondisi Lingkungan -->
+          <section class="config-card">
+            <div class="card-title">
+              <span class="step-num">2</span>
+              <h2>Waktu Berangkat &amp; Simulasi</h2>
+            </div>
+
+            <div class="time-config-grid">
+              <div class="time-main">
+                <label for="input-departure-time">Jam Berangkat</label>
+                <div class="time-input-wrapper">
+                  <input type="time" id="input-departure-time" value="16:45" />
+                  <span id="time-period-badge" class="period-badge">Sore / Senja</span>
+                </div>
+              </div>
+              <div class="time-sub">
+                <label for="select-time-speed">Kecepatan Waktu</label>
+                <select id="select-time-speed">
+                  <option value="1">1x (Waktu Nyata)</option>
+                  <option value="15" selected>15x (Dinamis)</option>
+                  <option value="60">60x (Siklus Cepat)</option>
+                </select>
+              </div>
+              <div class="time-sub">
+                <label for="select-route-scale">Skala Jarak 3D</label>
+                <select id="select-route-scale">
+                  <option value="1" selected>1:1 (Jarak Asli Akurat)</option>
+                  <option value="0.35">Ringkas (3x Lebih Cepat Sampai)</option>
+                  <option value="0.15">Ekspres (Rute Jauh Antar Kota)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="time-presets">
+              <button type="button" class="chip-btn" data-time="05:30">🌅 05:30 Subuh</button>
+              <button type="button" class="chip-btn" data-time="08:30">☀️ 08:30 Pagi</button>
+              <button type="button" class="chip-btn" data-time="12:30">🌤️ 12:30 Siang</button>
+              <button type="button" class="chip-btn active" data-time="17:15">🌇 17:15 Senja</button>
+              <button type="button" class="chip-btn" data-time="21:00">🌙 21:00 Malam</button>
+            </div>
+          </section>
+
+          <!-- 3. Pilih Kendaraan -->
+          <section class="config-card">
+            <div class="card-title">
+              <span class="step-num">3</span>
+              <h2>Pilih Kendaraan 3D</h2>
+              <div class="color-picker-inline">
+                <span>Warna:</span>
+                <button type="button" class="color-dot active" data-color="#ef4444" style="background:#ef4444" title="Merah Sport"></button>
+                <button type="button" class="color-dot" data-color="#3b82f6" style="background:#3b82f6" title="Biru Elektrik"></button>
+                <button type="button" class="color-dot" data-color="#f8fafc" style="background:#f8fafc" title="Putih Mutiara"></button>
+                <button type="button" class="color-dot" data-color="#f59e0b" style="background:#f59e0b" title="Kuning Emas"></button>
+                <button type="button" class="color-dot" data-color="#10b981" style="background:#10b981" title="Hijau Zamrud"></button>
+                <button type="button" class="color-dot" data-color="#1e293b" style="background:#1e293b" title="Hitam Matte"></button>
+              </div>
+            </div>
+
+            <div id="vehicle-grid" class="vehicle-grid">
+              <!-- Populated dynamically or statically -->
+              <div class="vehicle-card active" data-vehicle="sedan">
+                <div class="v-icon">🏎️</div>
+                <div class="v-info">
+                  <h3>Sedan Sport GT</h3>
+                  <p>220 km/j • Responsif &amp; Cepat</p>
+                  <div class="v-bars">
+                    <span>Speed <i style="width:90%"></i></span>
+                    <span>Handling <i style="width:92%"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="vehicle-card" data-vehicle="suv">
+                <div class="v-icon">🚙</div>
+                <div class="v-info">
+                  <h3>SUV Adventure 4x4</h3>
+                  <p>175 km/j • Tangguh &amp; Stabil</p>
+                  <div class="v-bars">
+                    <span>Speed <i style="width:75%"></i></span>
+                    <span>Handling <i style="width:84%"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="vehicle-card" data-vehicle="motorbike">
+                <div class="v-icon">🏍️</div>
+                <div class="v-info">
+                  <h3>Motor Sport 1000cc</h3>
+                  <p>240 km/j • Lincah &amp; Miring di Tikungan</p>
+                  <div class="v-bars">
+                    <span>Speed <i style="width:98%"></i></span>
+                    <span>Handling <i style="width:90%"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="vehicle-card" data-vehicle="bus">
+                <div class="v-icon">🚌</div>
+                <div class="v-info">
+                  <h3>Bus Pariwisata</h3>
+                  <p>130 km/j • Bodi Panjang &amp; Nyaman</p>
+                  <div class="v-bars">
+                    <span>Speed <i style="width:58%"></i></span>
+                    <span>Handling <i style="width:65%"></i></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="vehicle-card" data-vehicle="truck">
+                <div class="v-icon">🚚</div>
+                <div class="v-info">
+                  <h3>Truk Kargo Box</h3>
+                  <p>115 km/j • Torsi Besar &amp; Berat</p>
+                  <div class="v-bars">
+                    <span>Speed <i style="width:52%"></i></span>
+                    <span>Handling <i style="width:60%"></i></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right Column: Interactive Map & Route Summary -->
+        <div class="planner-map-panel">
+          <div class="map-toolbar">
+            <div class="map-mode-indicator" id="map-click-status">
+              Mode Klik Peta: <strong id="map-click-target">Titik Mulai (Hijau)</strong>
+            </div>
+            <div class="map-Extras">
+              <label class="traffic-label">
+                Lalu Lintas AI:
+                <select id="select-traffic">
+                  <option value="0">Sepi (0 Mobil)</option>
+                  <option value="12" selected>Normal (12 Mobil)</option>
+                  <option value="25">Ramai (25 Mobil)</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div id="planner-map" class="planner-leaflet-map"></div>
+
+          <!-- Route Summary Footer inside Map Panel -->
+          <div class="route-summary-bar">
+            <div class="summary-stats">
+              <div class="stat-item">
+                <span class="stat-label">Jarak Rute Nyata</span>
+                <strong id="stat-distance">-- km</strong>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Estimasi Durasi</span>
+                <strong id="stat-duration">-- mnt</strong>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Berangkat → Tiba (ETA)</span>
+                <strong id="stat-eta">--:-- → --:--</strong>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Titik Belokan</span>
+                <strong id="stat-steps">-- instruksi</strong>
+              </div>
+            </div>
+
+            <button id="btn-start-drive" class="btn-primary-launch">
+              <span>🚀 MULAI BERKENDARA 3D</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== IN-GAME 3D DRIVING HUD ==================== -->
+  <div id="driving-hud" class="hud-overlay hidden">
+    <!-- Top Left: Turn-by-Turn GPS Navigation Card -->
+    <div class="hud-top-left">
+      <div class="nav-instruction-card">
+        <div class="nav-turn-icon" id="hud-turn-icon">⬆️</div>
+        <div class="nav-turn-details">
+          <div class="nav-turn-dist" id="hud-turn-dist">0 m</div>
+          <div class="nav-turn-street" id="hud-turn-street">Ikuti jalur rute</div>
+        </div>
+      </div>
+
+      <div class="trip-progress-card">
+        <div class="trip-progress-header">
+          <span id="hud-route- endpoints">Perjalanan Aktif</span>
+          <span id="hud-progress-pct">0%</span>
+        </div>
+        <div class="progress-bar-track">
+          <div id="hud-progress-fill" class="progress-bar-fill" style="width: 0%"></div>
+        </div>
+        <div class="trip-metrics-row">
+          <div>
+            <small>Sisa Jarak</small>
+            <strong id="hud-rem-dist">0.0 km</strong>
+          </div>
+          <div>
+            <small>Waktu Sekarang</small>
+            <strong id="hud-current-clock">16:45</strong>
+          </div>
+          <div>
+            <small>Estimasi Tiba</small>
+            <strong id="hud-live-eta">17:00</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Center: Autopilot / Notification Banner -->
+    <div class="hud-top-center">
+      <div id="autopilot-banner" class="autopilot-pill hidden">
+        🤖 <strong>AUTOPILOT AI AKTIF</strong> — Mengikuti Rute Peta Nyata (Tekan [P] atau Gas untuk Ambil Alih)
+      </div>
+      <div id="offroad-banner" class="offroad-pill hidden">
+        ⚠️ Anda keluar dari jalur jalan! Tekan <strong>[R]</strong> untuk kembali ke jalan terdekat.
+      </div>
+    </div>
+
+    <!-- Top Right: Environment, Camera & Menu Controls -->
+    <div class="hud-top-right">
+      <div class="env-control-card">
+        <div class="env-time-row">
+          <span id="hud-sky-icon">🌇</span>
+          <input type="range" id="hud-time-slider" min="0" max="1439" value="1005" title="Geser untuk ubah waktu matahari secara langsung" />
+          <span id="hud-sky-label">Senja</span>
+        </div>
+        <div class="hud-action-buttons">
+          <button id="btn-hud-autopilot" class="hud-btn" title="Aktifkan/Matikan Autopilot AI [P]">🤖 Autopilot [P]</button>
+          <button id="btn-hud-camera" class="hud-btn" title="Ganti Sudut Kamera [C]">🎥 Kamera: Chase [C]</button>
+          <button id="btn-hud-lights" class="hud-btn active" title="Lampu Kendaraan [L]">💡 Lampu [L]</button>
+          <button id="btn-hud-reset" class="hud-btn" title="Reset Posisi ke Jalan [R]">🔄 Reset [R]</button>
+          <button id="btn-hud-planner" class="hud-btn btn-accent" title="Ubah Rute, Waktu, atau Kendaraan [Esc]">🗺️ Ubah Rute</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Left: Live Synchronized Real-World 2D GPS Minimap -->
+    <div class="hud-bottom-left">
+      <div class="minimap-header">
+        <span>🛰️ GPS Peta Nyata Live</span>
+        <span id="hud-coords-label" class="coords-text">-6.1754, 106.8272</span>
+      </div>
+      <div id="hud-minimap" class="hud-leaflet-minimap"></div>
+    </div>
+
+    <!-- Bottom Center: On-Screen Touch / Mouse Driving Controls -->
+    <div class="hud-bottom-center">
+      <div class="touch-controls">
+        <button id="touch-left" class="ctrl-btn">◀</button>
+        <button id="touch-gas" class="ctrl-btn ctrl-gas">GAS (W)</button>
+        <button id="touch-brake" class="ctrl-btn ctrl-brake">REM / MUNDUR (S)</button>
+        <button id="touch-handbrake" class="ctrl-btn ctrl-hb">DRIFT (Spasi)</button>
+        <button id="touch-right" class="ctrl-btn">▶</button>
+      </div>
+      <div class="controls-hint">
+        <span><b>WASD / Panah</b> Berkendara</span> •
+        <span><b>Spasi</b> Rem Tangan</span> •
+        <span><b>P</b> Autopilot</span> •
+        <span><b>C</b> Kamera</span> •
+        <span><b>L</b> Lampu</span> •
+        <span><b>H</b> Klakson</span> •
+        <span><b>R</b> Reset Jalan</span>
+      </div>
+    </div>
+
+    <!-- Bottom Right: Speedometer, RPM, Gear & Vehicle Info -->
+    <div class="hud-bottom-right">
+      <div class="speedometer-card">
+        <div class="vehicle-badge-row">
+          <span id="hud-vehicle-name">Sedan Sport GT</span>
+          <span id="hud-gear-box" class="gear-badge">D1</span>
+        </div>
+        <div class="speed-main">
+          <span id="hud-speed-val" class="speed-number">0</span>
+          <span class="speed-unit">KM/J</span>
+        </div>
+        <div class="rpm-bar-container">
+          <div id="hud-rpm-fill" class="rpm-bar-fill" style="width: 10%"></div>
+        </div>
+        <div class="rpm-labels">
+          <span>IDLE</span>
+          <span>RPM</span>
+          <span>REDLINE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ARRIVAL CELEBRATION MODAL ==================== -->
+  <div id="arrival-modal" class="modal-overlay hidden">
+    <div class="arrival-card">
+      <div class="arrival-icon">🏁</div>
+      <h2>Selamat! Anda Tiba di Tujuan</h2>
+      <p id="arrival-dest-name">Tujuan Perjalanan</p>
+      <div class="arrival-stats-grid">
+        <div class="a-stat">
+          <span>Jarak Tempuh</span>
+          <strong id="arr-distance">0 km</strong>
+        </div>
+        <div class="a-stat">
+          <span>Waktu Berangkat</span>
+          <strong id="arr-dep-time">00:00</strong>
+        </div>
+        <div class="a-stat">
+          <span>Waktu Tiba</span>
+          <strong id="arr-arr-time">00:00</strong>
+        </div>
+        <div class="a-stat">
+          <span>Kecepatan Puncak</span>
+          <strong id="arr-top-speed">0 km/j</strong>
+        </div>
+      </div>
+      <div class="arrival-actions">
+        <button id="btn-replay-route" class="btn-secondary">🔄 Ulangi Rute Ini</button>
+        <button id="btn-new-route" class="btn-primary-launch">🗺️ Buat Rute Baru</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
