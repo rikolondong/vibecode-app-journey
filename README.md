@@ -19,6 +19,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 10 | [**10_ANOTHER WORLD**](./10_ANOTHER%20WORLD) | Game Horor Indonesia bertema acara TV *Dunia Lain* (Uji Nyali) dengan mekanik Five Nights at Freddy's (FNAF), audio prosedural, dan 11 aset gambar pre-render. | ✅ Selesai |
 | 11 | [**11_HOME SURVIVOR**](./11_HOME%20SURVIVOR) | Game Simulasi Realistis 3D Isometric Bertahan Hidup di Rumah saat Serangan Zombie (ala *Project Zomboid*) dengan Three.js, Cutaway Walls, Barikade Papan, Stealth, & Web Audio API. | ✅ Selesai |
 | 12 | [**12_SIMTRIP**](./12_SIMTRIP) | Game 3D Simulasi Berkendara Peta Dunia Nyata (100% OpenStreetMap + OSRM + Overpass 3D Buildings) dengan pengaturan Titik Mulai/Tujuan, Waktu Berangkat, 5 Kendaraan 3D, Plang Nama Jalan Asli, & Autopilot AI. | ✅ Selesai |
+| 13 | [**13_WEB AC130**](./13_WEB%20AC130) | 3D Interactive Lockheed AC-130U Spooky Gunship Inspector & Combat Simulator (ExplodeView, Pylon Turn Orbit, Live Fire Ballistics, Angel Flares, FLIR HUD & FPS Gunner Mode). | ✅ Selesai |
 
 ---
 
@@ -225,6 +226,34 @@ Game simulasi berkendara 3D berbasis peta jalan dunia nyata menggunakan **100% e
 - **Tech Stack**: Three.js (WebGL 3D Engine), Leaflet.js, OpenStreetMap (Slippy Tiles, Overpass API, OSRM, Nominatim), Web Audio API, HTML5 & CSS3 Glassmorphism HUD.
 
 👉 **[Buka Dokumentasi & Kode Proyek 12](./12_SIMTRIP)**
+
+---
+
+## ✈️ Ringkasan Proyek 13: WEB AC-130 (3D Gunship Inspector & Combat Simulator)
+
+Aplikasi web interaktif 3D militer untuk inspeksi teknis mendalam dan simulasi tempur pesawat serang darat legendaris **Lockheed AC-130U Spooky Gunship ("Angel of Death")**:
+- **Inspeksi Hanggar & ExplodeView Dinamis**:
+  - Mengurai komponen fisik pesawat (Hidung, Sayap, 4× Mesin Turboprop Rolls-Royce AE 2100D3, Baterai Senjata Sisi Port, Sponson & Roda Pendarat, Ekor Vertikal & Horizontal, Ramp Belakang) secara mekanis dari 0% hingga 100%.
+  - Drawer detail interaktif 16 komponen, kamera preset, interior cutaway, dan rangka poligonal Wireframe X-Ray.
+- **Simulasi Manuver Pylon Turn Orbit & Atmosfer Realistis**:
+  - Manuver pylon turn otentik mengorbit sasaran darat pada radius 38 meter di ketinggian patroli tinggi (24.5 m / ~7,500 ft) dengan sudut kemiringan perbankan sayap kiri -37° (*orbit lock*).
+  - Kamera penguntit (*Camera Follow / Chase Cam*), partikel hembusan angin kencang (*wind streaks*), dan hamparan awan volumetrik (*low-altitude cloud deck*) di bawah badan pesawat.
+  - Roda pendarat otomatis terlipat masuk (*retracted*) ke sponson saat terbang serta rotasi 6-bilah baling-baling Dowty R391 mulus tanpa glitch.
+- **Sistem Balistik & Kontrol Tembakan Tiga Kaliber (Live Fire)**:
+  - Tembakan artileri berat **105 mm M102 Howitzer** dengan kawah ledakan tanah dan gelombang kejut (*shockwave ring*).
+  - Tembakan otomatis beruntun **40 mm L/60 Bofors** dengan lintasan pelacak bercahaya (*tracer line*).
+  - Tembakan berkecepatan tinggi **30 mm GAU-23/A Bushmaster Chain Gun** dengan efek *muzzle flash* dan hujan selongsong.
+  - Berkas laser penuntun presisi **AN/AAQ-38 FLIR Laser Designator** ke koordinat tanah.
+- **Pola Pertahanan Udara Angel Wing Flare**:
+  - Peluncuran 40 butir suar inframerah (*decoy flares*) dari dispenser AN/ALE-47 membentuk pola sayap malaikat (*Angel Wing*) dramatis dengan asap tebal dan percikan api bercahaya yang melambat dan jatuh mengikuti gravitasi.
+- **Mode Kokpit First-Person Gunner (WSO FLIR Station)**:
+  - Pembidikan mouse 360° bebas tanpa batasan tepian layar via **Pointer Lock API** dan kursor disembunyikan otomatis.
+  - Sensor FLIR ganda (**IR White-Hot** dan **NVG / Green FLIR** via `[V]`), telemetri jarak laser (LRF), pita kompas heading, tangga pitch (*pitch ladder*), dan ganti senjata instan via scroll mouse atau angka `1`–`4`.
+  - Mode Layar Penuh (*Fullscreen Viewport*) terdedikasi.
+- **Tech Stack**: Three.js (WebGL 3D Engine, GLTFLoader, OrbitControls), Modern Vanilla JavaScript (ES6 Modules), esbuild, CSS3 Glassmorphism & Tactical Scanlines.
+- **Lisensi Model 3D**: Model ["Lockheed AC-130U Spooky"](https://sketchfab.com/3d-models/lockheed-ac-130u-spooky-0945d9ad0b354afd87fd65e9f4e1777b) oleh [Rhine_Lab_Muelsyse](https://sketchfab.com/Rhine_Lab_Muelsyse) berlisensi CC Attribution-NonCommercial (CC BY-NC 4.0).
+
+👉 **[Buka Dokumentasi & Kode Proyek 13](./13_WEB%20AC130)**
 
 ---
 

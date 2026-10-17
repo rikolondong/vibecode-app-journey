@@ -17,7 +17,9 @@ const MIME_TYPES = {
   '.vcf': 'text/vcard',
   '.mp3': 'audio/mpeg',
   '.woff': 'font/woff',
-  '.woff2': 'font/woff2'
+  '.woff2': 'font/woff2',
+  '.glb': 'model/gltf-binary',
+  '.gltf': 'model/gltf+json'
 };
 
 const server = http.createServer((req, res) => {
@@ -29,7 +31,10 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/12_SIMTRIP/') || decodedUrl.startsWith('/12/')) {
+  if (decodedUrl.startsWith('/13_WEB AC130/') || decodedUrl.startsWith('/13_WEB_AC130/') || decodedUrl.startsWith('/13/')) {
+    projectDir = '13_WEB AC130';
+    relativePath = decodedUrl.replace(/^\/(13_WEB AC130|13_WEB_AC130|13)\/?/, '');
+  } else if (decodedUrl.startsWith('/12_SIMTRIP/') || decodedUrl.startsWith('/12/')) {
     projectDir = '12_SIMTRIP';
     relativePath = decodedUrl.replace(/^\/(12_SIMTRIP|12)\/?/, '');
   } else if (decodedUrl.startsWith('/11_HOME SURVIVOR/') || decodedUrl.startsWith('/11_HOME_SURVIVOR/') || decodedUrl.startsWith('/11/')) {
@@ -101,4 +106,5 @@ server.listen(PORT, () => {
   console.log(`- Project 10: http://localhost:${PORT}/10/`);
   console.log(`- Project 11: http://localhost:${PORT}/11/`);
   console.log(`- Project 12: http://localhost:${PORT}/12/`);
+  console.log(`- Project 13: http://localhost:${PORT}/13/`);
 });

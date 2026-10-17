@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AC-130 Gunship — 3D Interactive Tactical Dossier</title>
+  
+  <!-- Google Fonts: Chakra Petch, JetBrains Mono, Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Master Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Self-contained bundle script loaded as module -->
+</head>
+<body>
+
+  <!-- Subtle Tactical Scanline Overlay -->
+  <div class="tactical-scanline"></div>
+
+  <!-- Header / Navigation Bar -->
+  <header class="navbar">
+    <a href="#" class="nav-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2L1 21h22L12 2zm0 3.84L19.34 19H4.66L12 5.84z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">AC-130 <span class="brand-badge">J-VARIANT</span></span>
+        <span class="brand-sub">USAF AFSOC AIRBORNE FIRE SUPPORT</span>
+      </div>
+    </a>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#viewer" class="nav-link active">3D ExplodeView</a></li>
+        <li><a href="#spesifikasi" class="nav-link">Spesifikasi</a></li>
+        <li><a href="#persenjataan" class="nav-link">Persenjataan</a></li>
+        <li><a href="#misi" class="nav-link">Riwayat Misi</a></li>
+        <li><a href="#varian" class="nav-link">Varian</a></li>
+      </ul>
+    </nav>
+
+    <a href="#viewer" class="nav-action">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
+      </svg>
+      Jelajahi 3D
+    </a>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-glow"></div>
+    <div class="hero-badge-container">
+      <div class="hero-tag">Sistem Senjata Udara Berat Taktis</div>
+      <div class="brand-badge">AFSOC FLAGSHIP</div>
+    </div>
+    
+    <h1 class="hero-title">LOCKHEED AC-130<br>GHOSTRIDER</h1>
+    <p class="hero-subtitle">
+      Monumen kedirgantaraan militer terhebat: <strong>Pesawat serbu artileri udara terberat di dunia</strong>, memadukan howitzer 105mm, meriam rantai 30mm, serta amunisi berpemandu cerdas dengan taktik manuver <em>pylon turn</em> mematikan.
+    </p>
+
+    <div class="hero-stats-bar">
+      <div class="hero-stat-card">
+        <div class="stat-value">105 mm</div>
+        <div class="stat-label">Artileri Udara M102</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="stat-value">40,4 m</div>
+        <div class="stat-label">Rentang Sayap Penuh</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="stat-value">18.000+</div>
+        <div class="stat-label">Total Tenaga Kuda (shp)</div>
+      </div>
+      <div class="hero-stat-card">
+        <div class="stat-value">6+ Jam</div>
+        <div class="stat-label">Waktu Tempur (Loiter)</div>
+      </div>
+    </div>
+
+    <div class="hero-cta-group">
+      <a href="#viewer" class="btn-primary">
+        Buka Mode ExplodeView 3D
+      </a>
+      <a href="#spesifikasi" class="btn-secondary">
+        Lihat Lembar Spesifikasi
+      </a>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       3D EXPLODEVIEW INTERACTIVE SECTION
+  ===================================================================== -->
+  <section id="viewer" class="viewer-section">
+    <div class="viewer-header">
+      <div class="viewer-title-group">
+        <h2>
+          <svg width="20" height="20" fill="var(--accent-cyan)" viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          Sistem Rekayasa ExplodeView & Simulasi 3D
+        </h2>
+        <p>Geser slider ExplodeView untuk mengurai 16 sub-sistem pesawat, aktifkan Simulasi Pylon Turn, atau klik komponen 3D</p>
+      </div>
+
+      <div class="hud-camera-preset">
+        <button class="preset-btn active" data-preset="default">Tampak Port-Side</button>
+        <button class="preset-btn" data-preset="front">Hidung & Radome</button>
+        <button class="preset-btn" data-preset="weapons">Baterai Senjata Kiri</button>
+        <button class="preset-btn" data-preset="cockpit">Interior BMC</button>
+        <button class="preset-btn" data-preset="tail">Ekor & CLT</button>
+        <button class="preset-btn" data-preset="top">Tampak Atas</button>
+      </div>
+    </div>
+
+    <div class="viewer-viewport" id="viewerViewport">
+      <canvas id="canvas3d"></canvas>
+
+      <!-- Tactical HUD Overlays -->
+      <div class="hud-overlay">
+        <div class="hud-top-bar">
+          <div class="hud-reticle-box">
+            <span>AIRFRAME: LOCKHEED AC-130U SPOOKY / AC-130J</span>
+            <span>ENGINE: 4× ROLLS-ROYCE AE 2100D3 + DOWTY R391 6-BLADE</span>
+            <span>ARSENAL: 105MM M102 • 40MM BOFORS • 30MM GAU-23/A • AGM-114 • SDB</span>
+            <span id="hudStatusLine" style="color: var(--accent-amber);">MODE: HANGGAR INSPEKSI & EXPLODEVIEW</span>
+            <span style="font-size: 0.68rem; color: var(--text-dim); margin-top: 2px;">
+              3D MODEL: <a href="https://sketchfab.com/3d-models/lockheed-ac-130u-spooky-0945d9ad0b354afd87fd65e9f4e1777b" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: underline;">"Lockheed AC-130U Spooky"</a> by <a href="https://sketchfab.com/Rhine_Lab_Muelsyse" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: underline;">Rhine_Lab_Muelsyse</a> (CC BY-NC 4.0)
+            </span>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; pointer-events: auto;">
+            <button class="dock-btn" id="btnToggleFullscreen" title="Tampilkan Mode Layar Penuh (Fullscreen)">
+              <span id="fsBtnIcon">⛶</span> <span id="fsBtnLabel">Fullscreen</span>
+            </button>
+            <button class="dock-btn" id="btnOpenDrawer" style="pointer-events: auto; display: none;">
+              Panel Komponen (16)
+            </button>
+          </div>
+        </div>
+
+        <!-- Floating Controls Dock (Explode Slider & Tactical Modes) -->
+        <div class="hud-controls-dock" id="hudControlsDock">
+          <div class="dock-header-row">
+            <div class="slider-group">
+              <div class="slider-label-row">
+                <span class="slider-label-title">
+                  <svg width="15" height="15" fill="var(--accent-cyan)" viewBox="0 0 16 16">
+                    <path d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z"/>
+                  </svg>
+                  ExplodeView (Urai Komponen)
+                </span>
+                <div style="display: flex; align-items: center; gap: 0.45rem;">
+                  <button class="chip-btn" data-explode="0">0%</button>
+                  <button class="chip-btn" data-explode="50">50%</button>
+                  <button class="chip-btn" data-explode="100">100%</button>
+                  <span class="slider-val-readout" id="explodeReadout">0%</span>
+                </div>
+              </div>
+              <input type="range" id="explodeSlider" class="custom-range-slider" min="0" max="100" value="0">
+            </div>
+
+            <button class="dock-minimize-btn" id="btnToggleDock" title="Sembunyikan / Tampilkan Tombol Kontrol">
+              <span id="dockToggleIcon">▾</span> <span id="dockToggleLabel">Sembunyikan</span>
+            </button>
+          </div>
+
+          <div class="dock-actions" id="dockActions">
+            <!-- Group 1: Flight & Orbit -->
+            <div class="dock-btn-group">
+              <span class="dock-group-tag">FLIGHT</span>
+              <button class="dock-btn" id="btnTogglePlay" title="Jeda / Lanjutkan Animasi & Penerbangan Pesawat">
+                <span id="btnPlayIcon">⏸️</span> <span id="btnPlayText">Jeda</span>
+              </button>
+              <button class="dock-btn" id="btnPylonTurn" title="Simulasi Manuver Orbit Pylon Turn & Penembakan">
+                Orbit Pylon
+              </button>
+              <button class="dock-btn" id="btnCameraFollow" title="Kamera Mengikuti Pesawat saat Mengorbit (Chase Cam)">
+                🎥 Ikuti
+              </button>
+              <button class="dock-btn" id="btnFlightEnv" title="Efek Penerbangan: Angin Berkecepatan Tinggi & Awan Realistis">
+                ☁️ Awan
+              </button>
+            </div>
+
+            <!-- Group 2: Weapons & Combat -->
+            <div class="dock-btn-group combat-group">
+              <span class="dock-group-tag">COMBAT</span>
+              <button class="dock-btn" id="btnFPSGunner" style="border-color: rgba(0, 229, 255, 0.6); color: var(--accent-cyan);" title="Masuk ke Kokpit / Stasiun Gunner (First-Person View)">
+                🎯 Mode Gunner
+              </button>
+              <button class="dock-btn" id="btnFireSalvo" title="Tembakkan Meriam 105mm, 40mm & 25mm" style="border-color: rgba(245, 158, 11, 0.5); color: var(--accent-amber);">
+                💥 Tembak
+              </button>
+              <button class="dock-btn" id="btnAngelFlares" style="border-color: rgba(255, 170, 34, 0.6); color: #ffaa22;" title="Lepaskan Pola Pertahanan Flare Sayap Malaikat (Angel Wing Flare Pattern)">
+                🪽 Flares
+              </button>
+            </div>
+
+            <!-- Group 3: 3D Visualization Modes -->
+            <div class="dock-btn-group">
+              <span class="dock-group-tag">VIEW 3D</span>
+              <button class="dock-btn" id="btnCutaway" title="Buka Fuselage Atas untuk Melihat Kabin BMC">
+                Kabin
+              </button>
+              <button class="dock-btn active" id="btnToggleRotate" title="Nyalakan/Matikan Orbit Otomatis">
+                Rotasi
+              </button>
+              <button class="dock-btn" id="btnToggleNVG" title="Mode Night Vision FLIR Hijau">
+                NVG
+              </button>
+              <button class="dock-btn" id="btnToggleXRay" title="Mode Wireframe Kerangka Pesawat">
+                X-Ray
+              </button>
+              <button class="dock-btn" id="btnDockFullscreen" title="Layar Penuh Viewport">
+                ⛶ Fullscreen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced Military Gunner FLIR HUD Overlay -->
+      <div id="fpsGunnerHUD" class="fps-gunner-hud" style="display: none;">
+        <!-- Top Sensor & Dynamic Compass Ribbon -->
+        <div class="fps-hud-top">
+          <div class="fps-sys-tag">
+            <span>AN/AAQ-38 FLIR // SPECTRE 61</span>
+            <span id="fpsZuluTime" style="color: var(--accent-cyan);">ZULU 16:40:00Z</span>
+          </div>
+          <div class="fps-compass-container">
+            <div class="fps-compass-marker">▼</div>
+            <div class="fps-compass-window">
+              <div class="fps-compass-tape" id="fpsCompassTape">
+                <span>180</span><span>•</span><span>190</span><span>•</span><span>200</span><span>•</span><span>210</span><span>•</span><span>220</span><span>•</span><span>230</span><span>•</span><span>240</span><span>•</span><span>250</span><span>•</span><span>260</span><span>•</span><span>W</span><span>•</span><span>280</span><span>•</span><span>290</span><span>•</span><span>300</span>
+              </div>
+            </div>
+            <div class="fps-hdg-val" id="fpsHdgVal">HDG 248°</div>
+          </div>
+          <div class="fps-top-right-group">
+            <div class="fps-fov-tag">
+              <span>FOV: WIDE TACTICAL (38°)</span>
+              <span id="fpsVisionMode" style="color: var(--accent-amber);">SENSOR: IR WHITE-HOT</span>
+            </div>
+            <button class="fps-tactical-btn" id="btnFPSFullscreen" title="Layar Penuh (Fullscreen)">
+              <span id="fpsFsIcon">⛶</span> FULLSCREEN
+            </button>
+          </div>
+        </div>
+
+        <!-- Center Aiming Reticle & Artificial Pitch Ladder -->
+        <div class="fps-center-reticle-wrap">
+          <div class="fps-pitch-ladder" id="fpsPitchLadder">
+            <div class="ladder-bar bar-neg20"><span>-20</span><div class="bar-line"></div><span>-20</span></div>
+            <div class="ladder-bar bar-neg30"><span>-30</span><div class="bar-line"></div><span>-30</span></div>
+            <div class="ladder-bar bar-neg40"><span>-40</span><div class="bar-line"></div><span>-40</span></div>
+          </div>
+
+          <div class="fps-crosshair">
+            <div class="cross-corner tl"></div>
+            <div class="cross-corner tr"></div>
+            <div class="cross-corner bl"></div>
+            <div class="cross-corner br"></div>
+            <div class="cross-circle"></div>
+            <div class="cross-gate-l"></div>
+            <div class="cross-gate-r"></div>
+            <div class="cross-line cross-top"></div>
+            <div class="cross-line cross-bottom"></div>
+            <div class="cross-line cross-left"></div>
+            <div class="cross-line cross-right"></div>
+            <div class="cross-dot" id="fpsCrossDot"></div>
+            <div class="cross-target-diamond"></div>
+          </div>
+        </div>
+
+        <!-- Left & Right Telemetry Panes -->
+        <div class="fps-telemetry-grid">
+          <div class="fps-telemetry-col left">
+            <div class="hud-box-header">FLIGHT & SENSOR TELEMETRY</div>
+            <div class="hud-stat-row"><span class="k">ALTITUDE:</span><span class="v">7,500 FT (2,286 M)</span></div>
+            <div class="hud-stat-row"><span class="k">AIRSPEED:</span><span class="v">210 KTS (389 KM/H)</span></div>
+            <div class="hud-stat-row"><span class="k">PYLON BANK:</span><span class="v">30.0° L (ORBIT LOCK)</span></div>
+            <div class="hud-stat-row"><span class="k">AZIMUTH:</span><span class="v" id="fpsAzVal">+14.2°</span></div>
+            <div class="hud-stat-row"><span class="k">ELEVATION:</span><span class="v" id="fpsElVal">-34.8°</span></div>
+            <div class="hud-stat-row"><span class="k">TGT RANGE:</span><span class="v highlight" id="fpsRangeVal">4,120 M</span></div>
+            <div class="hud-stat-row"><span class="k">TGT COORD:</span><span class="v">34°31'22"N 043°29'08"E</span></div>
+            <div class="hud-stat-row"><span class="k">LRF DESIGNATOR:</span><span class="v green">CODE 1688 [PRF LOCKED]</span></div>
+          </div>
+
+          <div class="fps-telemetry-col right">
+            <div class="hud-box-header">ARMAMENT & FIRE CONTROL</div>
+            <div class="fps-weapon-item active" data-weapon="both" id="wpnBoth">
+              <span class="wpn-name">[4] ALL SALVO FIRE</span>
+              <span class="wpn-status" style="color: var(--accent-cyan);">ARMED & READY</span>
+            </div>
+            <div class="fps-weapon-item" data-weapon="105" id="wpn105">
+              <span class="wpn-name">[1] 105MM M102 HOWITZER</span>
+              <span class="wpn-ammo" id="ammo105">96 RDS</span>
+            </div>
+            <div class="fps-weapon-item" data-weapon="40" id="wpn40">
+              <span class="wpn-name">[2] 40MM L/60 BOFORS</span>
+              <span class="wpn-ammo" id="ammo40">256 RDS</span>
+            </div>
+            <div class="fps-weapon-item" data-weapon="30" id="wpn30">
+              <span class="wpn-name">[3] 30MM GAU-23/A CHAIN GUN</span>
+              <span class="wpn-ammo" id="ammo30">1,840 RDS</span>
+            </div>
+            <div class="hud-stat-row" style="margin-top: 0.4rem;">
+              <span class="k">AN/ALE-47 FLARES:</span>
+              <span class="v" style="color: #ffaa22;">120 RDS [READY]</span>
+            </div>
+            <div class="hud-stat-row">
+              <span class="k">FIRE STATUS:</span>
+              <span class="v green" id="fpsFireStatus">PERMITTED // AUTO-LEAD</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Controls & Shortcut Guide -->
+        <div class="fps-hud-bottom">
+          <div class="fps-key-hints">
+            <span class="key-badge"><kbd>AIM</kbd> Bidik Bebas (Pointer Lock)</span>
+            <span class="key-badge"><kbd>KLIK</kbd> / <kbd>SPACE</kbd> Tembak</span>
+            <span class="key-badge"><kbd>SCROLL</kbd> / <kbd>1-4</kbd> Ganti Senjata</span>
+            <span class="key-badge"><kbd>F</kbd> Angel Flares</span>
+            <span class="key-badge"><kbd>V</kbd> NVG / FLIR</span>
+            <span class="key-badge"><kbd>ESC</kbd> Keluar FPS</span>
+          </div>
+          <button class="fps-exit-btn" id="btnExitFPS">✕ KELUAR MODE GUNNER (ESC)</button>
+        </div>
+      </div>
+
+      <!-- Tactical Part Info Drawer (Visible by default for immediate exploration) -->
+      <aside class="part-info-drawer" id="partDrawer">
+        <div class="drawer-header">
+          <div>
+            <span class="drawer-cat-badge" id="drawerCat">Persenjataan Sisi Kiri</span>
+            <h3 class="drawer-title" id="drawerTitle">Howitzer Artileri Udara M102 105 mm</h3>
+          </div>
+          <button class="drawer-close" id="drawerClose" title="Sembunyikan Panel">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <p class="drawer-desc" id="drawerDesc">
+          Klik komponen langsung pada model 3D atau pilih salah satu dari 16 sub-sistem di bawah untuk melihat spesifikasi dan posisi rekayasanya.
+        </p>
+
+        <div class="drawer-facts-list" id="drawerFacts">
+          <!-- Dynamically inserted facts -->
+        </div>
+
+        <div style="margin-top: 0.85rem; border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+          <span style="font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase;">Inspeksi 16 Sub-Sistem (Klik untuk Sorot):</span>
+          <div class="part-selector-chips" id="partChips">
+            <!-- Dynamically populated chips -->
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       SPECIFICATIONS SECTION
+  ===================================================================== -->
+  <section id="spesifikasi" class="section-container">
+    <div class="section-tag">Spesifikasi Komprehensif</div>
+    <h2 class="section-heading">Arsitektur & Kinerja Penerbangan</h2>
+    <p class="section-lead">
+      Dibangun di atas rangka legendaris C-130J Super Hercules yang diperkuat, AC-130J memadukan efisiensi bahan bakar turboprop jarak jauh dengan kapasitas muatan persenjataan artileri terberat.
+    </p>
+
+    <div class="specs-tab-nav">
+      <button class="spec-tab-btn active" data-category="dimensi">Dimensi & Bobot</button>
+      <button class="spec-tab-btn" data-category="propulsi">Propulsi & Kinerja</button>
+      <button class="spec-tab-btn" data-category="kru">Kru Operasional</button>
+    </div>
+
+    <div class="specs-grid" id="specsGrid">
+      <!-- Injected by JavaScript -->
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       ARMAMENT & TACTICS SECTION
+  ===================================================================== -->
+  <section id="persenjataan" class="section-container">
+    <div class="section-tag">Arsenal & Persenjataan</div>
+    <h2 class="section-heading">Kekuatan Tembak Sisi Kiri (Port-Side)</h2>
+    <p class="section-lead">
+      Ciri khas terunik dalam dunia penerbangan militer: seluruh senjata terpasang mengarah ke lambung kiri pesawat, disinkronkan dengan komputer balistik canggih untuk memberikan hujan tembakan presisi tanpa henti.
+    </p>
+
+    <div class="armament-grid" id="armamentGrid">
+      <!-- Injected by JavaScript -->
+    </div>
+
+    <!-- Pylon Turn Special Feature -->
+    <div class="tactics-box">
+      <div class="tactics-content">
+        <div>
+          <span class="hero-tag" style="margin-bottom: 0.75rem;">Taktik Utama Gunship</span>
+          <h3 style="font-family: var(--font-display); font-size: 1.85rem; font-weight: 800; color: #fff; margin-bottom: 1rem;">
+            Prinsip Manuver Pylon Turn
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 1rem;">
+            Tidak seperti pesawat tempur konvensional yang harus melakukan <em>strafe run</em> lurus dan berbalik menjauhi target, AC-130 bermanuver dalam orbit lingkaran konstan dengan kemiringan (bank angle) 25° hingga 45°.
+          </p>
+          <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7;">
+            Karena laras Howitzer 105mm dan meriam 30mm dipasang di lambung kiri dengan sudut kemiringan tertentu, titik fokus tembakan terkunci secara kontinu pada koordinat darat yang sama. Hal ini memungkinkan tembakan penekan (suppressive fire) tanpa jeda selama berjam-jam di atas wilayah pertempuran.
+          </p>
+        </div>
+
+        <div class="tactics-diagram">
+          <svg viewBox="0 0 300 240" style="width: 100%; max-width: 280px;">
+            <!-- Ground Target -->
+            <circle cx="150" cy="180" r="16" fill="rgba(239, 68, 68, 0.2)" stroke="#ef4444" stroke-width="2"/>
+            <circle cx="150" cy="180" r="4" fill="#ef4444"/>
+            <text x="150" y="215" fill="#ef4444" font-family="var(--font-mono)" font-size="11" text-anchor="middle">TARGET TITIK DARAT</text>
+
+            <!-- Orbit Ellipse -->
+            <ellipse cx="150" cy="90" rx="100" ry="40" fill="none" stroke="rgba(0, 229, 255, 0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+
+            <!-- AC-130 in Orbit -->
+            <circle cx="210" cy="70" r="8" fill="#00e5ff"/>
+            <line x1="210" y1="70" x2="150" y2="180" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="3,3"/>
+            <circle cx="150" cy="180" r="28" fill="none" stroke="rgba(245, 158, 11, 0.5)" stroke-width="1.5"/>
+
+            <text x="220" y="55" fill="#00e5ff" font-family="var(--font-mono)" font-size="10">AC-130 (Bank Angle 30°)</text>
+            <text x="185" y="130" fill="#f59e0b" font-family="var(--font-mono)" font-size="10">Lintasan Peluru 105mm</text>
+          </svg>
+          <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim); text-align: center; margin-top: 0.75rem;">
+            Diagram Geometri Lintasan Tembak Pylon Turn
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       COMBAT MISSIONS TIMELINE SECTION
+  ===================================================================== -->
+  <section id="misi" class="section-container">
+    <div class="section-tag">Riwayat Tempur Legendaris</div>
+    <h2 class="section-heading">Misi & Operasi Yang Terlibat</h2>
+    <p class="section-lead">
+      Sejak perang Vietnam hingga pertempuran modern melawan terorisme di Timur Tengah, armada AC-130 telah hadir di garis terdepan melindungi pasukan sekutu di saat-saat paling genting.
+    </p>
+
+    <div class="timeline-container" id="missionsTimeline">
+      <!-- Injected by JavaScript -->
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       VARIANTS COMPARISON SECTION
+  ===================================================================== -->
+  <section id="varian" class="section-container">
+    <div class="section-tag">Evolusi Teknologi</div>
+    <h2 class="section-heading">Silsilah Varian AC-130</h2>
+    <p class="section-lead">
+      Perjalanan panjang pengembangan gunship dari modifikasi sederhana di era 1960-an hingga platform penyerang presisi digital berpeluru kendali tercanggih saat ini.
+    </p>
+
+    <div class="table-responsive">
+      <table class="tactical-table">
+        <thead>
+          <tr>
+            <th>Varian</th>
+            <th>Masa Tugas</th>
+            <th>Mesin & Propulsi</th>
+            <th>Konfigurasi Senjata Utama</th>
+            <th>Catatan Operasional</th>
+          </tr>
+        </thead>
+        <tbody id="variantsTableBody">
+          <!-- Injected by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+        <div class="footer-brand">
+        <span class="brand-title" style="font-size: 1.3rem;">AC-130 GHOSTRIDER</span>
+        <p class="footer-desc">
+          Dokumentasi interaktif 3D pesawat artileri udara Lockheed Martin AC-130 Gunship. Dirancang untuk eksplorasi teknologi penerbangan militer, spesifikasi sistem senjata, dan studi sejarah operasi kedirgantaraan modern.
+        </p>
+        <div class="model-credit-box" style="margin-top: 1.25rem; padding: 0.9rem 1.1rem; background: rgba(0, 229, 255, 0.05); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: var(--radius-md); font-size: 0.82rem; line-height: 1.6;">
+          <div style="font-family: var(--font-mono); font-weight: 700; color: var(--accent-cyan); margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📦 3D MODEL ATTRIBUTION & CREDIT</span>
+          </div>
+          <div style="color: var(--text-main);">
+            Model 3D <strong>"Lockheed AC-130U Spooky"</strong> dibuat oleh 
+            <a href="https://sketchfab.com/Rhine_Lab_Muelsyse" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: underline; font-weight: 600;">Rhine_Lab_Muelsyse</a> 
+            di <a href="https://sketchfab.com/3d-models/lockheed-ac-130u-spooky-0945d9ad0b354afd87fd65e9f4e1777b" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: underline;">Sketchfab</a>.
+          </div>
+          <div style="color: var(--text-muted); font-size: 0.76rem; margin-top: 0.3rem;">
+            Lisensi: <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-amber); text-decoration: underline;">Creative Commons Attribution-NonCommercial (CC BY-NC 4.0)</a>.
+          </div>
+        </div>
+      </div>
+      <div>
+        <a href="#viewer" class="btn-primary" style="font-size: 0.85rem; padding: 0.75rem 1.4rem;">
+          Kembali ke 3D Viewport
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>UNITED STATES AIR FORCE AIR SPECIAL OPERATIONS COMMAND (AFSOC) REFERENCE</span>
+      <span>3D ASSET CREDIT: SKETCHFAB / RHINE_LAB_MUELSYSE (CC BY-NC 4.0)</span>
+      <span>DOKUMENTASI TEKNIS TACTICAL WEB EXPERIENCE</span>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript Bundle (All Three.js + App Code bundled) -->
+  <script type="module" src="js/bundle.js"></script>
+</body>
+</html>
