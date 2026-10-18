@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResponsiView Studio — Simulator Perangkat &amp; OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Color+Emoji&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- APPLE DESIGN SYSTEM TOP UNIFIED TOOLBAR -->
+  <header class="topbar">
+    <div class="brand-area">
+      <div class="apple-window-dots" aria-hidden="true">
+        <span class="dot-close"></span>
+        <span class="dot-min"></span>
+        <span class="dot-max"></span>
+      </div>
+      <div class="logo-mark" title="ResponsiView Studio">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2.5" ry="2.5"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">ResponsiView</span>
+        <span class="brand-subtitle">Simulator Studio</span>
+      </div>
+    </div>
+
+    <!-- Safari-Inspired Unified Address & Command Bar -->
+    <form class="url-bar-form" id="urlForm" autocomplete="off">
+      <div class="nav-history-btns">
+        <button type="button" class="icon-btn" id="btnBack" title="Kembali (Riwayat URL)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button type="button" class="icon-btn" id="btnForward" title="Maju (Riwayat URL)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+        <button type="button" class="icon-btn" id="btnReload" title="Muat Ulang Website (Reload)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+        </button>
+      </div>
+
+      <div class="url-input-wrapper">
+        <svg class="url-security-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <input
+          type="text"
+          id="urlInput"
+          class="url-input"
+          placeholder="Ketik alamat web (misal: wikipedia.org, example.com, atau demo.html)..."
+          value="demo.html"
+          spellcheck="false"
+        />
+        <button type="button" class="clear-url-btn" id="btnClearUrl" title="Bersihkan URL">×</button>
+      </div>
+
+      <button type="submit" class="btn-primary" id="btnGo">
+        <span>Buka</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </button>
+    </form>
+
+    <!-- Right Action Controls: Deep Spoof Toggle, Light/Dark Theme Toggle & External Link -->
+    <div class="topbar-actions">
+      <label class="proxy-toggle" title="Emulasi Penuh: Memalsukan User-Agent, Platform, DPR, Font OS, dan Emoji agar website mengira diakses langsung dari perangkat asli">
+        <input type="checkbox" id="proxyModeToggle" checked />
+        <span class="proxy-slider"></span>
+        <span class="proxy-label">Deep Spoof <span id="proxyStatusDot" class="status-dot"></span></span>
+      </label>
+
+      <!-- Apple Light / Dark Mode Toggle Button -->
+      <button type="button" class="theme-toggle-btn" id="themeToggleBtn" title="Ganti Tema Light / Dark (Apple Design System)">
+        <span class="theme-icon-sun" id="themeIconSun">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="theme-icon-moon hidden" id="themeIconMoon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </span>
+        <span id="themeToggleLabel">Light</span>
+      </button>
+
+      <!-- Apple HIG Screenshot Action Button -->
+      <button type="button" class="btn-screenshot" id="btnScreenshot" title="Ambil Screenshot Perangkat / Layar (Mockup HD, Salin, Unduh)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+        <span>Screenshot</span>
+      </button>
+
+      <button type="button" class="icon-btn-labeled" id="btnOpenExternal" title="Buka URL di Tab Baru">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- QUICK PRESET WEBSITES RIBBON -->
+  <div class="quick-sites-bar">
+    <div class="quick-sites-list">
+      <span class="quick-label">Bookmark:</span>
+      <button type="button" class="site-chip active" data-url="demo.html" data-proxy="false">
+        ⚡ Demo Deteksi OS &amp; Font
+      </button>
+      <button type="button" class="site-chip" data-url="https://id.wikipedia.org/wiki/Halaman_Utama" data-proxy="true">
+        📖 Wikipedia ID
+      </button>
+      <button type="button" class="site-chip" data-url="https://example.com" data-proxy="true">
+        🌍 Example.com
+      </button>
+      <button type="button" class="site-chip" data-url="https://news.ycombinator.com" data-proxy="true">
+        📰 Hacker News
+      </button>
+      <button type="button" class="site-chip" data-url="https://news.detik.com" data-proxy="true">
+        📰 Detikcom
+      </button>
+      <button type="button" class="site-chip" data-url="https://www.instagram.com" data-proxy="true">
+        📷 Instagram
+      </button>
+      <button type="button" class="site-chip" data-url="https://www.openstreetmap.org/export/embed.html?bbox=106.78%2C-6.23%2C106.87%2C-6.15&layer=mapnik" data-proxy="false">
+        🗺️ Peta Jakarta
+      </button>
+    </div>
+
+    <!-- Apple UISegmentedControl for View Mode -->
+    <div class="view-mode-switcher" role="group" aria-label="Mode Tampilan">
+      <button type="button" class="mode-btn active" id="modeSingleBtn" data-mode="single">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="2"></rect></svg>
+        <span>Single View</span>
+      </button>
+      <button type="button" class="mode-btn" id="modeMatrixBtn" data-mode="matrix">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="6" height="16" rx="1"></rect><rect x="10" y="4" width="12" height="16" rx="1"></rect></svg>
+        <span>Multi-Device</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN WORKSPACE -->
+  <div class="workspace">
+    <!-- LEFT SIDEBAR: APPLE FINDER / XCODE INSPECTOR STYLE -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-header">
+          <h2>Perangkat &amp; Mode</h2>
+          <span class="device-count-badge" id="deviceCountBadge">13 Perangkat</span>
+        </div>
+
+        <!-- Dedicated Responsive Mode Button -->
+        <button type="button" class="responsive-mode-card" id="btnResponsiveMode" title="Aktifkan Mode Responsive untuk mengubah ukuran layar secara bebas">
+          <div class="rm-icon">📐</div>
+          <div class="rm-info">
+            <span class="rm-title">Mode Responsive</span>
+            <span class="rm-sub">Bebas ubah &amp; tarik resolusi</span>
+          </div>
+          <span class="rm-badge">Custom</span>
+        </button>
+
+        <!-- Apple Segmented Category Filter Tabs -->
+        <div class="category-tabs" id="categoryTabs">
+          <button type="button" class="cat-tab active" data-cat="all">Semua</button>
+          <button type="button" class="cat-tab" data-cat="mobile">iPhone/HP</button>
+          <button type="button" class="cat-tab" data-cat="tablet">iPad/Tab</button>
+          <button type="button" class="cat-tab" data-cat="desktop">Mac/PC</button>
+        </div>
+
+        <!-- Device Preset Cards -->
+        <div class="device-list" id="deviceList">
+          <!-- Populated dynamically via app.js -->
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-header">
+          <h2>Breakpoints</h2>
+          <span class="hint-text">Mode Responsive</span>
+        </div>
+        <div class="breakpoint-grid">
+          <button type="button" class="bp-btn" data-w="360" data-h="780" title="Buka di Mode Responsive (360px)">
+            <span class="bp-name">xs</span>
+            <span class="bp-px">360px</span>
+          </button>
+          <button type="button" class="bp-btn" data-w="640" data-h="800" title="Buka di Mode Responsive (640px)">
+            <span class="bp-name">sm</span>
+            <span class="bp-px">640px</span>
+          </button>
+          <button type="button" class="bp-btn" data-w="768" data-h="1024" title="Buka di Mode Responsive (768px)">
+            <span class="bp-name">md</span>
+            <span class="bp-px">768px</span>
+          </button>
+          <button type="button" class="bp-btn" data-w="1024" data-h="768" title="Buka di Mode Responsive (1024px)">
+            <span class="bp-name">lg</span>
+            <span class="bp-px">1024px</span>
+          </button>
+          <button type="button" class="bp-btn" data-w="1280" data-h="800" title="Buka di Mode Responsive (1280px)">
+            <span class="bp-name">xl</span>
+            <span class="bp-px">1280px</span>
+          </button>
+          <button type="button" class="bp-btn" data-w="1536" data-h="900" title="Buka di Mode Responsive (1536px)">
+            <span class="bp-name">2xl</span>
+            <span class="bp-px">1536px</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER STAGE: TOOLBAR + VIEWPORT CANVAS -->
+    <main class="stage-container">
+      <!-- Viewport Control Toolbar -->
+      <div class="stage-toolbar">
+        <!-- Active Device Pill & Dimensions -->
+        <div class="toolbar-group" id="singleControlsGroup">
+          <div class="active-device-indicator">
+            <span id="activeDeviceIcon">📱</span>
+            <span id="activeDeviceName">iPhone 16 Pro</span>
+            <span class="os-design-badge" id="activeOsBadge">iOS 18 • SF Pro</span>
+          </div>
+
+          <div class="dimension-inputs" id="dimensionInputsWrap">
+            <label class="dim-field" id="dimFieldW" title="Lebar Viewport (Terkunci pada perangkat asli, terbuka pada Mode Responsive)">
+              <span>W</span>
+              <input type="number" id="inputWidth" min="240" max="3840" value="393" readonly />
+            </label>
+            <button type="button" class="rotate-btn" id="btnRotate" title="Putar Orientasi Portrait / Landscape">
+              ⇄
+            </button>
+            <label class="dim-field" id="dimFieldH" title="Tinggi Viewport (Terkunci pada perangkat asli, terbuka pada Mode Responsive)">
+              <span>H</span>
+              <input type="number" id="inputHeight" min="240" max="3840" value="852" readonly />
+            </label>
+            <span class="px-unit">px</span>
+            <span class="resolution-lock-badge locked" id="resLockBadge" title="Resolusi layar mengikuti ukuran perangkat asli secara presisi. Pilih Mode Responsive di kiri jika ingin mengubah ukuran bebas.">
+              🔒 Fix Hardware
+            </span>
+          </div>
+        </div>
+
+        <!-- Matrix Controls Group (Visible in Multi-Device Mode) -->
+        <div class="toolbar-group hidden" id="matrixControlsGroup">
+          <div class="active-device-indicator">
+            <span>⊞</span>
+            <span>Multi-Device Studio</span>
+            <span class="os-design-badge">3 Layar Bersamaan</span>
+          </div>
+          <button type="button" class="tool-pill" id="btnMatrixSyncReload" title="Muat Ulang Ketiga Perangkat Sekaligus">
+            ↻ Muat Ulang Semua
+          </button>
+          <label class="control-label" for="matrixScaleSelect">Skala Matrix:</label>
+          <select id="matrixScaleSelect" class="toolbar-select" title="Skala Tampilan Ketiga Perangkat">
+            <option value="fit" selected>Auto-Fit</option>
+            <option value="0.45">45%</option>
+            <option value="0.55">55%</option>
+            <option value="0.65">65%</option>
+            <option value="0.8">80%</option>
+            <option value="1">100%</option>
+          </select>
+        </div>
+
+        <!-- Zoom / Scale Controls -->
+        <div class="toolbar-group" id="singleZoomGroup">
+          <label class="control-label" for="zoomSelect">Skala:</label>
+          <select id="zoomSelect" class="toolbar-select" title="Skala Zoom Kanvas (Resolusi internal tetap 100% asli)">
+            <option value="fit" selected>Auto-Fit</option>
+            <option value="1">100% (Ukuran Asli 1:1)</option>
+            <option value="0.85">85%</option>
+            <option value="0.75">75%</option>
+            <option value="0.65">65%</option>
+            <option value="0.5">50%</option>
+            <option value="1.25">125%</option>
+          </select>
+          <button type="button" class="tool-pill" id="btnZoom100" title="Tampilkan Ukuran Asli 100% (1:1 Skala Nyata Hardware)">100% Asli</button>
+          <button type="button" class="tool-pill active" id="btnZoomFit" title="Sesuaikan Tampilan dengan Ukuran Layar Kerja">Fit Layar</button>
+          <span class="zoom-readout" id="zoomReadout">100%</span>
+        </div>
+
+        <!-- Hardware & Inspection Overlays -->
+        <div class="toolbar-group toolbar-toggles">
+          <button type="button" class="tool-pill active" id="btnToggleFrame" title="Tampilkan Bingkai Fisik Perangkat">
+            Bodi Perangkat
+          </button>
+          <button type="button" class="tool-pill active" id="btnToggleStatusbar" title="Tampilkan Antarmuka Sistem Operasi (Status Bar, Safari/Chrome Bar, Taskbar)">
+            Sistem OS
+          </button>
+          <button type="button" class="tool-pill active" id="btnToggleTouch" title="Simulasikan Kursor Sentuhan Jari pada HP/Tablet">
+            Touch Cursor
+          </button>
+          <button type="button" class="tool-pill" id="btnToggleGrid" title="Tampilkan Overlay Grid 12-Kolom">
+            Grid 12-Col
+          </button>
+          <button type="button" class="tool-pill pill-screenshot" id="btnQuickScreenshot" title="Ambil Screenshot Perangkat (Shortcut: Ctrl+Shift+S)">
+            📸 Screenshot
+          </button>
+        </div>
+      </div>
+
+      <!-- Apple HIG Security Advisory Notice (for Auth/Login restricted sites like Instagram/Google/Facebook) -->
+      <div class="auth-security-notice hidden" id="authSecurityNotice" role="alert">
+        <div class="notice-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <div class="notice-content">
+          <div class="notice-title">Kebijakan Keamanan Autentikasi (Instagram / Meta)</div>
+          <div class="notice-desc">
+            Instagram dan platform Meta melarang proses login di dalam frame (Anti-Phishing &amp; CORS Origin Policy). Anda dapat menjelajahi profil/halaman publik secara langsung di simulator ini, atau gunakan tombol di samping untuk sesi login akun Anda di tab baru.
+          </div>
+        </div>
+        <div class="notice-actions">
+          <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" class="notice-btn-primary" id="btnNoticeOpenExternal">
+            <span>Buka Tab Baru untuk Login</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+          <button type="button" class="notice-btn-close" id="btnNoticeClose" title="Tutup pemberitahuan">✕</button>
+        </div>
+      </div>
+
+      <!-- INTERACTIVE VIEWPORT CANVAS -->
+      <div class="canvas-viewport" id="canvasViewport">
+        <!-- SINGLE DEVICE STAGE -->
+        <div class="single-stage" id="singleStage">
+          <div class="device-scale-wrapper" id="deviceScaleWrapper">
+            <div class="device-shell device-mobile bezel-enabled" id="deviceShell" data-frame="dynamic-island" data-os="ios">
+              <!-- Physical Side Buttons (Phones/Tablets) -->
+              <div class="hw-btn hw-btn-action" title="Action Button"></div>
+              <div class="hw-btn hw-btn-silent" title="Mute Switch"></div>
+              <div class="hw-btn hw-btn-vol-up" title="Volume Up"></div>
+              <div class="hw-btn hw-btn-vol-down" title="Volume Down"></div>
+              <div class="hw-btn hw-btn-power" title="Power Button"></div>
+              <div class="hw-btn hw-btn-camera" title="Camera Control"></div>
+
+              <!-- Top Bezel Forehead for iPhone SE -->
+              <div class="hw-bezel-forehead" id="hwBezelForehead">
+                <div class="bezel-speaker"></div>
+                <div class="bezel-cam"></div>
+              </div>
+
+              <!-- Touch ID Home Button Ring (Only for Classic iPhone SE bezel) -->
+              <div class="hw-touchid-ring"></div>
+
+              <!-- Screen Inner Area (Exact Hardware Resolution) -->
+              <div class="device-screen" id="deviceScreen" data-os="ios">
+                <!-- Authentic Hardware Screen Cutouts -->
+                <div class="hw-notch-area" id="hwNotchArea">
+                  <div class="dynamic-island">
+                    <span class="island-mic"></span>
+                    <span class="camera-lens"></span>
+                  </div>
+                  <div class="classic-notch">
+                    <span class="notch-speaker"></span>
+                    <span class="camera-lens"></span>
+                  </div>
+                  <div class="punch-hole-cam"></div>
+                </div>
+
+                <!-- =========================================================
+                     TOP OS SYSTEM CHROME OVERLAY
+                     ========================================================= -->
+                <div class="os-top-chrome" id="osTopChrome">
+
+                  <!-- 1. Apple iOS Status Bar (iPhone) -->
+                  <div class="chrome-ios-top">
+                    <span class="ios-clock" data-clock>10:55</span>
+                    <div class="ios-status-right">
+                      <svg width="15" height="11" viewBox="0 0 17 11" fill="currentColor">
+                        <rect x="0" y="7" width="3" height="4" rx="1"/>
+                        <rect x="4.5" y="5" width="3" height="6" rx="1"/>
+                        <rect x="9" y="2.5" width="3" height="8.5" rx="1"/>
+                        <rect x="13.5" y="0" width="3" height="11" rx="1"/>
+                      </svg>
+                      <span class="ios-5g">5G</span>
+                      <div class="ios-battery">
+                        <div class="ios-battery-fill"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 2. Android 15 Status Bar + Chrome Mobile Bar (Samsung One UI / Pixel) -->
+                  <div class="chrome-android-top">
+                    <div class="android-statusbar">
+                      <span class="android-clock" data-clock>10:55</span>
+                      <div class="android-status-right">
+                        <span class="android-5g">5G</span>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21L1 9c6-5.5 16-5.5 22 0L12 21z"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M2 22h20V2L2 22z"/></svg>
+                        <span class="android-battery-pill">100%</span>
+                      </div>
+                    </div>
+                    <div class="android-chrome-bar">
+                      <span class="ac-home">🏠</span>
+                      <div class="ac-omnibox">
+                        <span class="ac-lock">🔒</span>
+                        <span class="ac-domain" data-domain>demo.html</span>
+                      </div>
+                      <span class="ac-tabs">1</span>
+                      <span class="ac-more">⋮</span>
+                    </div>
+                  </div>
+
+                  <!-- 3. iPadOS 18 Status Bar + Safari Unified Tab Bar -->
+                  <div class="chrome-ipados-top">
+                    <div class="ipados-statusbar">
+                      <div class="ipados-left">
+                        <span data-clock>10:55</span>
+                        <span class="ipados-date">Min 18 Okt</span>
+                      </div>
+                      <div class="ipados-right">
+                        <svg width="14" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21L1 9c6-5.5 16-5.5 22 0L12 21z"/></svg>
+                        <span>100%</span>
+                        <div class="ios-battery"><div class="ios-battery-fill"></div></div>
+                      </div>
+                    </div>
+                    <div class="ipados-safari-bar">
+                      <div class="ipados-nav-btns">
+                        <span>◧</span>
+                        <span>‹</span>
+                        <span>›</span>
+                      </div>
+                      <div class="ipados-url-pill">
+                        <span>🔒</span>
+                        <span data-domain>demo.html</span>
+                      </div>
+                      <div class="ipados-nav-btns">
+                        <span>⇪</span>
+                        <span>＋</span>
+                        <span>⧉</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 4. macOS Sequoia Menu Bar + Safari Window Titlebar -->
+                  <div class="chrome-macos-top">
+                    <div class="macos-menubar">
+                      <div class="macos-menu-left">
+                        <span class="apple-logo"></span>
+                        <strong>Safari</strong>
+                        <span>File</span>
+                        <span>Edit</span>
+                        <span>View</span>
+                        <span>History</span>
+                        <span>Window</span>
+                      </div>
+                      <div class="macos-menu-right">
+                        <span>Wi-Fi</span>
+                        <span>🔍</span>
+                        <span>Min 18 Okt</span>
+                        <span data-clock>10:55</span>
+                      </div>
+                    </div>
+                    <div class="macos-safari-bar">
+                      <div class="macos-traffic-lights">
+                        <span class="tl-red"></span>
+                        <span class="tl-yellow"></span>
+                        <span class="tl-green"></span>
+                      </div>
+                      <div class="macos-nav-arrows">
+                        <span>‹</span>
+                        <span>›</span>
+                      </div>
+                      <div class="macos-address-pill">
+                        <span>🔒</span>
+                        <span data-domain>demo.html</span>
+                      </div>
+                      <div class="macos-actions">
+                        <span>⇪</span>
+                        <span>＋</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 5. Windows 11 Chrome Window Header -->
+                  <div class="chrome-windows-top">
+                    <div class="win11-tabstrip">
+                      <div class="win11-active-tab">
+                        <span>🌐</span>
+                        <span class="win11-tab-title" data-domain>demo.html</span>
+                        <span class="win11-tab-close">×</span>
+                      </div>
+                      <div class="win11-caption-btns">
+                        <span>─</span>
+                        <span>□</span>
+                        <span class="win11-close">✕</span>
+                      </div>
+                    </div>
+                    <div class="win11-omnibox-bar">
+                      <div class="win11-nav-icons">
+                        <span>←</span>
+                        <span>→</span>
+                        <span>↻</span>
+                      </div>
+                      <div class="win11-omnibox">
+                        <span>🔒</span>
+                        <span data-domain>demo.html</span>
+                      </div>
+                      <div class="win11-profile">👤</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- =========================================================
+                     EXACT HARDWARE VIEWPORT IFRAME CONTAINER
+                     ========================================================= -->
+                <div class="iframe-container" id="iframeContainer">
+                  <!-- Loading Overlay -->
+                  <div class="loading-overlay" id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <span>Menyiapkan lingkungan perangkat &amp; memuat website...</span>
+                  </div>
+
+                  <!-- 12-Column CSS Grid Overlay -->
+                  <div class="grid-overlay hidden" id="gridOverlay">
+                    <div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div>
+                    <div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div>
+                    <div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div>
+                    <div class="grid-col"></div><div class="grid-col"></div><div class="grid-col"></div>
+                  </div>
+
+                  <!-- Main Simulated Website Iframe -->
+                  <iframe
+                    id="simIframe"
+                    title="Simulated Device Viewport"
+                    src="demo.html"
+                  ></iframe>
+                </div>
+
+                <!-- =========================================================
+                     BOTTOM OS SYSTEM CHROME
+                     ========================================================= -->
+                <div class="os-bottom-chrome" id="osBottomChrome">
+                  <!-- 1. iOS Safari Bottom Address & Gesture Bar -->
+                  <div class="chrome-ios-bottom">
+                    <div class="ios-safari-capsule">
+                      <span class="ios-aa">AA</span>
+                      <div class="ios-capsule-domain">
+                        <span>🔒</span>
+                        <span data-domain>demo.html</span>
+                      </div>
+                      <span class="ios-reload">↻</span>
+                    </div>
+                    <div class="ios-home-indicator">
+                      <div class="home-pill"></div>
+                    </div>
+                  </div>
+
+                  <!-- 2. Android Bottom System Navigation -->
+                  <div class="chrome-android-bottom" id="androidBottomNav">
+                    <div class="android-three-btns">
+                      <span>|||</span>
+                      <span>▢</span>
+                      <span>❮</span>
+                    </div>
+                    <div class="android-gesture-bar">
+                      <div class="home-pill"></div>
+                    </div>
+                  </div>
+
+                  <!-- 3. iPadOS Bottom Home Indicator -->
+                  <div class="chrome-ipados-bottom">
+                    <div class="home-pill"></div>
+                  </div>
+
+                  <!-- 4. Windows 11 Bottom Taskbar -->
+                  <div class="chrome-windows-bottom">
+                    <div class="win11-taskbar-center">
+                      <span class="win11-start-icon" title="Start Windows 11">⊞</span>
+                      <span class="win11-search-pill">🔍 Cari</span>
+                      <span class="win11-app-icon">📁</span>
+                      <span class="win11-app-icon active">🌐</span>
+                    </div>
+                    <div class="win11-systray">
+                      <span>ENG</span>
+                      <span>🔊</span>
+                      <div class="win11-clock">
+                        <span data-clock>10:55</span>
+                        <span>18/10/2026</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Laptop Base / Desktop Monitor Stand -->
+              <div class="hw-laptop-base">
+                <div class="laptop-lip"></div>
+              </div>
+              <div class="hw-monitor-stand">
+                <div class="monitor-neck"></div>
+                <div class="monitor-foot"></div>
+              </div>
+
+              <!-- Interactive Resize Handles (ONLY unlocked in Mode Responsive) -->
+              <div class="resize-handle resize-right hidden" id="resizeRight" title="Tarik untuk mengubah lebar (Mode Responsive)"></div>
+              <div class="resize-handle resize-bottom hidden" id="resizeBottom" title="Tarik untuk mengubah tinggi (Mode Responsive)"></div>
+              <div class="resize-handle resize-corner hidden" id="resizeCorner" title="Tarik untuk mengubah lebar & tinggi (Mode Responsive)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MULTI-DEVICE MATRIX STAGE (APPLE DESIGN SYSTEM) -->
+        <div class="matrix-stage hidden" id="matrixStage">
+          <!-- 1. Smartphone Matrix Card -->
+          <div class="matrix-card" id="matrixCardMobile">
+            <div class="matrix-card-header">
+              <div class="matrix-title">
+                <span>📱</span>
+                <select class="matrix-device-select" id="matrixSelectMobile" title="Ganti Tipe Smartphone">
+                  <option value="iphone-16-pro" selected>iPhone 16 Pro (393×852)</option>
+                  <option value="iphone-16-pro-max">iPhone 16 Pro Max (440×956)</option>
+                  <option value="iphone-xr">iPhone XR (414×896)</option>
+                  <option value="iphone-se">iPhone SE (375×667)</option>
+                  <option value="galaxy-s24-ultra">Galaxy S24 Ultra (412×915)</option>
+                  <option value="pixel-9-pro">Pixel 9 Pro (412×892)</option>
+                </select>
+                <code id="matrixMobileDims">393 × 852</code>
+              </div>
+              <div class="matrix-actions">
+                <button type="button" class="mini-btn" id="btnRotateMatrixMobile" title="Putar Portrait/Landscape">⇄</button>
+                <button type="button" class="mini-btn" id="btnReloadMatrixMobile" title="Muat Ulang Layar HP">↻</button>
+                <button type="button" class="mini-btn" id="btnFocusMatrixMobile" title="Buka di Single View">Fokus</button>
+              </div>
+            </div>
+            <div class="matrix-frame-wrap" id="matrixWrapMobile">
+              <div class="matrix-scale-box" id="matrixBoxMobile">
+                <div class="matrix-screen matrix-screen-mobile" id="matrixScreenMobile">
+                  <!-- Mini Top OS Chrome -->
+                  <div class="matrix-mini-top">
+                    <span class="matrix-mini-clock" data-clock>10:55</span>
+                    <div class="matrix-mini-island"></div>
+                    <div class="matrix-mini-status">
+                      <span>5G</span>
+                      <div class="ios-battery"><div class="ios-battery-fill"></div></div>
+                    </div>
+                  </div>
+                  <iframe id="matrixIframeMobile" src="demo.html" title="Mobile Simulation"></iframe>
+                  <!-- Mini Bottom OS Chrome -->
+                  <div class="matrix-mini-bottom">
+                    <div class="home-pill"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Tablet Matrix Card -->
+          <div class="matrix-card" id="matrixCardTablet">
+            <div class="matrix-card-header">
+              <div class="matrix-title">
+                <span>📟</span>
+                <select class="matrix-device-select" id="matrixSelectTablet" title="Ganti Tipe Tablet">
+                  <option value="ipad-air" selected>iPad Air 11" (820×1180)</option>
+                  <option value="ipad-pro-13">iPad Pro 13" (1024×1366)</option>
+                  <option value="ipad-mini">iPad Mini (744×1133)</option>
+                  <option value="galaxy-tab-s9">Galaxy Tab S9 (800×1280)</option>
+                </select>
+                <code id="matrixTabletDims">820 × 1180</code>
+              </div>
+              <div class="matrix-actions">
+                <button type="button" class="mini-btn" id="btnRotateMatrixTablet" title="Putar Portrait/Landscape">⇄</button>
+                <button type="button" class="mini-btn" id="btnReloadMatrixTablet" title="Muat Ulang Layar Tablet">↻</button>
+                <button type="button" class="mini-btn" id="btnFocusMatrixTablet" title="Buka di Single View">Fokus</button>
+              </div>
+            </div>
+            <div class="matrix-frame-wrap" id="matrixWrapTablet">
+              <div class="matrix-scale-box" id="matrixBoxTablet">
+                <div class="matrix-screen matrix-screen-tablet" id="matrixScreenTablet">
+                  <div class="matrix-mini-top">
+                    <span class="matrix-mini-clock" data-clock>10:55</span>
+                    <span class="matrix-mini-domain" data-domain>demo.html</span>
+                    <div class="matrix-mini-status">
+                      <span>100%</span>
+                      <div class="ios-battery"><div class="ios-battery-fill"></div></div>
+                    </div>
+                  </div>
+                  <iframe id="matrixIframeTablet" src="demo.html" title="Tablet Simulation"></iframe>
+                  <div class="matrix-mini-bottom">
+                    <div class="home-pill"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Desktop / Laptop Matrix Card -->
+          <div class="matrix-card" id="matrixCardDesktop">
+            <div class="matrix-card-header">
+              <div class="matrix-title">
+                <span>💻</span>
+                <select class="matrix-device-select" id="matrixSelectDesktop" title="Ganti Tipe Komputer">
+                  <option value="macbook-air" selected>MacBook Air 13" (1280×800)</option>
+                  <option value="macbook-pro-16">MacBook Pro 16" (1512×982)</option>
+                  <option value="desktop-1080p">Full HD Desktop 24" (1920×1080)</option>
+                </select>
+                <code id="matrixDesktopDims">1280 × 800</code>
+              </div>
+              <div class="matrix-actions">
+                <button type="button" class="mini-btn" id="btnReloadMatrixDesktop" title="Muat Ulang Layar Desktop">↻</button>
+                <button type="button" class="mini-btn" id="btnFocusMatrixDesktop" title="Buka di Single View">Fokus</button>
+              </div>
+            </div>
+            <div class="matrix-frame-wrap" id="matrixWrapDesktop">
+              <div class="matrix-scale-box" id="matrixBoxDesktop">
+                <div class="matrix-screen matrix-screen-desktop" id="matrixScreenDesktop">
+                  <div class="matrix-mini-top matrix-mini-desktop-top">
+                    <div class="macos-traffic-lights">
+                      <span class="tl-red"></span>
+                      <span class="tl-yellow"></span>
+                      <span class="tl-green"></span>
+                    </div>
+                    <span class="matrix-mini-domain" data-domain>demo.html</span>
+                    <span class="matrix-mini-clock" data-clock>10:55</span>
+                  </div>
+                  <iframe id="matrixIframeDesktop" src="demo.html" title="Desktop Simulation"></iframe>
+                  <div class="matrix-mini-bottom matrix-mini-desktop-bottom">
+                    <div class="win11-taskbar-center">
+                      <span class="win11-start-icon">⊞</span>
+                      <span class="win11-search-pill">🔍 Cari</span>
+                      <span class="win11-app-icon active">🌐</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOTTOM TELEMETRY FOOTER -->
+      <footer class="telemetry-footer">
+        <div class="footer-left">
+          <span class="telemetry-item">
+            <strong>Viewport:</strong> <code id="footerRes">393 × 852 px (Fix Asli)</code>
+          </span>
+          <span class="telemetry-divider">•</span>
+          <span class="telemetry-item">
+            <strong>Font &amp; Emoji:</strong> <code id="footerFont">SF Pro + Apple Emoji</code>
+          </span>
+          <span class="telemetry-divider">•</span>
+          <span class="telemetry-item">
+            <strong>DPR &amp; Touch:</strong> <code id="footerDpr">3x Retina • 5 Touch</code>
+          </span>
+          <span class="telemetry-divider">•</span>
+          <span class="telemetry-item">
+            <strong>Platform:</strong> <span class="bp-tag" id="footerBp">iPhone (iOS 18)</span>
+          </span>
+        </div>
+        <div class="footer-right">
+          <span class="telemetry-ua" id="footerUa" title="User-Agent Perangkat Simulasi">
+            UA: Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148
+          </span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- =========================================================
+       APPLE HIG STUDIO SCREENSHOT & MOCKUP EXPORTER MODAL
+       ========================================================= -->
+  <div class="apple-modal-backdrop hidden" id="screenshotModal">
+    <div class="apple-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="modalShotTitle">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon-badge">📸</div>
+          <div>
+            <h3 class="modal-title" id="modalShotTitle">Studio Screenshot &amp; Mockup</h3>
+            <p class="modal-subtitle">Tangkapan layar resolusi tinggi perangkat asli (High-DPI)</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" id="btnModalShotClose" title="Tutup (Esc)">✕</button>
+      </div>
+
+      <!-- Segmented Target Chooser -->
+      <div class="shot-segmented-control" role="tablist">
+        <button type="button" class="shot-seg-btn active" data-target="mockup" id="tabShotMockup">
+          <span>📱 Bodi &amp; Mockup</span>
+        </button>
+        <button type="button" class="shot-seg-btn" data-target="viewport" id="tabShotViewport">
+          <span>🖥️ Layar Saja</span>
+        </button>
+        <button type="button" class="shot-seg-btn" data-target="canvas" id="tabShotCanvas">
+          <span>🖼️ Studio Kanvas</span>
+        </button>
+      </div>
+
+      <!-- Live Preview Area -->
+      <div class="shot-preview-container">
+        <div class="shot-preview-box" id="shotPreviewBox">
+          <div class="shot-spinner hidden" id="shotSpinner">
+            <div class="apple-spinner"></div>
+            <span>Mengambil tangkapan layar perangkat...</span>
+          </div>
+          <img id="shotPreviewImg" class="shot-preview-img" alt="Screenshot Preview" />
+        </div>
+        <div class="shot-meta-bar" id="shotMetaBar">
+          <span class="shot-meta-chip" id="shotMetaDevice">📱 iPhone 16 Pro</span>
+          <span class="shot-meta-chip" id="shotMetaRes">393 × 852 px</span>
+          <span class="shot-meta-chip" id="shotMetaDpr">3x Retina</span>
+          <span class="shot-meta-chip meta-format">PNG</span>
+        </div>
+      </div>
+
+      <!-- Options & Settings -->
+      <div class="shot-options-grid">
+        <label class="shot-option-field">
+          <span class="shot-opt-label">Latar Belakang Mockup:</span>
+          <select id="shotBgSelect" class="shot-select">
+            <option value="transparent">⚪ Transparan (PNG Alpha)</option>
+            <option value="studio" selected>🎨 Studio Canvas (Tema Aktif)</option>
+            <option value="white">⬜ Putih Bersih</option>
+            <option value="black">⬛ Hitam Gelap</option>
+          </select>
+        </label>
+        <label class="shot-option-field">
+          <span class="shot-opt-label">Metode Pengambilan:</span>
+          <select id="shotMethodSelect" class="shot-select">
+            <option value="display-media" selected>⚡ Tangkap Layar Aktif (Browser)</option>
+            <option value="headless">🌐 Render Headless (Server)</option>
+          </select>
+        </label>
+      </div>
+
+      <!-- Action Buttons Footer -->
+      <div class="modal-actions-footer">
+        <button type="button" class="btn-modal-secondary" id="btnShotRetake" title="Ambil ulang tangkapan layar">
+          <span>↻ Ambil Ulang</span>
+        </button>
+        <div class="modal-actions-right">
+          <button type="button" class="btn-modal-secondary" id="btnShotCopy" title="Salin gambar langsung ke clipboard (Ctrl+V di Figma, Slack, dll)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span id="btnShotCopyLabel">Salin ke Clipboard</span>
+          </button>
+          <button type="button" class="btn-modal-primary" id="btnShotDownload" title="Unduh gambar PNG">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Unduh PNG</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Apple HIG Toast Notification Component -->
+  <div class="apple-toast-container" id="appleToastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

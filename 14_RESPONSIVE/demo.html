@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResponsiLab — Apple HIG &amp; Multi-OS Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Color+Emoji&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root,
+    [data-theme="light"] {
+      --bg: #F2F2F7;
+      --surface: #FFFFFF;
+      --surface-2: rgba(118, 118, 128, 0.09);
+      --glass: rgba(255, 255, 255, 0.82);
+      --border: rgba(60, 60, 67, 0.12);
+      --text: #1D1D1F;
+      --muted: #6E6E73;
+      --accent: #007AFF;
+      --accent-soft: rgba(0, 122, 255, 0.12);
+      --indigo: #5856D6;
+      --indigo-soft: rgba(88, 86, 214, 0.12);
+      --success: #34C759;
+      --success-soft: rgba(52, 199, 89, 0.14);
+      --warning: #FF9500;
+      --warning-soft: rgba(255, 149, 0, 0.15);
+      --rose: #FF2D55;
+      --rose-soft: rgba(255, 45, 85, 0.14);
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+      --active-os-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', sans-serif;
+      --active-emoji-font: 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --bg: #000000;
+      --surface: #1C1C1E;
+      --surface-2: #2C2C2E;
+      --glass: rgba(28, 28, 30, 0.82);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #F5F5F7;
+      --muted: #98989D;
+      --accent: #0A84FF;
+      --accent-soft: rgba(10, 132, 255, 0.18);
+      --indigo: #5E5CE6;
+      --indigo-soft: rgba(94, 92, 230, 0.18);
+      --success: #30D158;
+      --success-soft: rgba(48, 209, 88, 0.18);
+      --warning: #FF9F0A;
+      --warning-soft: rgba(255, 159, 10, 0.18);
+      --rose: #FF375F;
+      --rose-soft: rgba(255, 55, 95, 0.18);
+      --shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--active-os-font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.48;
+      min-height: 100vh;
+      overflow-x: hidden;
+      letter-spacing: -0.012em;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .emoji-render {
+      font-family: var(--active-emoji-font);
+    }
+
+    /* Top Telemetry Ribbon (Apple Frosted Glass) */
+    .telemetry-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--glass);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 11.5px;
+    }
+
+    .bp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .bp-mobile { background: var(--rose-soft); color: var(--rose); }
+    .bp-tablet { background: var(--warning-soft); color: var(--warning); }
+    .bp-desktop { background: var(--success-soft); color: var(--success); }
+
+    .live-dims {
+      font-family: 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Apple Style Navigation Header */
+    .navbar {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: linear-gradient(180deg, #2E96FF, #007AFF);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mobile-drawer {
+      display: none;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mobile-drawer.open { display: flex; }
+
+    .mobile-drawer a {
+      color: var(--text);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 20px 20px 60px;
+    }
+
+    /* Hero Section */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 20px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 4px 10px;
+      border-radius: 99px;
+      margin-bottom: 10px;
+    }
+
+    .hero h1 {
+      font-size: clamp(19px, 2.8vw, 29px);
+      line-height: 1.18;
+      letter-spacing: -0.022em;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .telemetry-card {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      padding: 10px;
+      border-radius: 9px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 3px;
+      color: var(--text);
+      font-family: 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+    }
+
+    /* OS Font, Emoji & Hardware Fingerprint Showcase */
+    .os-showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .showcase-card {
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .showcase-card h3 {
+      font-size: 13.5px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .os-pill {
+      font-size: 10.5px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .font-sample-box {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .font-sample-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .font-sample-body {
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    .emoji-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 22px;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 8px 12px;
+      overflow-x: auto;
+    }
+
+    .fp-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-size: 12px;
+    }
+
+    .fp-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fp-list code {
+      color: var(--accent);
+      font-family: 'SF Mono', 'JetBrains Mono', monospace;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    /* Responsive Grid */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title { font-size: 15px; font-weight: 700; }
+
+    .grid-cols-indicator {
+      font-size: 11px;
+      color: var(--indigo);
+      background: var(--indigo-soft);
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .responsive-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      border-radius: 13px;
+      padding: 16px;
+    }
+
+    .feature-card h3 { font-size: 13.5px; margin-bottom: 5px; }
+    .feature-card p { font-size: 12px; color: var(--muted); }
+
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; }
+      .os-showcase-grid { grid-template-columns: 1fr; }
+      .responsive-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .mobile-menu-btn { display: inline-flex; }
+      .responsive-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="telemetry-bar">
+    <div>
+      <span id="bpBadge" class="bp-badge bp-desktop">DESKTOP VIEW</span>
+    </div>
+    <div class="live-dims" id="liveDims">0 × 0 px</div>
+  </div>
+
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon"></div>
+      <span>ResponsiLab HIG</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#fingerprint">Lingkungan OS</a></li>
+      <li><a href="#typography">Font &amp; Emoji</a></li>
+      <li><a href="#grid">Adaptive Layout</a></li>
+    </ul>
+    <button class="mobile-menu-btn" onclick="document.getElementById('mobileDrawer').classList.toggle('open')">
+      ☰ Menu
+    </button>
+  </nav>
+
+  <div class="mobile-drawer" id="mobileDrawer">
+    <a href="#fingerprint">🔍 Lingkungan OS</a>
+    <a href="#typography">🔤 Font &amp; Emoji</a>
+    <a href="#grid">📐 Adaptive Layout</a>
+  </div>
+
+  <main class="container">
+    <section class="hero" id="fingerprint">
+      <div>
+        <span class="hero-tag" id="detectedOsTag">Mendeteksi Sistem Operasi...</span>
+        <h1 id="heroTitle">Simulasi Perangkat &amp; Desain Sistem Asli</h1>
+        <p id="heroDesc">
+          Halaman ini mendeteksi <code>navigator.userAgent</code>, <code>navigator.platform</code>,
+          <code>window.devicePixelRatio</code>, serta merender <strong>Font Sistem</strong>, <strong>Emoji</strong>,
+          dan tema <strong>Light / Dark</strong> secara langsung.
+        </p>
+      </div>
+      <div class="telemetry-card">
+        <div class="stat-box">
+          <div class="stat-label">Layar (Viewport)</div>
+          <div class="stat-value" id="statWidth">-- × --</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Platform OS</div>
+          <div class="stat-value" id="statPlatform">--</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Pixel Ratio (DPR)</div>
+          <div class="stat-value" id="statDpr">--</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Touch Points</div>
+          <div class="stat-value" id="statTouch">--</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="os-showcase-grid" id="typography">
+      <div class="showcase-card">
+        <h3>
+          <span>🔤 Tipografi &amp; Emoji Sistem</span>
+          <span class="os-pill" id="activeFontBadge">System Font</span>
+        </h3>
+        <div class="font-sample-box">
+          <div class="font-sample-title">The quick brown fox jumps over the lazy dog</div>
+          <div class="font-sample-body">
+            0123456789 • Tipografi menyesuaikan OS yang aktif (SF Pro di Apple, Roboto di Android, Segoe UI Variable di Windows 11).
+          </div>
+        </div>
+        <div class="emoji-bar emoji-render">
+          <span>📱</span><span>🚀</span><span>🔥</span><span>🎨</span><span>✨</span><span>🇮🇩</span><span>👨‍💻</span><span>🎉</span><span>❤️</span>
+        </div>
+      </div>
+
+      <div class="showcase-card">
+        <h3>
+          <span>🛡️ Sidik Jari Browser (Terdeteksi Website)</span>
+          <span class="os-pill">Spoofed API</span>
+        </h3>
+        <ul class="fp-list">
+          <li><span>navigator.platform</span> <code id="fpPlatform">--</code></li>
+          <li><span>navigator.vendor</span> <code id="fpVendor">--</code></li>
+          <li><span>window.screen (Hardware)</span> <code id="fpScreen">--</code></li>
+          <li><span>Touch Support (ontouchstart)</span> <code id="fpTouchApi">--</code></li>
+          <li><span>User-Agent</span> <code id="fpUa" style="font-size:10px; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">--</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="grid">
+      <div class="section-header">
+        <h2 class="section-title">Adaptive Layout Grid</h2>
+        <span class="grid-cols-indicator" id="gridColsLabel">3 Kolom</span>
+      </div>
+      <div class="responsive-grid">
+        <article class="feature-card">
+          <h3><span class="emoji-render">📱</span> Smartphone (&le; 640px)</h3>
+          <p>Resolusi dikunci presisi mengikuti ukuran layar asli perangkat (misal 414×896 px di iPhone XR atau 393×852 px di iPhone 16 Pro).</p>
+        </article>
+        <article class="feature-card">
+          <h3><span class="emoji-render">📟</span> Tablet (641px – 1024px)</h3>
+          <p>Menyajikan tampilan iPadOS / Android Tablet dengan kepadatan piksel Retina 2x dan dukungan sentuh penuh.</p>
+        </article>
+        <article class="feature-card">
+          <h3><span class="emoji-render">🖥️</span> Desktop (&gt; 1024px)</h3>
+          <p>Menampilkan antarmuka macOS Sequoia atau Windows 11 lengkap dengan kursor mouse presisi.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function updateTelemetry() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      document.getElementById('liveDims').textContent = `${w} × ${h} px`;
+      document.getElementById('statWidth').textContent = `${w} × ${h} px`;
+      document.getElementById('statPlatform').textContent = navigator.platform || '--';
+      document.getElementById('statDpr').textContent = `${window.devicePixelRatio || 1}x`;
+      document.getElementById('statTouch').textContent = `${navigator.maxTouchPoints || 0} titik`;
+
+      document.getElementById('fpPlatform').textContent = navigator.platform || '--';
+      document.getElementById('fpVendor').textContent = navigator.vendor || 'Standard';
+      document.getElementById('fpScreen').textContent = `${window.screen.width} × ${window.screen.height} px`;
+      document.getElementById('fpTouchApi').textContent = (navigator.maxTouchPoints > 0) ? 'Aktif (Mobile/Tablet)' : 'Nonaktif (Desktop)';
+      document.getElementById('fpUa').textContent = navigator.userAgent;
+      document.getElementById('fpUa').title = navigator.userAgent;
+
+      const ua = navigator.userAgent || '';
+      const osTag = document.getElementById('detectedOsTag');
+      const fontBadge = document.getElementById('activeFontBadge');
+
+      if (/iPhone/i.test(ua)) {
+        osTag.textContent = '🍎 Terdeteksi: Apple iOS (iPhone)';
+        fontBadge.textContent = 'SF Pro + Apple Emoji';
+      } else if (/iPad/i.test(ua)) {
+        osTag.textContent = '🍎 Terdeteksi: Apple iPadOS (iPad)';
+        fontBadge.textContent = 'SF Pro + Apple Emoji';
+      } else if (/Android/i.test(ua)) {
+        osTag.textContent = '🤖 Terdeteksi: Google Android';
+        fontBadge.textContent = 'Roboto + Noto Color Emoji';
+      } else if (/Macintosh/i.test(ua)) {
+        osTag.textContent = '💻 Terdeteksi: Apple macOS';
+        fontBadge.textContent = 'SF Pro Display + Apple Emoji';
+      } else {
+        osTag.textContent = '🪟 Terdeteksi: Windows 11 Desktop';
+        fontBadge.textContent = 'Segoe UI Variable + Segoe Emoji';
+      }
+
+      const bpBadge = document.getElementById('bpBadge');
+      const gridColsLabel = document.getElementById('gridColsLabel');
+
+      if (w <= 640) {
+        bpBadge.className = 'bp-badge bp-mobile';
+        bpBadge.textContent = '📱 SMARTPHONE VIEW';
+        gridColsLabel.textContent = '1 Kolom (Mobile)';
+      } else if (w <= 1024) {
+        bpBadge.className = 'bp-badge bp-tablet';
+        bpBadge.textContent = '📟 TABLET VIEW';
+        gridColsLabel.textContent = '2 Kolom (Tablet)';
+      } else {
+        bpBadge.className = 'bp-badge bp-desktop';
+        bpBadge.textContent = '🖥️ DESKTOP VIEW';
+        gridColsLabel.textContent = '3 Kolom (Desktop)';
+      }
+    }
+
+    window.addEventListener('resize', updateTelemetry);
+    window.addEventListener('DOMContentLoaded', updateTelemetry);
+    window.addEventListener('message', (e) => {
+      if (!e.data) return;
+      if (e.data.type === 'RESPONSIVIEW_ENV_UPDATED') {
+        if (e.data.theme) {
+          document.documentElement.setAttribute('data-theme', e.data.theme);
+        }
+        updateTelemetry();
+      } else if (e.data.type === 'RESPONSIVIEW_THEME_CHANGED' && e.data.theme) {
+        document.documentElement.setAttribute('data-theme', e.data.theme);
+      }
+    });
+    updateTelemetry();
+  </script>
+</body>
+</html>

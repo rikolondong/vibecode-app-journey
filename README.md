@@ -20,6 +20,8 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 11 | [**11_HOME SURVIVOR**](./11_HOME%20SURVIVOR) | Game Simulasi Realistis 3D Isometric Bertahan Hidup di Rumah saat Serangan Zombie (ala *Project Zomboid*) dengan Three.js, Cutaway Walls, Barikade Papan, Stealth, & Web Audio API. | ✅ Selesai |
 | 12 | [**12_SIMTRIP**](./12_SIMTRIP) | Game 3D Simulasi Berkendara Peta Dunia Nyata (100% OpenStreetMap + OSRM + Overpass 3D Buildings) dengan pengaturan Titik Mulai/Tujuan, Waktu Berangkat, 5 Kendaraan 3D, Plang Nama Jalan Asli, & Autopilot AI. | ✅ Selesai |
 | 13 | [**13_WEB AC130**](./13_WEB%20AC130) | 3D Interactive Lockheed AC-130U Spooky Gunship Inspector & Combat Simulator (ExplodeView, Pylon Turn Orbit, Live Fire Ballistics, Angel Flares, FLIR HUD & FPS Gunner Mode). | ✅ Selesai |
+| 14 | [**14_RESPONSIVE**](./14_RESPONSIVE) | ResponsiView Studio: Simulator & Emulator Multi-Perangkat (Smartphone, Tablet, Desktop) dengan Apple HIG, Deep Browser Spoofing, Status Bar & Safari/Chrome Bar Asli, Smart Proxy, dan Studio Screenshot Mockup. | ✅ Selesai |
+
 
 ---
 
@@ -254,6 +256,30 @@ Aplikasi web interaktif 3D militer untuk inspeksi teknis mendalam dan simulasi t
 - **Lisensi Model 3D**: Model ["Lockheed AC-130U Spooky"](https://sketchfab.com/3d-models/lockheed-ac-130u-spooky-0945d9ad0b354afd87fd65e9f4e1777b) oleh [Rhine_Lab_Muelsyse](https://sketchfab.com/Rhine_Lab_Muelsyse) berlisensi CC Attribution-NonCommercial (CC BY-NC 4.0).
 
 👉 **[Buka Dokumentasi & Kode Proyek 13](./13_WEB%20AC130)**
+
+---
+
+## 📱 Ringkasan Proyek 14: ResponsiView Studio (Multi-Device & OS Environment Simulator)
+
+Studio simulator & emulator multi-perangkat presisi tinggi dengan filosofi **Apple Human Interface Guidelines (HIG)**, emulasi sasis fisik asli, status bar & browser chrome interaktif, serta *Deep Browser Spoofing*:
+- **Simulasi Sasis & OS Chrome Otentik**:
+  - Rekonstruksi bodi hardware 1:1 untuk iPhone 16 Pro, Samsung Galaxy S24 Ultra, iPad Pro M4, MacBook Pro 16", iMac 24", Google Pixel 9 Pro, dan Responsive Free Canvas.
+  - **Dynamic Island & Punch-Hole Camera**: Visual notch/cutout fisik yang akurat sesuai hardware asli.
+  - **Status Bar & Native Browser Chrome**: Jam real-time, sinyal 5G, Wi-Fi, baterai, address bar interaktif (Safari / Chrome), dan tombol navigasi tanpa menutupi konten web.
+- **Deep Browser & Device Spoofing Engine**:
+  - Manipulasi runtime browser di dalam frame: `navigator.userAgent`, `navigator.platform`, `navigator.vendor`, `navigator.maxTouchPoints`.
+  - Simulasi `window.devicePixelRatio` (DPR), resolusi layar fisik (`screen.width`, `screen.height`, `window.innerWidth`, `window.innerHeight`).
+  - Emulasi font sistem dan emoji native (SF Pro & Apple Color Emoji untuk iOS/macOS, Roboto & Noto Color Emoji untuk Android).
+- **Smart Reverse Proxy & Anti-Frame Bypass**:
+  - Proxy Node.js built-in untuk mengeliminasi batasan `X-Frame-Options` dan `Content-Security-Policy (CSP)` (frame-ancestors).
+  - Rewriting otomatis header `Cookie`, `Origin`, `Referer`, dan injeksi payload client spoofing.
+- **Studio Screenshot Mockup Generator**:
+  - Mengambil tangkapan layar perangkat dengan sasis fisik lengkap, status bar, dan shadow realistis beresolusi tinggi menggunakan `html2canvas-pro`.
+- **Mode Tampilan Lengkap & Apple HIG**:
+  - Single Device Mode, Multi-Device Grid Comparison, orientasi Portrait / Landscape, zoom canvas 25%–200%, serta Toggle Light/Dark Mode dengan aksen warna Apple.
+- **Tech Stack**: HTML5 Semantic, Modern Vanilla CSS (Apple HIG Design Tokens & Glassmorphism), Vanilla JavaScript (ES6+), Node.js HTTP Proxy, `html2canvas-pro`.
+
+👉 **[Buka Dokumentasi & Kode Proyek 14](./14_RESPONSIVE)**
 
 ---
 

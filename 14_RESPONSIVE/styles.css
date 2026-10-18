@@ -1,0 +1,3344 @@
+/* ==========================================================================
+   RESPONSIVIEW STUDIO — APPLE HUMAN INTERFACE GUIDELINES (HIG) DESIGN SYSTEM
+   Supports Cupertino Light Mode & macOS Pro Dark Mode
+   ========================================================================== */
+
+:root,
+[data-theme="light"] {
+  --apple-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', sans-serif;
+  --apple-mono: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  /* Apple Light Mode Palette (Cupertino Daylight) */
+  --bg-canvas: #F2F2F7;
+  --bg-canvas-dot: rgba(60, 60, 67, 0.14);
+  --bg-topbar: rgba(255, 255, 255, 0.82);
+  --bg-subbar: rgba(249, 249, 251, 0.86);
+  --bg-sidebar: rgba(245, 245, 247, 0.9);
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F9F9FB;
+  --bg-card-active: rgba(0, 122, 255, 0.09);
+  --bg-input: rgba(118, 118, 128, 0.11);
+  --bg-segmented: rgba(118, 118, 128, 0.12);
+  --bg-segmented-pill: #FFFFFF;
+
+  --border-hairline: rgba(60, 60, 67, 0.13);
+  --border-card: rgba(60, 60, 67, 0.1);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-segmented: 0 2px 5px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05);
+  --shadow-device: 0 28px 65px rgba(0, 0, 0, 0.22), 0 6px 18px rgba(0, 0, 0, 0.08);
+
+  --text-main: #1D1D1F;
+  --text-secondary: #6E6E73;
+  --text-tertiary: #8E8E93;
+
+  /* Apple System Accent Colors (Light) */
+  --sys-blue: #007AFF;
+  --sys-blue-hover: #0066D6;
+  --sys-blue-soft: rgba(0, 122, 255, 0.12);
+  --sys-green: #34C759;
+  --sys-green-soft: rgba(52, 199, 89, 0.14);
+  --sys-indigo: #5856D6;
+  --sys-indigo-soft: rgba(88, 86, 214, 0.12);
+  --sys-orange: #FF9500;
+  --sys-orange-soft: rgba(255, 149, 0, 0.14);
+  --sys-red: #FF3B30;
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 11px;
+  --radius-lg: 14px;
+}
+
+[data-theme="dark"] {
+  /* Apple Dark Mode Palette (macOS Sequoia Pro Dark) */
+  --bg-canvas: #0B0B0E;
+  --bg-canvas-dot: rgba(235, 235, 245, 0.12);
+  --bg-topbar: rgba(28, 28, 30, 0.82);
+  --bg-subbar: rgba(22, 22, 24, 0.88);
+  --bg-sidebar: rgba(24, 24, 26, 0.92);
+  --bg-card: #1C1C1E;
+  --bg-card-hover: #2C2C2E;
+  --bg-card-active: rgba(10, 132, 255, 0.18);
+  --bg-input: rgba(118, 118, 128, 0.24);
+  --bg-segmented: rgba(118, 118, 128, 0.24);
+  --bg-segmented-pill: #3A3A3C;
+
+  --border-hairline: rgba(255, 255, 255, 0.1);
+  --border-card: rgba(255, 255, 255, 0.08);
+  --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-segmented: 0 2px 6px rgba(0, 0, 0, 0.45);
+  --shadow-device: 0 32px 75px rgba(0, 0, 0, 0.78), 0 0 0 1px rgba(255, 255, 255, 0.08);
+
+  --text-main: #F5F5F7;
+  --text-secondary: #98989D;
+  --text-tertiary: #636366;
+
+  /* Apple System Accent Colors (Dark) */
+  --sys-blue: #0A84FF;
+  --sys-blue-hover: #409CFF;
+  --sys-blue-soft: rgba(10, 132, 255, 0.18);
+  --sys-green: #30D158;
+  --sys-green-soft: rgba(48, 209, 88, 0.18);
+  --sys-indigo: #5E5CE6;
+  --sys-indigo-soft: rgba(94, 92, 230, 0.18);
+  --sys-orange: #FF9F0A;
+  --sys-orange-soft: rgba(255, 159, 10, 0.18);
+  --sys-red: #FF453A;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: var(--apple-font);
+  background-color: var(--bg-canvas);
+  color: var(--text-main);
+  font-size: 13px;
+  letter-spacing: -0.012em;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.22s ease, color 0.22s ease;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================
+   1. APPLE UNIFIED TOP TOOLBAR
+   ========================================== */
+.topbar {
+  height: 52px;
+  background: var(--bg-topbar);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-bottom: 1px solid var(--border-hairline);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 16px;
+  flex-shrink: 0;
+  z-index: 30;
+}
+
+.brand-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.apple-window-dots {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: 4px;
+}
+
+.apple-window-dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+}
+
+.dot-close { background: #FF5F56; }
+.dot-min { background: #FFBD2E; }
+.dot-max { background: #27C93F; }
+
+.logo-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #2E96FF 0%, #007AFF 100%);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 122, 255, 0.28);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: -0.022em;
+  color: var(--text-main);
+  line-height: 1.15;
+}
+
+.brand-subtitle {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Safari-Style Unified Address Bar */
+.url-bar-form {
+  flex: 1;
+  max-width: 720px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-history-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-btn:hover {
+  background: var(--bg-input);
+  color: var(--text-main);
+}
+
+.url-input-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--bg-input);
+  border: 1px solid transparent;
+  border-radius: 9px;
+  height: 32px;
+  padding: 0 11px;
+  transition: all 0.18s ease;
+}
+
+.url-input-wrapper:focus-within {
+  background: var(--bg-card);
+  border-color: var(--sys-blue);
+  box-shadow: 0 0 0 3px var(--sys-blue-soft);
+}
+
+.url-security-icon {
+  color: var(--text-secondary);
+  margin-right: 7px;
+  flex-shrink: 0;
+}
+
+.url-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-main);
+  font-family: var(--apple-font);
+  font-size: 12.5px;
+  font-weight: 500;
+  width: 100%;
+}
+
+.url-input::placeholder {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.clear-url-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.clear-url-btn:hover {
+  color: var(--text-main);
+}
+
+.btn-primary {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--sys-blue);
+  color: #fff;
+  font-family: var(--apple-font);
+  font-weight: 600;
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn-primary:hover {
+  background: var(--sys-blue-hover);
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+/* Right Topbar Actions */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Apple iOS/macOS UISwitch */
+.proxy-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  padding: 4px 9px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  user-select: none;
+}
+
+.proxy-toggle input {
+  display: none;
+}
+
+.proxy-slider {
+  width: 32px;
+  height: 18px;
+  background: rgba(120, 120, 128, 0.32);
+  border-radius: 99px;
+  position: relative;
+  transition: background 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.proxy-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.proxy-toggle input:checked + .proxy-slider {
+  background: var(--sys-green);
+}
+
+.proxy-toggle input:checked + .proxy-slider::after {
+  transform: translateX(14px);
+}
+
+.proxy-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-main);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+}
+
+.status-dot.online {
+  background: var(--sys-green);
+}
+
+/* Apple Light / Dark Mode Button */
+.theme-toggle-btn {
+  height: 30px;
+  padding: 0 11px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-card);
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: var(--shadow-card);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--apple-font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--sys-blue);
+}
+
+.theme-icon-sun {
+  color: var(--sys-orange);
+  display: inline-flex;
+}
+
+.theme-icon-moon {
+  color: var(--sys-indigo);
+  display: inline-flex;
+}
+
+.icon-btn-labeled {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-card);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-card);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.icon-btn-labeled:hover {
+  color: var(--text-main);
+  background: var(--bg-card-hover);
+}
+
+/* ==========================================
+   2. SAFARI FAVORITES BAR & VIEW MODE SWITCHER
+   ========================================== */
+.quick-sites-bar {
+  height: 38px;
+  background: var(--bg-subbar);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border-hairline);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.quick-sites-list {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.quick-sites-list::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-right: 4px;
+  white-space: nowrap;
+}
+
+.site-chip {
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--apple-font);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.site-chip:hover {
+  color: var(--text-main);
+  background: var(--bg-input);
+}
+
+.site-chip.active {
+  background: var(--sys-blue-soft);
+  color: var(--sys-blue);
+  font-weight: 600;
+}
+
+/* Apple UISegmentedControl for View Mode */
+.view-mode-switcher {
+  display: flex;
+  background: var(--bg-segmented);
+  padding: 2px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--apple-font);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mode-btn.active {
+  background: var(--bg-segmented-pill);
+  color: var(--text-main);
+  font-weight: 600;
+  box-shadow: var(--shadow-segmented);
+}
+
+/* ==========================================
+   3. WORKSPACE & MACOS SIDEBAR
+   ========================================== */
+.workspace {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 288px;
+  background: var(--bg-sidebar);
+  backdrop-filter: saturate(180%) blur(24px);
+  border-right: 1px solid var(--border-hairline);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: 14px 12px;
+  gap: 14px;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.sidebar-header h2 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.device-count-badge {
+  font-size: 10.5px;
+  background: var(--sys-blue-soft);
+  color: var(--sys-blue);
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 600;
+}
+
+.hint-text {
+  font-size: 10.5px;
+  color: var(--text-tertiary);
+}
+
+/* Dedicated Responsive Mode Card */
+.responsive-mode-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  color: var(--text-main);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.responsive-mode-card:hover {
+  border-color: var(--sys-blue);
+  background: var(--bg-card-hover);
+}
+
+.responsive-mode-card.active {
+  border-color: var(--sys-blue);
+  background: var(--bg-card-active);
+  box-shadow: 0 0 0 1px var(--sys-blue);
+}
+
+.rm-icon {
+  font-size: 16px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--sys-indigo-soft);
+  display: grid;
+  place-items: center;
+}
+
+.rm-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.rm-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.rm-sub {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+}
+
+.rm-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--sys-indigo-soft);
+  color: var(--sys-indigo);
+}
+
+/* Apple UISegmentedControl Category Tabs */
+.category-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  background: var(--bg-segmented);
+  padding: 2px;
+  border-radius: 8px;
+}
+
+.cat-tab {
+  padding: 5px 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--apple-font);
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cat-tab:hover {
+  color: var(--text-main);
+}
+
+.cat-tab.active {
+  background: var(--bg-segmented-pill);
+  color: var(--text-main);
+  font-weight: 600;
+  box-shadow: var(--shadow-segmented);
+}
+
+/* Device Cards List */
+.device-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: calc(100vh - 385px);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.device-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.device-list::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.28);
+  border-radius: 99px;
+}
+
+.device-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8.5px 10px;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  font-family: var(--apple-font);
+}
+
+.device-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(0, 122, 255, 0.35);
+}
+
+.device-card.active {
+  background: var(--bg-card-active);
+  border-color: var(--sys-blue);
+  box-shadow: 0 0 0 1px var(--sys-blue);
+}
+
+.device-card-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.device-card-icon {
+  font-size: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: var(--bg-input);
+  display: grid;
+  place-items: center;
+}
+
+.device-card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.device-card-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.device-card-os {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+}
+
+.device-card-dims {
+  font-family: var(--apple-mono);
+  font-size: 10.5px;
+  color: var(--sys-blue);
+  background: var(--sys-blue-soft);
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-weight: 600;
+}
+
+/* Breakpoints Grid */
+.breakpoint-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.bp-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-sm);
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.bp-btn:hover {
+  border-color: var(--sys-indigo);
+  background: var(--bg-card-hover);
+}
+
+.bp-name {
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--sys-indigo);
+}
+
+.bp-px {
+  font-family: var(--apple-mono);
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+/* ==========================================
+   4. STAGE TOOLBAR & VIEWPORT CONTROLS
+   ========================================== */
+.stage-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.stage-toolbar {
+  min-height: 44px;
+  background: var(--bg-topbar);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border-hairline);
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  z-index: 20;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.active-device-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.os-design-badge {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: var(--sys-blue-soft);
+  color: var(--sys-blue);
+}
+
+.dimension-inputs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dim-field {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 0 7px;
+  height: 28px;
+}
+
+.dim-field.locked {
+  background: var(--bg-input);
+  border-color: transparent;
+  cursor: not-allowed;
+}
+
+.dim-field.locked input {
+  cursor: not-allowed;
+  color: var(--text-main);
+}
+
+.dim-field span {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  margin-right: 4px;
+}
+
+.dim-field input {
+  width: 50px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--sys-blue);
+  font-family: var(--apple-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.resolution-lock-badge {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.resolution-lock-badge.locked {
+  background: var(--sys-orange-soft);
+  color: var(--sys-orange);
+}
+
+.resolution-lock-badge.unlocked {
+  background: var(--sys-green-soft);
+  color: var(--sys-green);
+}
+
+.rotate-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-card);
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  transition: transform 0.2s, background 0.15s;
+}
+
+.rotate-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--sys-blue);
+  transform: rotate(180deg);
+}
+
+.px-unit {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-family: var(--apple-mono);
+}
+
+.control-label {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.toolbar-select {
+  height: 28px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-sm);
+  padding: 0 8px;
+  font-family: var(--apple-font);
+  font-size: 11.5px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+}
+
+.zoom-readout {
+  font-family: var(--apple-mono);
+  font-size: 11px;
+  color: var(--sys-green);
+  background: var(--sys-green-soft);
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-weight: 600;
+}
+
+.tool-pill {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-card);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  box-shadow: var(--shadow-card);
+  font-family: var(--apple-font);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tool-pill:hover {
+  color: var(--text-main);
+  background: var(--bg-card-hover);
+}
+
+.tool-pill.active {
+  background: var(--sys-blue);
+  color: #ffffff;
+  border-color: var(--sys-blue);
+}
+
+/* ==========================================
+   5. CANVAS VIEWPORT & HARDWARE BEZELS
+   ========================================== */
+.canvas-viewport {
+  flex: 1;
+  position: relative;
+  overflow: auto;
+  background-color: var(--bg-canvas);
+  background-image: radial-gradient(var(--bg-canvas-dot) 1px, transparent 1px);
+  background-size: 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  transition: background-color 0.22s ease;
+}
+
+.single-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.device-scale-wrapper {
+  transform-origin: center center;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hardware Device Shell */
+.device-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #1C1C1E;
+  transition: width 0.22s ease, height 0.22s ease, border-radius 0.22s ease, padding 0.22s ease;
+  box-shadow: var(--shadow-device);
+}
+
+.device-shell.resizing {
+  transition: none !important;
+}
+
+/* Raw Wireframe Mode (When Bezel is toggled OFF or Responsive Mode) */
+.device-shell:not(.bezel-enabled) {
+  padding: 0 !important;
+  border-radius: 10px !important;
+  border: 2px solid var(--sys-blue) !important;
+  background: var(--bg-card) !important;
+}
+
+.device-shell:not(.bezel-enabled) .hw-btn,
+.device-shell:not(.bezel-enabled) .hw-notch-area,
+.device-shell:not(.bezel-enabled) .hw-touchid-ring,
+.device-shell:not(.bezel-enabled) .hw-laptop-base,
+.device-shell:not(.bezel-enabled) .hw-monitor-stand {
+  display: none !important;
+}
+
+.device-shell:not(.bezel-enabled) .device-screen {
+  border-radius: 8px !important;
+}
+
+/* =========================================================
+   AUTHENTIC HARDWARE DEVICE CHASSIS & BEZEL PROPORTIONS
+   ========================================================= */
+
+/* Default Mobile Chassis Baseline */
+.device-shell.device-mobile.bezel-enabled {
+  padding: 10px;
+  border-radius: 50px;
+  background: linear-gradient(145deg, #38373B 0%, #1A191C 55%, #2A292D 100%);
+  border: 2px solid #5A585C;
+  box-shadow:
+    inset 0 0 2px rgba(255, 255, 255, 0.28),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.8),
+    var(--shadow-device);
+}
+
+.device-shell.device-mobile.bezel-enabled .device-screen {
+  border-radius: 40px;
+}
+
+/* 1. iPhone 16 Pro (Ultra-Thin Titanium Bezel 9px, Radius 54px/46px) */
+.device-shell.device-mobile.bezel-enabled[data-device="iphone-16-pro"] {
+  padding: 9px;
+  border-radius: 54px;
+  background: linear-gradient(145deg, #3A393E 0%, #1A191D 55%, #2C2B30 100%);
+  border: 2px solid #5C5A60;
+  box-shadow:
+    inset 0 0 2.5px rgba(255, 255, 255, 0.35),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.95),
+    var(--shadow-device);
+}
+
+.device-shell.device-mobile.bezel-enabled[data-device="iphone-16-pro"] .device-screen {
+  border-radius: 46px;
+}
+
+/* 2. iPhone 16 Pro Max (Ultra-Thin Titanium Bezel 9px, Radius 56px/48px) */
+.device-shell.device-mobile.bezel-enabled[data-device="iphone-16-pro-max"] {
+  padding: 9px;
+  border-radius: 56px;
+  background: linear-gradient(145deg, #3A393E 0%, #1A191D 55%, #2C2B30 100%);
+  border: 2px solid #5C5A60;
+  box-shadow:
+    inset 0 0 2.5px rgba(255, 255, 255, 0.35),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.95),
+    var(--shadow-device);
+}
+
+.device-shell.device-mobile.bezel-enabled[data-device="iphone-16-pro-max"] .device-screen {
+  border-radius: 48px;
+}
+
+/* 3. iPhone XR (Liquid Retina Aluminum Bezel 14px, Radius 50px/38px) */
+.device-shell.device-mobile.bezel-enabled[data-device="iphone-xr"] {
+  padding: 14px;
+  border-radius: 50px;
+  background: linear-gradient(145deg, #48484C 0%, #202022 55%, #343438 100%);
+  border: 2.5px solid #6E6E73;
+  box-shadow:
+    inset 0 0 2px rgba(255, 255, 255, 0.25),
+    var(--shadow-device);
+}
+
+.device-shell.device-mobile.bezel-enabled[data-device="iphone-xr"] .device-screen {
+  border-radius: 38px;
+}
+
+/* 4. iPhone SE Gen 3 (Classic Aluminum Unibody with Forehead 56px & Chin 64px) */
+.device-shell.device-mobile.bezel-enabled[data-device="iphone-se"] {
+  padding: 56px 12px 64px 12px;
+  border-radius: 44px;
+  background: linear-gradient(145deg, #38383A 0%, #18181A 55%, #262628 100%);
+  border: 2px solid #525256;
+  box-shadow:
+    inset 0 0 2px rgba(255, 255, 255, 0.22),
+    var(--shadow-device);
+}
+
+.device-shell.device-mobile.bezel-enabled[data-device="iphone-se"] .device-screen {
+  border-radius: 0px !important; /* Authentic flat square screen corners */
+}
+
+/* iPhone SE Forehead (Top Bezel Speaker & Front Camera) */
+.hw-bezel-forehead {
+  display: none;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-se"] .hw-bezel-forehead {
+  display: flex;
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 5;
+}
+
+.bezel-speaker {
+  width: 50px;
+  height: 4.5px;
+  background: #1C1C1E;
+  border: 1px solid #3A3A3C;
+  border-radius: 99px;
+}
+
+.bezel-cam {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #0A84FF, #000 75%);
+  border: 1px solid #2C2C2E;
+}
+
+/* iPhone SE Chin (Authentic Touch ID Home Button Ring) */
+.hw-touchid-ring {
+  display: none;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-se"] .hw-touchid-ring {
+  display: block;
+  position: absolute;
+  bottom: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #636366;
+  background: radial-gradient(circle, #1C1C1E 66%, #2C2C2E 100%);
+  box-shadow:
+    inset 0 0 4px rgba(0, 0, 0, 0.8),
+    0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+/* 5. Samsung Galaxy S24 Ultra (Iconic Sharp Titanium Box Corners, 8px Bezel) */
+.device-shell.device-mobile.bezel-enabled[data-device="galaxy-s24-ultra"] {
+  padding: 8px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #343438 0%, #161618 55%, #242426 100%);
+  border: 2px solid #545458;
+  box-shadow:
+    inset 0 0 2px rgba(255, 255, 255, 0.25),
+    var(--shadow-device);
+}
+
+.device-shell.device-mobile.bezel-enabled[data-device="galaxy-s24-ultra"] .device-screen {
+  border-radius: 6px; /* Signature Samsung Ultra subtle curved display corners */
+}
+
+/* 6. Google Pixel 9 Pro (Matte Aluminum Bezel 10px, Rounded 46px/38px) */
+.device-shell.device-mobile.bezel-enabled[data-device="pixel-9-pro"] {
+  padding: 10px;
+  border-radius: 46px;
+  background: linear-gradient(145deg, #3A3A3E 0%, #1A1A1C 55%, #28282C 100%);
+  border: 2px solid #58585C;
+  box-shadow:
+    inset 0 0 2px rgba(255, 255, 255, 0.25),
+    var(--shadow-device);
+}
+
+.device-shell.device-mobile.bezel-enabled[data-device="pixel-9-pro"] .device-screen {
+  border-radius: 38px;
+}
+
+/* 7. iPad Tablets (Symmetrical Uniform Aluminum Bezel) */
+.device-shell.device-tablet.bezel-enabled {
+  padding: 18px;
+  border-radius: 34px;
+  background: linear-gradient(145deg, #38383A, #18181A);
+  border: 2px solid #5E5E62;
+  box-shadow:
+    inset 0 0 2px rgba(255, 255, 255, 0.2),
+    var(--shadow-device);
+}
+
+.device-shell.device-tablet.bezel-enabled .device-screen {
+  border-radius: 18px;
+}
+
+.device-shell.device-tablet.bezel-enabled[data-device="ipad-mini"] {
+  padding: 16px;
+  border-radius: 32px;
+}
+.device-shell.device-tablet.bezel-enabled[data-device="ipad-mini"] .device-screen {
+  border-radius: 16px;
+}
+
+.device-shell.device-tablet.bezel-enabled[data-device="ipad-pro-13"] {
+  padding: 14px;
+  border-radius: 38px;
+}
+.device-shell.device-tablet.bezel-enabled[data-device="ipad-pro-13"] .device-screen {
+  border-radius: 22px;
+}
+
+.device-shell.device-tablet.bezel-enabled[data-device="galaxy-tab-s9"] {
+  padding: 16px;
+  border-radius: 30px;
+}
+.device-shell.device-tablet.bezel-enabled[data-device="galaxy-tab-s9"] .device-screen {
+  border-radius: 16px;
+}
+
+/* 8. MacBook Air & Pro Laptops */
+.device-shell.device-laptop.bezel-enabled {
+  padding: 14px 14px 10px 14px;
+  border-radius: 20px 20px 4px 4px;
+  background: #18181A;
+  border: 2px solid #444448;
+  box-shadow: var(--shadow-device);
+}
+
+.device-shell.device-laptop.bezel-enabled .device-screen {
+  border-radius: 8px 8px 0 0;
+}
+
+/* 9. Windows 11 Desktop Monitor */
+.device-shell.device-monitor.bezel-enabled {
+  padding: 14px 14px 28px 14px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #2A2A2E 0%, #18181A 85%, #343438 100%);
+  border: 2px solid #58585C;
+  box-shadow: var(--shadow-device);
+}
+
+.device-shell.device-monitor.bezel-enabled .device-screen {
+  border-radius: 4px;
+}
+
+/* =========================================================
+   AUTHENTIC PHYSICAL HARDWARE SIDE BUTTONS
+   ========================================================= */
+.hw-btn {
+  display: none;
+  position: absolute;
+  background: linear-gradient(180deg, #5C5A60, #3E3D42);
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.device-shell.device-mobile.bezel-enabled .hw-btn {
+  display: block;
+}
+
+/* iPhone 16 Pro / Pro Max Side Buttons (Action, Vol Up/Down, Power, Camera Control) */
+.device-shell.bezel-enabled[data-device="iphone-16-pro"] .hw-btn-action,
+.device-shell.bezel-enabled[data-device="iphone-16-pro-max"] .hw-btn-action {
+  left: -4.5px;
+  top: 96px;
+  width: 3.5px;
+  height: 26px;
+  border-radius: 2px;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-16-pro"] .hw-btn-silent,
+.device-shell.bezel-enabled[data-device="iphone-16-pro-max"] .hw-btn-silent {
+  display: none !important; /* Replaced by Action Button */
+}
+
+.device-shell.bezel-enabled[data-device="iphone-16-pro"] .hw-btn-vol-up,
+.device-shell.bezel-enabled[data-device="iphone-16-pro-max"] .hw-btn-vol-up {
+  left: -4.5px;
+  top: 136px;
+  width: 3.5px;
+  height: 50px;
+  border-radius: 2px;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-16-pro"] .hw-btn-vol-down,
+.device-shell.bezel-enabled[data-device="iphone-16-pro-max"] .hw-btn-vol-down {
+  left: -4.5px;
+  top: 198px;
+  width: 3.5px;
+  height: 50px;
+  border-radius: 2px;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-16-pro"] .hw-btn-power,
+.device-shell.bezel-enabled[data-device="iphone-16-pro-max"] .hw-btn-power {
+  right: -4.5px;
+  top: 154px;
+  width: 3.5px;
+  height: 72px;
+  border-radius: 2px;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-16-pro"] .hw-btn-camera,
+.device-shell.bezel-enabled[data-device="iphone-16-pro-max"] .hw-btn-camera {
+  right: -3px;
+  bottom: 130px;
+  width: 3px;
+  height: 42px;
+  background: linear-gradient(180deg, #4A494E, #28272B);
+  border-radius: 2px;
+  box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+/* iPhone XR Side Buttons (Silent switch, Vol Up/Down, Power) */
+.device-shell.bezel-enabled[data-device="iphone-xr"] .hw-btn-action,
+.device-shell.bezel-enabled[data-device="iphone-xr"] .hw-btn-camera {
+  display: none !important;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-xr"] .hw-btn-silent {
+  left: -4.5px;
+  top: 92px;
+  width: 3.5px;
+  height: 24px;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-xr"] .hw-btn-vol-up {
+  left: -4.5px;
+  top: 132px;
+  width: 3.5px;
+  height: 46px;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-xr"] .hw-btn-vol-down {
+  left: -4.5px;
+  top: 188px;
+  width: 3.5px;
+  height: 46px;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-xr"] .hw-btn-power {
+  right: -4.5px;
+  top: 150px;
+  width: 3.5px;
+  height: 68px;
+}
+
+/* iPhone SE Side Buttons */
+.device-shell.bezel-enabled[data-device="iphone-se"] .hw-btn-action,
+.device-shell.bezel-enabled[data-device="iphone-se"] .hw-btn-camera {
+  display: none !important;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-se"] .hw-btn-silent {
+  left: -4px;
+  top: 90px;
+  width: 3px;
+  height: 20px;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-se"] .hw-btn-vol-up {
+  left: -4px;
+  top: 124px;
+  width: 3px;
+  height: 38px;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-se"] .hw-btn-vol-down {
+  left: -4px;
+  top: 172px;
+  width: 3px;
+  height: 38px;
+}
+
+.device-shell.bezel-enabled[data-device="iphone-se"] .hw-btn-power {
+  right: -4px;
+  top: 130px;
+  width: 3px;
+  height: 48px;
+}
+
+/* Samsung Galaxy S24 Ultra Side Buttons (ALL buttons on the RIGHT side!) */
+.device-shell.bezel-enabled[data-device="galaxy-s24-ultra"] .hw-btn-action,
+.device-shell.bezel-enabled[data-device="galaxy-s24-ultra"] .hw-btn-silent,
+.device-shell.bezel-enabled[data-device="galaxy-s24-ultra"] .hw-btn-vol-down,
+.device-shell.bezel-enabled[data-device="galaxy-s24-ultra"] .hw-btn-camera {
+  display: none !important;
+}
+
+.device-shell.bezel-enabled[data-device="galaxy-s24-ultra"] .hw-btn-vol-up {
+  left: auto !important;
+  right: -4.5px !important;
+  top: 138px !important;
+  width: 3.5px !important;
+  height: 74px !important;
+  border-radius: 2px !important;
+}
+
+.device-shell.bezel-enabled[data-device="galaxy-s24-ultra"] .hw-btn-power {
+  right: -4.5px !important;
+  top: 232px !important;
+  width: 3.5px !important;
+  height: 46px !important;
+  border-radius: 2px !important;
+}
+
+/* Google Pixel 9 Pro Side Buttons (ALL buttons on the RIGHT side!) */
+.device-shell.bezel-enabled[data-device="pixel-9-pro"] .hw-btn-action,
+.device-shell.bezel-enabled[data-device="pixel-9-pro"] .hw-btn-silent,
+.device-shell.bezel-enabled[data-device="pixel-9-pro"] .hw-btn-vol-down,
+.device-shell.bezel-enabled[data-device="pixel-9-pro"] .hw-btn-camera {
+  display: none !important;
+}
+
+.device-shell.bezel-enabled[data-device="pixel-9-pro"] .hw-btn-power {
+  right: -4.5px !important;
+  top: 132px !important;
+  width: 3.5px !important;
+  height: 38px !important;
+  border-radius: 2px !important;
+}
+
+.device-shell.bezel-enabled[data-device="pixel-9-pro"] .hw-btn-vol-up {
+  left: auto !important;
+  right: -4.5px !important;
+  top: 184px !important;
+  width: 3.5px !important;
+  height: 68px !important;
+  border-radius: 2px !important;
+}
+
+/* =========================================================
+   HARDWARE SCREEN CUTOUTS (Dynamic Island / Notch / Punch Hole)
+   ========================================================= */
+.hw-notch-area {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  pointer-events: none;
+}
+
+.dynamic-island,
+.classic-notch,
+.punch-hole-cam,
+.laptop-webcam {
+  display: none;
+}
+
+/* Dynamic Island (iPhone 16 Pro / Pro Max) */
+.device-shell.bezel-enabled[data-frame="dynamic-island"] .dynamic-island {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  gap: 8px;
+  margin-top: 11px;
+  width: 120px;
+  height: 35px;
+  background: #000000;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.device-shell.bezel-enabled[data-device="iphone-16-pro-max"] .dynamic-island {
+  width: 124px;
+}
+
+.island-mic {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #0d0d0d;
+}
+
+.camera-lens {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #1860a8, #051424 70%, #000000 100%);
+  border: 1px solid #1c1c1e;
+  box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+/* Classic Notch (iPhone XR) */
+.device-shell.bezel-enabled[data-frame="notch"] .classic-notch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 186px;
+  height: 30px;
+  margin-top: 0;
+  background: #000000;
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.notch-speaker {
+  width: 44px;
+  height: 4px;
+  background: #242426;
+  border-radius: 99px;
+  border: 0.5px solid #333;
+}
+
+/* Punch Hole Front Camera (Galaxy S24 Ultra & Google Pixel 9 Pro) */
+.device-shell.bezel-enabled[data-frame="punch-hole"] .punch-hole-cam,
+.device-shell.bezel-enabled[data-frame="punch-hole-sharp"] .punch-hole-cam {
+  display: block;
+  margin-top: 9px;
+  width: 11px;
+  height: 11px;
+  background: #000000;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px #111111, inset 0 0 2.5px #0A84FF;
+}
+
+/* Laptop Base & Monitor Stand */
+.hw-laptop-base,
+.hw-monitor-stand {
+  display: none;
+}
+
+.device-shell.device-laptop.bezel-enabled .hw-laptop-base {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: -18px;
+  left: -5%;
+  width: 110%;
+  height: 18px;
+  background: linear-gradient(90deg, #636366, #AEAEB2 20%, #E5E5EA 50%, #AEAEB2 80%, #636366);
+  border-radius: 2px 2px 14px 14px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+}
+
+.laptop-lip {
+  width: 120px;
+  height: 6px;
+  background: #8E8E93;
+  border-radius: 0 0 6px 6px;
+}
+
+.device-shell.device-monitor.bezel-enabled .hw-monitor-stand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  bottom: -64px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.monitor-neck {
+  width: 90px;
+  height: 52px;
+  background: linear-gradient(180deg, #8E8E93, #D1D1D6);
+  clip-path: polygon(12% 0%, 88% 0%, 100% 100%, 0% 100%);
+}
+
+.monitor-foot {
+  width: 220px;
+  height: 12px;
+  background: linear-gradient(90deg, #8E8E93, #E5E5EA, #8E8E93);
+  border-radius: 8px 8px 2px 2px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* =========================================================
+   6. OS SYSTEM DESIGN CHROME & AUTHENTIC BROWSER VIEWPORT
+   ========================================================= */
+.device-screen {
+  position: relative;
+  background: var(--bg-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 393px;
+  height: 852px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* The website iframe container occupies the exact viewport between top and bottom chrome */
+.iframe-container {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #ffffff;
+  z-index: 1;
+}
+
+#simIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: #fff;
+}
+
+/* OS System Chrome Bars (Fixed siblings in flex column, never overlapping page content) */
+.os-top-chrome {
+  position: relative;
+  z-index: 20;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.os-bottom-chrome {
+  position: relative;
+  z-index: 20;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.os-top-chrome.hidden,
+.os-bottom-chrome.hidden {
+  display: none !important;
+}
+
+/* Landscape Mode Orientation for Device Shell & Hardware */
+.device-shell.is-landscape .hw-notch-area {
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.device-shell.is-landscape .hw-btn-action { left: 96px; top: -4.5px; width: 26px; height: 3.5px; }
+.device-shell.is-landscape .hw-btn-silent { left: 92px; top: -4.5px; width: 24px; height: 3.5px; }
+.device-shell.is-landscape .hw-btn-vol-up { left: 136px; top: -4.5px; width: 50px; height: 3.5px; }
+.device-shell.is-landscape .hw-btn-vol-down { left: 198px; top: -4.5px; width: 50px; height: 3.5px; }
+.device-shell.is-landscape .hw-btn-power { left: 154px; bottom: -4.5px; top: auto; right: auto; width: 72px; height: 3.5px; }
+.device-shell.is-landscape .hw-btn-camera { right: 130px; bottom: -3px; top: auto; left: auto; width: 42px; height: 3px; }
+
+.chrome-ios-top,
+.chrome-android-top,
+.chrome-ipados-top,
+.chrome-macos-top,
+.chrome-windows-top,
+.chrome-ios-bottom,
+.chrome-android-bottom,
+.chrome-ipados-bottom,
+.chrome-windows-bottom {
+  display: none;
+  user-select: none;
+}
+
+/* =========================================================
+   A. APPLE iOS 18 SYSTEM STATUS BAR & SAFARI CHROME
+   ========================================================= */
+.device-screen[data-os="ios"] .chrome-ios-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 54px;
+  padding: 0 30px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-hairline);
+  color: var(--text-main);
+  font-family: var(--apple-font);
+  font-weight: 600;
+  font-size: 14.5px;
+  letter-spacing: -0.015em;
+  box-sizing: border-box;
+}
+
+[data-theme="light"] .device-screen[data-os="ios"] .chrome-ios-top {
+  background: #FBFBFD;
+  border-bottom: 1px solid rgba(60, 60, 67, 0.12);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .device-screen[data-os="ios"] .chrome-ios-top {
+  background: #1C1C1E;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+/* iPhone 16 Pro Max status bar */
+.device-screen[data-device="iphone-16-pro-max"] .chrome-ios-top {
+  height: 56px;
+  padding: 0 34px;
+}
+
+/* iPhone XR status bar (classic notch) */
+.device-screen[data-device="iphone-xr"] .chrome-ios-top {
+  height: 44px;
+  padding: 0 26px;
+}
+
+/* iPhone SE (Gen 3) status bar */
+.device-screen[data-device="iphone-se"] .chrome-ios-top {
+  height: 24px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.ios-clock {
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1;
+}
+
+.device-screen[data-device="iphone-se"] .ios-clock {
+  font-size: 12px;
+}
+
+.ios-status-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+}
+
+.ios-5g {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.device-screen[data-device="iphone-se"] .ios-5g {
+  font-size: 11px;
+}
+
+.ios-battery {
+  width: 25px;
+  height: 12px;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  padding: 1.5px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ios-battery::after {
+  content: '';
+  position: absolute;
+  right: -3.5px;
+  top: 2.5px;
+  width: 2px;
+  height: 4px;
+  background: currentColor;
+  border-radius: 0 1px 1px 0;
+}
+
+.ios-battery-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--sys-green);
+  border-radius: 1.5px;
+}
+
+/* Apple iOS Safari Bottom Bar (URL Capsule + Home Indicator) */
+.device-screen[data-os="ios"] .chrome-ios-bottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 72px;
+  padding: 8px 16px 6px 16px;
+  font-family: var(--apple-font);
+  box-sizing: border-box;
+}
+
+[data-theme="light"] .device-screen[data-os="ios"] .chrome-ios-bottom {
+  background: #F8F8FA;
+  border-top: 1px solid rgba(60, 60, 67, 0.15);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .device-screen[data-os="ios"] .chrome-ios-bottom {
+  background: #1C1C1E;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* iPhone SE bottom bar (no home indicator line) */
+.device-screen[data-device="iphone-se"] .chrome-ios-bottom {
+  height: 52px;
+  padding: 7px 14px;
+  justify-content: center;
+}
+
+.device-screen[data-device="iphone-se"] .ios-home-indicator {
+  display: none !important;
+}
+
+.ios-safari-capsule {
+  height: 38px;
+  width: 100%;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  font-size: 13px;
+  color: var(--text-main);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: background 0.15s ease;
+  user-select: none;
+}
+
+[data-theme="light"] .ios-safari-capsule {
+  background: rgba(118, 118, 128, 0.12);
+}
+
+[data-theme="dark"] .ios-safari-capsule {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.ios-aa {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.ios-aa:hover {
+  color: var(--text-main);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.ios-capsule-domain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 500;
+  font-size: 13px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ios-reload {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: transform 0.2s ease, color 0.15s ease;
+}
+
+.ios-reload:hover {
+  color: var(--sys-blue);
+  transform: rotate(45deg);
+}
+
+.ios-home-indicator {
+  height: 18px;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  user-select: none;
+}
+
+.home-pill {
+  width: 134px;
+  height: 5px;
+  background: var(--text-main);
+  opacity: 0.35;
+  border-radius: 99px;
+}
+
+/* --- B. GOOGLE ANDROID 15 CHROME --- */
+.device-screen[data-os="android"] .chrome-android-top {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  color: var(--text-main);
+  font-family: 'Roboto', sans-serif;
+  border-bottom: 1px solid var(--border-hairline);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .device-screen[data-os="android"] .chrome-android-top {
+  background: #FFFFFF;
+}
+
+[data-theme="dark"] .device-screen[data-os="android"] .chrome-android-top {
+  background: #1F1F1F;
+}
+
+.android-statusbar {
+  height: 30px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.android-status-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.android-battery-pill {
+  background: var(--sys-green-soft);
+  color: var(--sys-green);
+  padding: 1px 6px;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 10px;
+}
+
+.android-chrome-bar {
+  height: 42px;
+  padding: 0 12px 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ac-omnibox {
+  flex: 1;
+  height: 32px;
+  background: var(--bg-input);
+  border-radius: 99px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.ac-domain {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ac-tabs {
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--text-secondary);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.device-screen[data-os="android"] .chrome-android-bottom {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-hairline);
+}
+
+[data-theme="light"] .device-screen[data-os="android"] .chrome-android-bottom {
+  background: #FFFFFF;
+}
+
+[data-theme="dark"] .device-screen[data-os="android"] .chrome-android-bottom {
+  background: #1F1F1F;
+}
+
+.android-three-btns {
+  display: none;
+  height: 40px;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 40px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.android-three-btns span {
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  user-select: none;
+}
+
+.android-three-btns span:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-main);
+}
+
+.android-gesture-bar {
+  display: grid;
+  place-items: center;
+  height: 24px;
+}
+
+.android-gesture-bar .home-pill {
+  width: 80px;
+  height: 4px;
+}
+
+.device-screen[data-os="android"][data-nav="samsung"] .android-three-btns {
+  display: flex;
+}
+
+.device-screen[data-os="android"][data-nav="samsung"] .android-gesture-bar {
+  display: none;
+}
+
+/* --- C. APPLE iPadOS 18 CHROME --- */
+.device-screen[data-os="ipados"] .chrome-ipados-top {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+[data-theme="light"] .device-screen[data-os="ipados"] .chrome-ipados-top {
+  background: #F2F2F7;
+}
+
+[data-theme="dark"] .device-screen[data-os="ipados"] .chrome-ipados-top {
+  background: #1C1C1E;
+}
+
+.ipados-statusbar {
+  height: 26px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.ipados-left, .ipados-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ipados-date {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.ipados-safari-bar {
+  height: 38px;
+  padding: 0 14px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-hairline);
+  color: var(--text-secondary);
+}
+
+.ipados-nav-btns {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.ipados-url-pill {
+  flex: 1;
+  max-width: 380px;
+  height: 28px;
+  background: var(--bg-input);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-main);
+}
+
+.device-screen[data-os="ipados"] .chrome-ipados-bottom {
+  display: grid;
+  place-items: center;
+  height: 18px;
+  background: var(--bg-card);
+}
+
+/* --- D. APPLE macOS SEQUOIA CHROME --- */
+.device-screen[data-os="macos"] .chrome-macos-top {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--apple-font);
+}
+
+.macos-menubar {
+  height: 24px;
+  background: var(--bg-topbar);
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.macos-menu-left, .macos-menu-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.apple-logo {
+  font-size: 13px;
+}
+
+.macos-safari-bar {
+  height: 36px;
+  background: var(--bg-card);
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.macos-traffic-lights {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.macos-traffic-lights span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.tl-red { background: #FF5F56; }
+.tl-yellow { background: #FFBD2E; }
+.tl-green { background: #27C93F; }
+
+.macos-nav-arrows, .macos-actions {
+  display: flex;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.macos-address-pill {
+  flex: 1;
+  max-width: 460px;
+  height: 24px;
+  background: var(--bg-input);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--text-main);
+}
+
+/* --- E. MICROSOFT WINDOWS 11 CHROME & TASKBAR --- */
+.device-screen[data-os="windows"] .chrome-windows-top {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  font-family: 'Segoe UI Variable Text', 'Segoe UI', sans-serif;
+}
+
+.win11-tabstrip {
+  height: 30px;
+  background: var(--bg-subbar);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-left: 10px;
+}
+
+.win11-active-tab {
+  height: 25px;
+  width: 200px;
+  background: var(--bg-card);
+  border-radius: 7px 7px 0 0;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-main);
+}
+
+.win11-tab-title {
+  flex: 1;
+  margin-left: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.win11-caption-btns {
+  display: flex;
+  height: 100%;
+  align-items: center;
+}
+
+.win11-caption-btns span {
+  width: 38px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.win11-omnibox-bar {
+  height: 34px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.win11-nav-icons {
+  display: flex;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.win11-omnibox {
+  flex: 1;
+  height: 24px;
+  background: var(--bg-input);
+  border-radius: 99px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--text-main);
+}
+
+.device-screen[data-os="windows"] .chrome-windows-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 38px;
+  background: var(--bg-topbar);
+  border-top: 1px solid var(--border-hairline);
+  padding: 0 16px;
+  font-family: 'Segoe UI Variable Text', 'Segoe UI', sans-serif;
+  font-size: 11px;
+  color: var(--text-main);
+}
+
+.win11-taskbar-center {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.win11-start-icon {
+  font-size: 16px;
+  color: var(--sys-blue);
+  background: var(--sys-blue-soft);
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+}
+
+.win11-search-pill {
+  background: var(--bg-input);
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.win11-app-icon {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+}
+
+.win11-app-icon.active {
+  background: var(--bg-input);
+  border-bottom: 2px solid var(--sys-blue);
+}
+
+.win11-systray {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 10.5px;
+}
+
+.win11-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.15;
+}
+
+.home-pill {
+  width: 120px;
+  height: 4px;
+  background: var(--text-tertiary);
+  border-radius: 99px;
+}
+
+/* =========================================================
+   7. EXACT VIEWPORT IFRAME CONTAINER & OVERLAYS
+   ========================================================= */
+.iframe-container {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+#simIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: #fff;
+}
+
+/* Touch Cursor Simulation */
+.touch-cursor-enabled #simIframe,
+.touch-cursor-enabled .iframe-container {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><circle cx='16' cy='16' r='12' fill='rgba(0, 122, 255, 0.28)' stroke='rgba(255, 255, 255, 0.95)' stroke-width='2'/></svg>") 16 16, pointer;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-topbar);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-main);
+  font-size: 12.5px;
+  z-index: 12;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.loading-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid var(--sys-blue-soft);
+  border-top-color: var(--sys-blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 12-Column CSS Grid Overlay */
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+  padding: 0 16px;
+  pointer-events: none;
+  z-index: 11;
+}
+
+.grid-col {
+  background: rgba(255, 59, 48, 0.12);
+  border-left: 0.5px dashed rgba(255, 59, 48, 0.4);
+  border-right: 0.5px dashed rgba(255, 59, 48, 0.4);
+  height: 100%;
+}
+
+/* Interactive Drag Resize Handles (Only visible in Responsive Mode) */
+.resize-handle {
+  position: absolute;
+  z-index: 25;
+  transition: background 0.15s;
+}
+
+.resize-right {
+  top: 50%;
+  right: -13px;
+  transform: translateY(-50%);
+  width: 7px;
+  height: 60px;
+  border-radius: 99px;
+  background: var(--sys-blue);
+  cursor: ew-resize;
+}
+
+.resize-bottom {
+  bottom: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 7px;
+  border-radius: 99px;
+  background: var(--sys-blue);
+  cursor: ns-resize;
+}
+
+.resize-corner {
+  bottom: -13px;
+  right: -13px;
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  background: var(--sys-green);
+  cursor: nwse-resize;
+}
+
+/* ==========================================
+   8. MULTI-DEVICE MATRIX STAGE
+   ========================================== */
+.matrix-stage {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 10px 16px 40px;
+}
+
+.matrix-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-device);
+  width: fit-content;
+  max-width: 100%;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.matrix-card:hover {
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.14);
+}
+
+.matrix-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-hairline);
+  padding-bottom: 8px;
+}
+
+.matrix-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.matrix-device-select {
+  background: var(--bg-input);
+  border: 1px solid transparent;
+  color: var(--text-main);
+  border-radius: var(--radius-xs);
+  padding: 3px 6px;
+  font-family: var(--apple-font);
+  font-size: 11px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  max-width: 190px;
+}
+
+.matrix-device-select:focus {
+  border-color: var(--sys-blue);
+  background: var(--bg-card);
+}
+
+.matrix-device-select option,
+.toolbar-select option {
+  background: var(--bg-card);
+  color: var(--text-main);
+}
+
+.matrix-title code {
+  font-family: var(--apple-mono);
+  font-size: 10.5px;
+  color: var(--sys-blue);
+  background: var(--sys-blue-soft);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.matrix-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mini-btn {
+  background: var(--bg-input);
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  border-radius: var(--radius-xs);
+  padding: 3px 8px;
+  font-family: var(--apple-font);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.mini-btn:hover {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border-color: var(--border-card);
+  box-shadow: var(--shadow-card);
+}
+
+.matrix-frame-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1.5px solid var(--border-hairline);
+  background: var(--bg-card);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.matrix-scale-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.matrix-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.matrix-mini-top {
+  height: 40px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-family: var(--apple-font);
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-hairline);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.matrix-mini-island {
+  width: 84px;
+  height: 20px;
+  background: #000;
+  border-radius: 99px;
+}
+
+.matrix-mini-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.matrix-mini-bottom {
+  height: 26px;
+  background: var(--bg-card);
+  display: grid;
+  place-items: center;
+  border-top: 1px solid var(--border-hairline);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.matrix-mini-desktop-top {
+  height: 34px;
+  background: var(--bg-topbar);
+  padding: 0 12px;
+}
+
+.matrix-mini-desktop-bottom {
+  height: 32px;
+  background: var(--bg-topbar);
+}
+
+.matrix-mini-domain {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.matrix-mini-clock {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.matrix-scale-box iframe,
+.matrix-screen iframe {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  border: none;
+  display: block;
+  background: #ffffff;
+}
+
+/* ==========================================
+   9. TELEMETRY FOOTER
+   ========================================== */
+.telemetry-footer {
+  height: 30px;
+  background: var(--bg-topbar);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-top: 1px solid var(--border-hairline);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.telemetry-item code {
+  color: var(--text-main);
+  font-family: var(--apple-mono);
+  font-weight: 500;
+}
+
+.telemetry-divider {
+  color: var(--text-tertiary);
+}
+
+.bp-tag {
+  background: var(--sys-indigo-soft);
+  color: var(--sys-indigo);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-family: var(--apple-mono);
+}
+
+.telemetry-ua {
+  font-family: var(--apple-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  max-width: 460px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   AUTHENTICATION & SECURITY ADVISORY BANNER (Apple HIG Notification Card)
+   ========================================================================== */
+.auth-security-notice {
+  margin: 10px 18px 0;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--sys-orange);
+  border-left: 4px solid var(--sys-orange);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: slideDownFade 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  z-index: 90;
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-security-notice.hidden {
+  display: none !important;
+}
+
+.auth-security-notice .notice-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--sys-orange-soft);
+  color: var(--sys-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.auth-security-notice .notice-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.auth-security-notice .notice-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.auth-security-notice .notice-desc {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.auth-security-notice .notice-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.notice-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--sys-blue);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.notice-btn-primary:hover {
+  background: var(--sys-blue-hover);
+  transform: translateY(-1px);
+}
+
+.notice-btn-close {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.notice-btn-close:hover {
+  color: var(--text-main);
+  background: var(--bg-input);
+}
+
+/* ==========================================================================
+   SCREENSHOT TOPBAR & TOOLBAR BUTTONS
+   ========================================================================== */
+.btn-screenshot {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-card);
+  background: var(--bg-card);
+  color: var(--text-main);
+  box-shadow: var(--shadow-card);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--apple-font);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-screenshot:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--sys-blue);
+  color: var(--sys-blue);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 122, 255, 0.15);
+}
+
+.btn-screenshot:active {
+  transform: scale(0.97);
+}
+
+.btn-screenshot svg {
+  color: var(--sys-blue);
+}
+
+.tool-pill.pill-screenshot {
+  border-color: var(--sys-blue-soft);
+  color: var(--sys-blue);
+  font-weight: 600;
+}
+
+.tool-pill.pill-screenshot:hover {
+  background: var(--sys-blue-soft);
+  border-color: var(--sys-blue);
+}
+
+/* ==========================================================================
+   APPLE HIG STUDIO SCREENSHOT & MOCKUP EXPORTER MODAL & TOAST
+   ========================================================================== */
+.apple-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: modalBackdropFadeIn 0.25s ease-out;
+}
+
+.apple-modal-backdrop.hidden {
+  display: none !important;
+}
+
+@keyframes modalBackdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSheetSlideUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.apple-modal-sheet {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28), 0 4px 16px rgba(0, 0, 0, 0.12);
+  animation: modalSheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  font-family: var(--apple-font);
+}
+
+.modal-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.modal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--sys-blue-soft);
+  color: var(--sys-blue);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 2px 0;
+  letter-spacing: -0.01em;
+}
+
+.modal-subtitle {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.modal-close-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(120, 120, 128, 0.24);
+  color: var(--text-main);
+}
+
+/* Segmented Target Chooser */
+.shot-segmented-control {
+  display: flex;
+  background: var(--bg-segmented);
+  border-radius: 10px;
+  padding: 3px;
+  margin: 14px 20px 0;
+  gap: 4px;
+}
+
+.shot-seg-btn {
+  flex: 1;
+  padding: 7px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.shot-seg-btn:hover {
+  color: var(--text-main);
+}
+
+.shot-seg-btn.active {
+  background: var(--bg-segmented-pill);
+  color: var(--text-main);
+  box-shadow: var(--shadow-segmented);
+}
+
+/* Preview Container */
+.shot-preview-container {
+  padding: 14px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.shot-preview-box {
+  position: relative;
+  min-height: 260px;
+  max-height: 380px;
+  background: var(--bg-canvas);
+  background-image: 
+    linear-gradient(45deg, var(--bg-canvas-dot) 25%, transparent 25%), 
+    linear-gradient(-45deg, var(--bg-canvas-dot) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, var(--bg-canvas-dot) 75%), 
+    linear-gradient(-45deg, transparent 75%, var(--bg-canvas-dot) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+  border: 1px solid var(--border-hairline);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  padding: 16px;
+}
+
+.shot-preview-img {
+  max-width: 100%;
+  max-height: 340px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  transition: opacity 0.2s ease;
+}
+
+.shot-spinner {
+  position: absolute;
+  inset: 0;
+  background: rgba(var(--bg-card), 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 10;
+  border-radius: 14px;
+}
+
+.shot-spinner.hidden {
+  display: none !important;
+}
+
+.apple-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(0, 122, 255, 0.2);
+  border-top-color: var(--sys-blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Meta Information Chips */
+.shot-meta-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.shot-meta-chip {
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: var(--apple-mono);
+}
+
+.shot-meta-chip.meta-format {
+  background: var(--sys-green-soft);
+  color: var(--sys-green);
+  font-weight: 700;
+}
+
+/* Options Grid */
+.shot-options-grid {
+  padding: 12px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  border-top: 1px solid var(--border-hairline);
+  margin-top: 10px;
+  background: var(--bg-card-hover);
+}
+
+.shot-option-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.shot-opt-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.shot-select {
+  height: 32px;
+  padding: 0 9px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-family: var(--apple-font);
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.shot-select:focus {
+  border-color: var(--sys-blue);
+  box-shadow: 0 0 0 2px var(--sys-blue-soft);
+}
+
+/* Modal Actions Footer */
+.modal-actions-footer {
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-hairline);
+  background: var(--bg-card);
+}
+
+.modal-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-modal-primary {
+  background: var(--sys-blue);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9px;
+  height: 36px;
+  padding: 0 16px;
+  font-family: var(--apple-font);
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-modal-primary:hover {
+  background: var(--sys-blue-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.btn-modal-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-modal-secondary {
+  background: var(--bg-input);
+  color: var(--text-main);
+  border: 1px solid transparent;
+  border-radius: 9px;
+  height: 36px;
+  padding: 0 14px;
+  font-family: var(--apple-font);
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-modal-secondary:hover {
+  background: rgba(120, 120, 128, 0.2);
+  border-color: var(--border-card);
+}
+
+.btn-modal-secondary:active {
+  transform: scale(0.97);
+}
+
+/* Apple HIG Toast Notifications */
+.apple-toast-container {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.apple-toast {
+  pointer-events: auto;
+  background: rgba(28, 28, 30, 0.88);
+  color: #FFFFFF;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 10px 18px;
+  border-radius: 99px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-family: var(--apple-font);
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  animation: toastSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="light"] .apple-toast {
+  background: rgba(30, 30, 32, 0.92);
+  color: #FFFFFF;
+}
+
+@keyframes toastSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.apple-toast.fade-out {
+  animation: toastFadeOut 0.25s forwards ease-in;
+}
+
+@keyframes toastFadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+}

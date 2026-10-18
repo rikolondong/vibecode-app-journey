@@ -31,7 +31,10 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/13_WEB AC130/') || decodedUrl.startsWith('/13_WEB_AC130/') || decodedUrl.startsWith('/13/')) {
+  if (decodedUrl.startsWith('/14_RESPONSIVE/') || decodedUrl.startsWith('/14_RESPONSIVE') || decodedUrl.startsWith('/14/') || decodedUrl === '/14') {
+    projectDir = '14_RESPONSIVE';
+    relativePath = decodedUrl.replace(/^\/(14_RESPONSIVE|14)\/?/, '');
+  } else if (decodedUrl.startsWith('/13_WEB AC130/') || decodedUrl.startsWith('/13_WEB_AC130/') || decodedUrl.startsWith('/13/')) {
     projectDir = '13_WEB AC130';
     relativePath = decodedUrl.replace(/^\/(13_WEB AC130|13_WEB_AC130|13)\/?/, '');
   } else if (decodedUrl.startsWith('/12_SIMTRIP/') || decodedUrl.startsWith('/12/')) {
@@ -107,4 +110,5 @@ server.listen(PORT, () => {
   console.log(`- Project 11: http://localhost:${PORT}/11/`);
   console.log(`- Project 12: http://localhost:${PORT}/12/`);
   console.log(`- Project 13: http://localhost:${PORT}/13/`);
+  console.log(`- Project 14: http://localhost:${PORT}/14/`);
 });
