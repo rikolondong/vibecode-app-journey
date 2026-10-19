@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WWII U-BOAT WAR SIMULATOR - U-96</title>
+  <script type="module" crossorigin src="./assets/index-B9r2l6eK.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CQZsBk78.css">
+</head>
+<body>
+  <!-- 3D World Canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- Top Hanging Gauges (Exact match to screenshot) -->
+  <div id="gauge-cluster-container"></div>
+
+  <!-- Left Floating Station Switcher & Controls -->
+  <div id="stations-bar">
+    <button class="station-btn active" id="btn-view-ext" title="F1 Key">
+      <span>⚓</span> F1 EXTERNAL VIEW
+    </button>
+    <button class="station-btn" id="btn-view-bridge" title="F2 Key">
+      <span>🔭</span> F2 BRIDGE DECK
+    </button>
+    <button class="station-btn" id="btn-view-peri" title="F3 Key">
+      <span>🎯</span> F3 ATTACK PERISCOPE
+    </button>
+    <button class="station-btn" id="btn-view-map" title="F4 Key / M">
+      <span>🗺️</span> F4 TACTICAL MAP
+    </button>
+    <button class="station-btn" id="btn-view-hydro" title="F5 Key">
+      <span>🎧</span> F5 HYDROPHONE (GHG)
+    </button>
+
+    <div style="height: 6px;"></div>
+
+    <button class="station-btn" id="btn-weather-toggle">
+      <span>☀️</span> WEATHER: DAY
+    </button>
+    <button class="station-btn" id="time-compress-btn">
+      <span>⏩</span> TIME WARP: 1x
+    </button>
+    <button class="station-btn" id="btn-help-modal">
+      <span>ℹ️</span> CONTROLS [H]
+    </button>
+  </div>
+
+  <!-- Bottom HUD Bar (Exact match to screenshot) -->
+  <div id="bottom-hud-bar">
+    <!-- 1. Engine & Battery Status -->
+    <div class="engine-status-group">
+      <div class="status-module">
+        <span class="status-module-label">BATTERY</span>
+        <div class="icon-battery">
+          <div class="batt-segment" id="batt-seg-3"></div>
+          <div class="batt-segment" id="batt-seg-2"></div>
+          <div class="batt-segment" id="batt-seg-1"></div>
+        </div>
+        <span class="status-module-val" id="hud-batt-val">100%</span>
+      </div>
+
+      <div class="status-module">
+        <span class="status-module-label">DIESEL</span>
+        <div class="icon-diesel">⛽</div>
+        <span class="status-module-val" id="hud-diesel-val">98%</span>
+      </div>
+    </div>
+
+    <!-- 2. Officer Report Box -->
+    <div class="report-group">
+      <div class="hud-tag">REPORT</div>
+      <div class="report-screen" id="hud-report-txt">Ahead Full! Heading 030°.</div>
+    </div>
+
+    <!-- 3. Control Readouts -->
+    <div class="hud-box-group">
+      <div class="hud-tag">SPEED</div>
+      <div class="hud-screen" id="hud-speed-box" title="Click: Cycle engine telegraph">
+        <span class="hud-red-val" id="hud-speed-val">14 kn</span>
+      </div>
+    </div>
+
+    <div class="hud-box-group">
+      <div class="hud-tag">DEPTH</div>
+      <div class="hud-screen" id="hud-depth-box" title="Click: Set target depth (Surface / Periscope / Dive)">
+        <span class="hud-red-val" id="hud-depth-val">2 m</span>
+      </div>
+    </div>
+
+    <div class="hud-box-group">
+      <div class="hud-tag">HEADING</div>
+      <div class="hud-screen" id="hud-heading-box" title="Click: Adjust heading course">
+        <span class="hud-red-val" id="hud-heading-val">30°</span>
+      </div>
+    </div>
+
+    <div class="hud-box-group">
+      <div class="hud-tag">- RUDDER +</div>
+      <div class="hud-screen" id="hud-rudder-box" title="Click: Rudder amidships (0°)">
+        <span class="hud-red-val" id="hud-rudder-val">0°</span>
+      </div>
+    </div>
+
+    <div class="hud-box-group">
+      <div class="hud-tag">TORPEDO</div>
+      <div class="hud-screen" id="hud-torpedo-box" title="Click: Fire torpedo tube!">
+        <span class="hud-red-val" id="hud-torpedo-val">14/14</span>
+      </div>
+    </div>
+
+    <div class="hud-box-group">
+      <div class="hud-tag">HULL</div>
+      <div class="hud-screen" id="hud-hull-box">
+        <span class="hud-red-val" id="hud-hull-val">94%</span>
+      </div>
+    </div>
+
+    <!-- 4. Hydrophone Readout (Far Right) -->
+    <div class="hydrophone-group">
+      <div class="hud-tag">HYDROPHONE</div>
+      <div class="hydrophone-screen" id="hud-hydrophone-box" title="Click: Open hydrophone station">
+        <span id="hud-hydrophone-val">0 - Too loud (Reduce speed)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help & Keybindings Modal -->
+  <div id="help-modal" class="quick-menu-modal hidden" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 460px; padding: 22px;">
+    <h3 style="color: #ffaa33; margin-bottom: 12px; border-bottom: 1px solid #555; padding-bottom: 6px;">COMMANDS & KEYBOARD SHORTCUTS</h3>
+    <div style="font-size: 12px; line-height: 1.8; color: #d0d8dc;">
+      <p><strong>W / S</strong> or <strong>Up / Down</strong> : Engine telegraph (Ahead / Stop / Astern)</p>
+      <p><strong>A / D</strong> or <strong>Left / Right</strong> : Rudder (Port / Starboard)</p>
+      <p><strong>0</strong> : Rudder Amidships (0°)</p>
+      <p><strong>U</strong> : Surface (0m - Diesel power & battery charging)</p>
+      <p><strong>P</strong> : Periscope Depth (12m - Attack mode)</p>
+      <p><strong>C</strong> : ALARM! CRASH DIVE! (Emergency dive to 80m)</p>
+      <p><strong>SPACE</strong> : Fire Torpedo Tube 1!</p>
+      <p><strong>F1 - F5</strong> : Switch Cameras & Battle Stations</p>
+      <p><strong>M</strong> : Toggle Tactical Navigation Chart</p>
+      <p><strong>Mouse Left Drag</strong> : Orbit Camera | <strong>Mouse Wheel</strong> : Zoom</p>
+      <p><strong>All top gauges & bottom HUD boxes</strong> are interactive and clickable!</p>
+    </div>
+    <button class="map-btn" id="help-close-btn" style="margin-top: 14px; align-self: flex-end;">UNDERSTOOD</button>
+  </div>
+
+  <!-- Depth Quick Selector Modal -->
+  <div id="depth-modal" class="quick-menu-modal hidden" style="left: 450px;">
+    <button class="menu-item-btn" data-depth="0">0m - SURFACE (Diesel engines & recharge battery)</button>
+    <button class="menu-item-btn" data-depth="12">12m - PERISCOPE DEPTH (Attack optics active)</button>
+    <button class="menu-item-btn" data-depth="45">45m - CRUISING DEPTH (Below surface swell)</button>
+    <button class="menu-item-btn" data-depth="90">90m - EVASION DEPTH (Under destroyer sonar)</button>
+    <button class="menu-item-btn danger" data-depth="160">CRASH DIVE! (Emergency deep dive)</button>
+  </div>
+
+  <!-- Main JavaScript App -->
+</body>
+</html>

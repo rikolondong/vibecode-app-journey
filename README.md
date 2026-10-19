@@ -21,6 +21,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 12 | [**12_SIMTRIP**](./12_SIMTRIP) | Game 3D Simulasi Berkendara Peta Dunia Nyata (100% OpenStreetMap + OSRM + Overpass 3D Buildings) dengan pengaturan Titik Mulai/Tujuan, Waktu Berangkat, 5 Kendaraan 3D, Plang Nama Jalan Asli, & Autopilot AI. | ✅ Selesai |
 | 13 | [**13_WEB AC130**](./13_WEB%20AC130) | 3D Interactive Lockheed AC-130U Spooky Gunship Inspector & Combat Simulator (ExplodeView, Pylon Turn Orbit, Live Fire Ballistics, Angel Flares, FLIR HUD & FPS Gunner Mode). | ✅ Selesai |
 | 14 | [**14_RESPONSIVE**](./14_RESPONSIVE) | ResponsiView Studio: Simulator & Emulator Multi-Perangkat (Smartphone, Tablet, Desktop) dengan Apple HIG, Deep Browser Spoofing, Status Bar & Safari/Chrome Bar Asli, Smart Proxy, dan Studio Screenshot Mockup. | ✅ Selesai |
+| 15 | [**15_SUBSIM**](./15_SUBSIM) | WWII U-Boat War Simulator: Game simulasi tempur kapal selam U-96 dengan instrumen kuningan gantung otentik, HUD taktis, periskop tempur, peta navigasi laut, hidrofom, dan Web Audio API. | ✅ Selesai |
 
 
 ---
@@ -280,6 +281,38 @@ Studio simulator & emulator multi-perangkat presisi tinggi dengan filosofi **App
 - **Tech Stack**: HTML5 Semantic, Modern Vanilla CSS (Apple HIG Design Tokens & Glassmorphism), Vanilla JavaScript (ES6+), Node.js HTTP Proxy, `html2canvas-pro`.
 
 👉 **[Buka Dokumentasi & Kode Proyek 14](./14_RESPONSIVE)**
+
+---
+
+## ⚓ Ringkasan Proyek 15: WWII U-Boat War Simulator (U-96)
+
+Game simulasi tempur kapal selam Perang Dunia II berbasis **Three.js** dan **Web Audio API** dengan panel instrumen kuningan gantung otentik, HUD taktis, stasiun periskop tempur, peta navigasi laut, sistem hidrofom akustik, dan AI kapal perusak pengawal konvoi:
+- **Panel Jam Antik Gantung Otentik (Top Hanging Gauges)**:
+  - *Speedometer (0–25 Knots)*: Indikator kecepatan kapal selam aktual dalam satuan knot.
+  - *Depth Gauge (0–260 Meters)*: Pengukur kedalaman laut dengan zona hijau (aman/periskop), kuning (jelajah), dan merah (bahaya tekanan hancur / crush depth).
+  - *Engine Order Telegraph*: Telegraf mesin dwisisi interaktif (Ahead / Astern) dengan tuas kuningan yang dapat diklik langsung untuk mengubah kecepatan mesin.
+  - *Rudder Indicator*: Penunjuk sudut kemudi Port (merah) dan Starboard (hijau).
+  - *Compass & Course Controller*: Kompas 360° dengan tombol kontrol [L] dan [R] di bagian bawah untuk koreksi haluan kapal.
+- **Konsol Taktis Bawah (Bottom HUD Console)**:
+  - Monitoring baterai motor listrik & bahan bakar solar, layar CRT laporan perwira kapal, kecepatan digital, kedalaman (dengan menu cepat), heading, sudut kemudi, tabung torpedo (14/14), integritas lambung, dan hidrofom.
+- **Model 3D U-Boot Type VII & Simulasi Samudra**:
+  - Rekonstruksi mendalam kapal selam Type VII: lambung ganda Hellgrau 50, saddle tanks, dek kayu jati, conning tower, meriam dek 8.8 cm, kanon 2.0 cm Flak, baling-baling kuningan yang berputar dinamis, kemudi gerak, dan bendera Kriegsmarine.
+  - Efek buih air laut: semprotan haluan (*bow spray*) dan jejak buih baling-baling (*stern wake*) yang berpadu halus dengan permukaan samudra Atlantik.
+- **5 Stasiun & Mode Kamera Tempur**:
+  - *F1 External View*: Kamera orbit 3D bebas mouse-look dan zoom scroll di sekitar kapal selam.
+  - *F2 Bridge Deck*: Sudut pandang perwira jaga di dek anjungan terbuka.
+  - *F3 Attack Periscope*: Teropong periskop tempur optik 1.5x / 6.0x dengan retikel miliradian dan kalkulator sasaran TDC (*Torpedo Data Computer*).
+  - *F4 / M Tactical Map*: Peta navigasi bahari bergrid dengan penjejak konvoi, trajektori torpedo, dan plotting haluan.
+  - *F5 Hydrophone Room (GHG)*: Ruang operator sonar pasif dengan roda kemudi akustik 360° dan meteran dB untuk melacak kapal musuh.
+- **Sistem Tempur & AI Kapal Pengawal (ASW)**:
+  - Konvoi kapal dagang Sekutu (*Liberty Ship*) berlayar dalam formasi dengan cerobong berasap.
+  - Kapal perusak pengawal (*Destroyer*) dengan sonar aktif, lampu sorot, dan menjatuhkan bom laut (*depth charges*) jika mendeteksi kapal selam.
+  - Ledakan torpedo dengan bola api raksasa, semburan air geyser, dan fisika kapal karam miring perlahan ke dasar samudra.
+- **Sintesis Audio Prosedural (Web Audio API)**:
+  - Suara mesin diesel gemuruh di permukaan & dengung motor listrik di kedalaman, sirine alarm dua nada otentik (*"ALARM! CRASH DIVE!"*), desis peluncuran torpedo, dentuman bom laut bawah air, dan gemeretak lambung (*hull creaking*).
+- **Tech Stack**: Three.js (WebGL 3D Engine, ShadowMap, Procedural Geometries), HTML5 Canvas, Vanilla CSS3 (Military HUD), ES6 Modules, Web Audio API, Vite, Node.js HTTP Server.
+
+👉 **[Buka Dokumentasi & Kode Proyek 15](./15_SUBSIM)**
 
 ---
 

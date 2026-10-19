@@ -31,7 +31,10 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/14_RESPONSIVE/') || decodedUrl.startsWith('/14_RESPONSIVE') || decodedUrl.startsWith('/14/') || decodedUrl === '/14') {
+  if (decodedUrl.startsWith('/15_SUBSIM/') || decodedUrl.startsWith('/15_SUBSIM') || decodedUrl.startsWith('/15/') || decodedUrl === '/15') {
+    projectDir = path.join('15_SUBSIM', 'dist');
+    relativePath = decodedUrl.replace(/^\/(15_SUBSIM|15)\/?/, '');
+  } else if (decodedUrl.startsWith('/14_RESPONSIVE/') || decodedUrl.startsWith('/14_RESPONSIVE') || decodedUrl.startsWith('/14/') || decodedUrl === '/14') {
     projectDir = '14_RESPONSIVE';
     relativePath = decodedUrl.replace(/^\/(14_RESPONSIVE|14)\/?/, '');
   } else if (decodedUrl.startsWith('/13_WEB AC130/') || decodedUrl.startsWith('/13_WEB_AC130/') || decodedUrl.startsWith('/13/')) {

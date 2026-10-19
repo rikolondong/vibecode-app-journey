@@ -1,0 +1,677 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #0b151d;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  color: #c8d1d8;
+}
+
+#canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* ========================================================
+   TOP HANGING GAUGES (MATCHING SCREENSHOT)
+======================================================== */
+#gauge-cluster-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.gauge-mount-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(180deg, #181714 0%, #3e382d 50%, #161512 100%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+  border-bottom: 1px solid #5a4b33;
+}
+
+.gauges-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-left: 18%;
+  gap: 1.8vw;
+  width: 100%;
+}
+
+.gauge-hanger {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+  transition: transform 0.2s ease;
+}
+
+.gauge-hanger:hover {
+  transform: translateY(2px);
+}
+
+.gauge-hanger canvas {
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.65));
+}
+
+/* Far right compass positioned exactly like in reference */
+.gauge-compass-hanger {
+  margin-left: auto;
+  margin-right: 4vw;
+}
+
+/* ========================================================
+   BOTTOM CONTROL DASHBOARD (MATCHING SCREENSHOT)
+======================================================== */
+#bottom-hud-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 76px;
+  background: linear-gradient(180deg, #43484c 0%, #292d30 25%, #181a1c 100%);
+  border-top: 2px solid #5d6368;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  z-index: 20;
+}
+
+/* 1. BATTERY & DIESEL STATUS */
+.engine-status-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 12px;
+  border-right: 1px solid #3c4146;
+}
+
+.status-module {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.status-module-label {
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: #cfd4d8;
+  background: #15181a;
+  border: 1px solid #555b62;
+  border-radius: 3px;
+  padding: 1px 4px;
+}
+
+.icon-battery {
+  width: 24px;
+  height: 26px;
+  border: 2px solid #5a646c;
+  background: #111417;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2px;
+  gap: 2px;
+  position: relative;
+}
+
+.icon-battery::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 6px;
+  width: 8px;
+  height: 3px;
+  background: #5a646c;
+  border-radius: 1px;
+}
+
+.batt-segment {
+  width: 100%;
+  height: 4px;
+  background: #39e64e;
+  box-shadow: 0 0 4px #39e64e;
+}
+
+.icon-diesel {
+  width: 24px;
+  height: 26px;
+  border: 2px solid #5a646c;
+  background: #252e25;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #ffaa33;
+}
+
+.status-module-val {
+  font-size: 11px;
+  font-weight: bold;
+  color: #e2e8ec;
+}
+
+/* 2. REPORT MONITOR */
+.report-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1.2;
+  min-width: 180px;
+  max-width: 320px;
+}
+
+.hud-tag {
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.8px;
+  color: #cfd4d8;
+  background: #181a1c;
+  border: 1px solid #52585f;
+  border-radius: 3px 3px 0 0;
+  padding: 1px 6px;
+  width: fit-content;
+  text-align: center;
+}
+
+.report-screen {
+  height: 34px;
+  background: #121715;
+  border: 2px solid #3d4a41;
+  border-radius: 0 3px 3px 3px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.9);
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  color: #79d690;
+  font-size: 13px;
+  font-weight: bold;
+  overflow: hidden;
+  text-shadow: 0 0 6px rgba(121, 214, 144, 0.5);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 3. CENTER / RIGHT CONTROL BOXES */
+.hud-box-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hud-screen {
+  height: 34px;
+  min-width: 74px;
+  background: #151313;
+  border: 2px solid #483d3b;
+  border-radius: 4px;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hud-screen:hover {
+  border-color: #8b4239;
+  background: #1e1818;
+}
+
+.hud-screen:active {
+  transform: translateY(1px);
+}
+
+.hud-red-val {
+  color: #ff3322;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(255, 51, 34, 0.7);
+}
+
+/* 4. HYDROPHONE READOUT (FAR RIGHT) */
+.hydrophone-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: auto;
+}
+
+.hydrophone-screen {
+  height: 34px;
+  min-width: 190px;
+  background: #151614;
+  border: 2px solid #434a3e;
+  border-radius: 4px;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  color: #b7ce74;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.hydrophone-screen:hover {
+  border-color: #72845c;
+  background: #1c2118;
+}
+
+/* ========================================================
+   FLOATING QUICK CONTROLS / STATIONS BAR
+======================================================== */
+#stations-bar {
+  position: absolute;
+  bottom: 84px;
+  left: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  z-index: 15;
+  background: rgba(20, 24, 28, 0.75);
+  padding: 4px 8px;
+  border-radius: 5px;
+  border: 1px solid rgba(85, 96, 108, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.station-btn {
+  background: linear-gradient(180deg, #383e44 0%, #1f2327 100%);
+  border: 1px solid #58616a;
+  border-radius: 4px;
+  color: #cfd8e0;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 6px 12px;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.station-btn:hover {
+  background: #48525b;
+  border-color: #8da1b4;
+  color: #ffffff;
+}
+
+.station-btn.active {
+  background: linear-gradient(180deg, #8a4835 0%, #582417 100%);
+  border-color: #d8694a;
+  color: #ffeedd;
+}
+
+/* Time Compression Badge */
+#time-compress-btn {
+  background: #252820;
+  border-color: #636b48;
+  color: #c7d884;
+}
+
+/* ========================================================
+   OVERLAYS: PERISCOPE, TACTICAL MAP, HYDROPHONE
+======================================================== */
+.hidden {
+  display: none !important;
+}
+
+/* 1. PERISCOPE OVERLAY */
+.periscope-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 76px);
+  z-index: 12;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.periscope-mask {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 40%, rgba(10, 15, 12, 0.94) 65%, #050806 85%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.periscope-bearing-bar {
+  position: absolute;
+  top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(18, 26, 20, 0.85);
+  border: 1px solid #475a4c;
+  padding: 6px 16px;
+  border-radius: 4px;
+}
+
+.bearing-label {
+  color: #8ae09f;
+  font-size: 14px;
+}
+
+.zoom-badge {
+  background: #be2818;
+  color: #ffffff;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.periscope-tdc-box {
+  position: absolute;
+  right: 40px;
+  top: 30%;
+  width: 220px;
+  background: rgba(18, 22, 24, 0.92);
+  border: 2px solid #5a646c;
+  border-radius: 6px;
+  padding: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+}
+
+.tdc-title {
+  color: #ffaa33;
+  font-weight: bold;
+  font-size: 13px;
+  border-bottom: 1px solid #444;
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.tdc-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: #ccc;
+}
+
+.tdc-row span {
+  color: #ff4433;
+  font-weight: bold;
+}
+
+.tdc-fire-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: linear-gradient(180deg, #be2618 0%, #70140c 100%);
+  border: 2px solid #ff5544;
+  border-radius: 4px;
+  color: #ffffff;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 10px 0;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(190, 38, 24, 0.6);
+  transition: all 0.15s ease;
+}
+
+.tdc-fire-btn:hover {
+  background: #d83222;
+  box-shadow: 0 0 15px rgba(255, 68, 51, 0.8);
+}
+
+.periscope-bottom-bar {
+  position: absolute;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.peri-btn {
+  background: #273129;
+  border: 1px solid #516a57;
+  color: #b5e4c0;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.peri-hint {
+  font-size: 11px;
+  color: #7b8e80;
+}
+
+/* 2. TACTICAL MAP OVERLAY */
+.tactical-map-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 76px);
+  z-index: 14;
+  background: #dfd3ba;
+}
+
+.map-header {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(30, 26, 20, 0.88);
+  border: 1px solid #7c684d;
+  padding: 8px 16px;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.map-title {
+  color: #e5d7ba;
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.map-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.map-btn {
+  background: #42382c;
+  border: 1px solid #857257;
+  color: #f0e4cb;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.map-btn:hover {
+  background: #5a4c3a;
+}
+
+.map-close-btn {
+  background: #8b3226;
+  border-color: #c94a3a;
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  display: flex;
+  gap: 16px;
+  background: rgba(230, 220, 195, 0.9);
+  border: 1px solid #9c8e76;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #2b261d;
+  z-index: 2;
+}
+
+/* 3. HYDROPHONE STATION OVERLAY */
+.hydrophone-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 76px);
+  z-index: 13;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 14, 12, 0.9);
+}
+
+.hydro-panel {
+  background: #19211c;
+  border: 3px solid #415648;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+}
+
+.hydro-title {
+  color: #55e282;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  margin-bottom: 18px;
+}
+
+.hydro-display-wrap {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.hydro-sound-meter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 160px;
+}
+
+.meter-label {
+  font-size: 11px;
+  color: #7a9c84;
+}
+
+.meter-bar-outer {
+  width: 100%;
+  height: 20px;
+  background: #0d1410;
+  border: 2px solid #2e4133;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.meter-bar-inner {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #329e4e 0%, #d8b835 70%, #d83a2e 100%);
+  transition: width 0.1s ease;
+}
+
+.meter-status {
+  font-size: 11px;
+  color: #e5933a;
+  min-height: 28px;
+}
+
+.hydro-contact-card {
+  margin-top: 16px;
+  background: #111713;
+  border: 1px solid #334438;
+  padding: 8px 24px;
+  border-radius: 4px;
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: #8be5a5;
+}
+
+/* ========================================================
+   MODALS: QUICK DEPTH SELECTOR, TORPEDO SELECTOR
+======================================================== */
+.quick-menu-modal {
+  position: absolute;
+  bottom: 84px;
+  background: #1c2024;
+  border: 2px solid #4a545e;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 25;
+}
+
+.menu-item-btn {
+  background: #2a3138;
+  border: 1px solid #58636e;
+  color: #dbe4ec;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 3px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.menu-item-btn:hover {
+  background: #424e5a;
+  color: #ffffff;
+}
+
+.menu-item-btn.danger {
+  border-color: #a83626;
+  color: #ff6655;
+}
