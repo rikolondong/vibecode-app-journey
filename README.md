@@ -22,6 +22,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 13 | [**13_WEB AC130**](./13_WEB%20AC130) | 3D Interactive Lockheed AC-130U Spooky Gunship Inspector & Combat Simulator (ExplodeView, Pylon Turn Orbit, Live Fire Ballistics, Angel Flares, FLIR HUD & FPS Gunner Mode). | ✅ Selesai |
 | 14 | [**14_RESPONSIVE**](./14_RESPONSIVE) | ResponsiView Studio: Simulator & Emulator Multi-Perangkat (Smartphone, Tablet, Desktop) dengan Apple HIG, Deep Browser Spoofing, Status Bar & Safari/Chrome Bar Asli, Smart Proxy, dan Studio Screenshot Mockup. | ✅ Selesai |
 | 15 | [**15_SUBSIM**](./15_SUBSIM) | WWII U-Boat War Simulator: Game simulasi tempur kapal selam U-96 dengan instrumen kuningan gantung otentik, HUD taktis, periskop tempur, peta navigasi laut, hidrofom, dan Web Audio API. | ✅ Selesai |
+| 16 | [**16_FLIGHTSIM**](./16_FLIGHTSIM) | PROJECT SKYLINE: Game simulasi pertempuran udara arcade 3D ala Ace Combat bergaya modern indie pixel shader, avionik HUD taktis, radar sirkular, sistem lock-on rudal & lead-computing gun sight, dan Web Audio API. | ✅ Selesai |
 
 
 ---
@@ -313,6 +314,37 @@ Game simulasi tempur kapal selam Perang Dunia II berbasis **Three.js** dan **Web
 - **Tech Stack**: Three.js (WebGL 3D Engine, ShadowMap, Procedural Geometries), HTML5 Canvas, Vanilla CSS3 (Military HUD), ES6 Modules, Web Audio API, Vite, Node.js HTTP Server.
 
 👉 **[Buka Dokumentasi & Kode Proyek 15](./15_SUBSIM)**
+
+
+---
+
+## ✈️ Ringkasan Proyek 16: PROJECT SKYLINE (Ace Combat Modern Indie Pixel Flight Combat)
+
+Game simulasi pertempuran udara arcade 3D bergaya **Ace Combat** dengan estetika **Modern Indie Pixel Shader (Sky Rogue / PS1 Retro 3D)** menggunakan **Three.js (WebGL)**, **Procedural Canvas Textures**, **Web Audio API Synth & Sound Engine**, dan **Crisp 2D Avionics HUD Canvas**:
+- **Hangar 3D Interaktif & Pemilihan Pesawat**:
+  - *3 Pesawat Tempur Unik*: **F-15C PIXEL EAGLE** (Air Superiority Fighter), **SU-47 BERKUT-X** (Forward-Swept Wing Experimental Interceptor), dan **F-22X RAPTOR NOVA** (Stealth Tactical Dominator).
+  - *3 Pilihan Special Weapon (SPW)*: **4AAM** (Multi-Lock hingga 4 target musuh), **QAAM** (Quick-Maneuver High-Agility Missile), dan **HVSM** (Hyper-Velocity Strike Missile).
+  - *3D Turntable Preview*: Model 3D jet tempur berputar mulus di platform holografik taktis dengan rotasi interaktif mouse drag.
+- **Sistem Avionik HUD & Radar Khas Ace Combat**:
+  - Proyeksi target box 3D-ke-2D `[TGT]` lengkap dengan nama, callsign, jarak (meter), dan health bar musuh.
+  - *Lead-Computing Gun Sight*: Garis dan pipper bidik yang menghitung arah pergerakan musuh untuk meriam Vulcan 20mm.
+  - *Lock-On Reticle Dinamis*: Animasi penguncian sasaran dengan nada frekuensi tinggi saat terkunci (`<< SHOOT / LOCK >>`).
+  - *Radar Sirkular Taktis*: Memetakan kontur pulau, kerucut pandang pilot (FOV cone), kapal perang radar, dan rudal musuh.
+  - *Wireframe Damage & Status Rack*: Indikator visual kerusakan bodi jet dan monitor isi ulang 2 slot rudal standar.
+- **Fisika Terbang 360° Bebas Gimbal Lock & Taktik Dogfight**:
+  - Rotasi Quaternion lokal (pitch, roll, yaw) bebas manuver loop dan barrel roll tanpa gimbal lock.
+  - *High-G Turn*: Manuver belokan tajam dengan menahan Boost + Brake, memicu jejak uap kental di ujung sayap.
+  - *Countermeasure Flares [F]*: Pengecoh inframerah untuk membelokkan rudal musuh.
+  - *Dynamic Camera Modes [V]*: Chase Cam (dengan efek inersia dan getaran G-force), Cockpit HUD View, dan Target Follow Cam (tahan `C`).
+- **3 Misi Kampanye & Pertempuran Bos**:
+  - *Op. Shattered Skies*, *Op. Crimson Sunset*, dan *Op. Night Viper*.
+  - Menghadapi skuadron pengintai MiG-29, kapal perang radar/frigat, Skuadron Elit "Crimson", dan benteng udara komando raksasa **ARKBIRD-01**.
+- **Sintesis Audio Prosedural (Web Audio API)**:
+  - Deru mesin jet & afterburner dinamis, tembakan meriam Vulcan, peluncuran rudal, sirene bahaya rudal (*Missile Alert*), radio AWACS, dan musik latar retro synthwave 136 BPM.
+- **Tech Stack**: Three.js (r128), HTML5 Canvas, Vanilla CSS3 (CRT Scanlines & HUD), Web Audio API, Node.js.
+
+👉 **[Buka Dokumentasi & Kode Proyek 16](./16_FLIGHTSIM)**
+
 
 ---
 

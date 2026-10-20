@@ -1,0 +1,19 @@
+{
+  "name": "project-skyline-flightsim",
+  "version": "1.0.0",
+  "description": "PROJECT SKYLINE: Ace Combat-inspired 3D Modern Indie Pixel Flight Combat Simulator",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "threejs",
+    "pixel-art",
+    "flight-simulator",
+    "ace-combat",
+    "webgl",
+    "indie-game"
+  ],
+  "author": "Riko Londong",
+  "license": "MIT"
+}

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROJECT SKYLINE // Pixel Tactical Flight Combat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <!-- Scanline & CRT Vignette Overlay -->
+  <div id="crt-overlay" class="crt-active"></div>
+
+  <!-- 3D Low-Res Pixel Viewport + Crisp 2D Tactical HUD Canvas -->
+  <div id="viewport-container">
+    <canvas id="gl-canvas"></canvas>
+    <canvas id="hud-canvas"></canvas>
+  </div>
+
+  <!-- TOP RADIO / TACTICAL ALERT BANNER (During Flight) -->
+  <div id="tactical-comms" class="hidden">
+    <div class="comms-portrait">
+      <canvas id="portrait-canvas" width="48" height="48"></canvas>
+    </div>
+    <div class="comms-body">
+      <div class="comms-speaker" id="comms-speaker"><< AWACS SKY-EYE >></div>
+      <div class="comms-text" id="comms-text">All callsigns, bandits detected in Sector Zero. Engage at will!</div>
+    </div>
+  </div>
+
+  <!-- MISSILE / STALL WARNING BANNER -->
+  <div id="warning-banner" class="hidden">
+    <span id="warning-text">! MISSILE ALERT - EVADE !</span>
+  </div>
+
+  <!-- IN-FLIGHT TOP BAR (Quick Controls & Settings) -->
+  <div id="flight-topbar" class="hidden">
+    <div class="topbar-left">
+      <span class="badge-mission" id="hud-mission-name">OP. SHATTERED SKIES</span>
+      <span class="badge-wave" id="hud-wave-text">WAVE 1/3</span>
+      <span class="badge-score" id="hud-score-text">SCORE: 00000</span>
+    </div>
+    <div class="topbar-right">
+      <button id="btn-pixel-scale" class="hud-mini-btn" title="Resolusi Pixel Shader">PIXEL: 3X</button>
+      <button id="btn-camera-mode" class="hud-mini-btn" title="Ganti Kamera [V]">CAM: CHASE [V]</button>
+      <button id="btn-bgm-toggle" class="hud-mini-btn" title="Toggle Musik [M]">BGM: ON</button>
+      <button id="btn-pause" class="hud-mini-btn" title="Pause / Bantuan Kontrol [ESC]">PAUSE [ESC]</button>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- HANGAR / BRIEFING & AIRCRAFT SELECTION SCREEN             -->
+  <!-- ========================================================= -->
+  <div id="hangar-screen" class="screen-overlay">
+    <header class="hangar-header">
+      <div class="brand-block">
+        <div class="sub-tag">AC-PIXEL TACTICAL FLIGHT SYSTEM // VER 1.4</div>
+        <h1>PROJECT <span>SKYLINE</span></h1>
+      </div>
+      <div class="header-actions">
+        <button id="btn-toggle-crt" class="pixel-btn secondary">CRT: ON</button>
+        <button id="btn-controls-help" class="pixel-btn secondary">PANDUAN KONTROL</button>
+      </div>
+    </header>
+
+    <main class="hangar-main">
+      <!-- LEFT PANEL: AIRCRAFT & LOADOUT SELECTION -->
+      <section class="panel aircraft-panel">
+        <div class="panel-title">// 01. PILIH PESAWAT TEMPUR</div>
+        <div class="aircraft-list" id="aircraft-list">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="panel-title" style="margin-top: 14px;">// 02. PILIH SPECIAL WEAPON (SPW)</div>
+        <div class="spw-list" id="spw-list">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="panel-title" style="margin-top: 14px;">// 03. PILIH OPERASI TEMPUR</div>
+        <div class="mission-list" id="mission-list">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- CENTER PANEL: 3D PIXEL TURNTABLE PREVIEW -->
+      <section class="panel preview-panel">
+        <div class="preview-header">
+          <div>
+            <div class="jet-code" id="preview-code">F-15C // PIXEL EAGLE</div>
+            <div class="jet-role" id="preview-role">AIR SUPERIORITY FIGHTER</div>
+          </div>
+          <div class="jet-tier" id="preview-tier">GEN-4.5</div>
+        </div>
+
+        <div class="preview-viewport-hint">3D LOW-POLY PIXEL SHADER PREVIEW (DRAG / AUTO-ROTATE)</div>
+
+        <div class="preview-bottom-specs">
+          <div class="spec-grid">
+            <div class="spec-row">
+              <span>SPEED</span>
+              <div class="stat-bar"><div id="stat-speed" class="stat-fill"></div></div>
+            </div>
+            <div class="spec-row">
+              <span>MOBILITY</span>
+              <div class="stat-bar"><div id="stat-mobility" class="stat-fill"></div></div>
+            </div>
+            <div class="spec-row">
+              <span>STABILITY</span>
+              <div class="stat-bar"><div id="stat-stability" class="stat-fill"></div></div>
+            </div>
+            <div class="spec-row">
+              <span>ARMOR / DEF</span>
+              <div class="stat-bar"><div id="stat-armor" class="stat-fill"></div></div>
+            </div>
+          </div>
+          <p class="jet-desc" id="preview-desc"></p>
+        </div>
+      </section>
+
+      <!-- RIGHT PANEL: BRIEFING & CONTROLS SUMMARY -->
+      <section class="panel briefing-panel">
+        <div class="panel-title">// TACTICAL BRIEFING</div>
+        <div class="briefing-box">
+          <div class="briefing-mission-title" id="briefing-title">OP. SHATTERED SKIES</div>
+          <div class="briefing-meta" id="briefing-meta">CUACA: CERAH // WAKTU: 14:30 // ZONA: KEPULAUan AZURE</div>
+          <p class="briefing-desc" id="briefing-desc">
+            Skuadron musuh terdeteksi di atas gugusan pulau Azure. Hancurkan seluruh target bertanda [TGT] untuk mengamankan wilayah udara.
+          </p>
+          <div class="briefing-Loadout-summary">
+            <div><span>GUN:</span> <strong id="loadout-gun">20mm VULCAN (∞)</strong></div>
+            <div><span>STD MSL:</span> <strong id="loadout-msl">AIM-9X SIDEWINDER</strong></div>
+            <div><span>SP WEAPON:</span> <strong id="loadout-spw" class="highlight-cyan">4AAM (MULTI-LOCK)</strong></div>
+            <div><span>FLARES:</span> <strong>CHAFF/FLARE DECOY [F]</strong></div>
+          </div>
+        </div>
+
+        <div class="panel-title" style="margin-top: 12px;">// KONTROL CEPAT</div>
+        <div class="controls-mini-grid">
+          <div><kbd>W</kbd>/<kbd>S</kbd> atau <kbd>↑</kbd>/<kbd>↓</kbd></div><div>Pitch (Tukik / Naik)</div>
+          <div><kbd>A</kbd>/<kbd>D</kbd> atau <kbd>←</kbd>/<kbd>→</kbd></div><div>Roll (Miring Kiri/Kanan)</div>
+          <div><kbd>Q</kbd> / <kbd>E</kbd></div><div>Yaw (Kemudi Ekor)</div>
+          <div><kbd>SHIFT</kbd> / <kbd>CTRL</kbd></div><div>Afterburner / Airbrake</div>
+          <div><kbd>SPACE</kbd> / <kbd>KLIK KIRI</kbd></div><div>Tembak Machine Gun</div>
+          <div><kbd>G</kbd> / <kbd>KLIK KANAN</kbd></div><div>Luncurkan Missile / SPW</div>
+          <div><kbd>X</kbd> / <kbd>SCROLL</kbd></div><div>Ganti STD MSL ⇄ SP WEAPON</div>
+          <div><kbd>TAB</kbd> / <kbd>R</kbd></div><div>Ganti Target Lock-On</div>
+          <div><kbd>C</kbd> (Tahan)</div><div>Fokus Kamera ke Target</div>
+          <div><kbd>F</kbd></div><div>Lepas Flare Anti-Rudal</div>
+        </div>
+
+        <button id="btn-sortie" class="pixel-btn sortie-btn">
+          <span><< SORTIE / TAKE OFF >></span>
+        </button>
+      </section>
+    </main>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PAUSE / CONTROLS MODAL                                    -->
+  <!-- ========================================================= -->
+  <div id="pause-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">// SISTEM PAUSE & KONFIGURASI PENERBANGAN</div>
+      <div class="modal-content">
+        <div class="control-columns">
+          <div>
+            <h4>MANUVER PESAWAT</h4>
+            <ul>
+              <li><strong>Pitch Naik (Pull Up):</strong> <kbd>S</kbd> atau <kbd>↓</kbd></li>
+              <li><strong>Pitch Turun (Nose Down):</strong> <kbd>W</kbd> atau <kbd>↑</kbd></li>
+              <li><strong>Roll Kiri / Kanan:</strong> <kbd>A</kbd> / <kbd>D</kbd> atau <kbd>←</kbd> / <kbd>→</kbd></li>
+              <li><strong>Yaw Kiri / Kanan:</strong> <kbd>Q</kbd> / <kbd>E</kbd></li>
+              <li><strong>Afterburner (Boost):</strong> Tahan <kbd>SHIFT</kbd></li>
+              <li><strong>Airbrake (Rem Udara):</strong> Tahan <kbd>CTRL</kbd></li>
+              <li><strong>High-G Turn (Drift Tajam):</strong> Tahan <kbd>SHIFT</kbd> + <kbd>CTRL</kbd> + Pitch</li>
+            </ul>
+          </div>
+          <div>
+            <h4>SISTEM SENJATA & AVIONIK</h4>
+            <ul>
+              <li><strong>Vulcan Machine Gun:</strong> Tahan <kbd>SPACE</kbd> atau <kbd>Klik Kiri</kbd></li>
+              <li><strong>Luncurkan Rudal / SPW:</strong> <kbd>G</kbd> atau <kbd>Klik Kanan</kbd></li>
+              <li><strong>Ganti Senjata (MSL / SPW):</strong> <kbd>X</kbd></li>
+              <li><strong>Ganti Target (Cycle TGT):</strong> <kbd>TAB</kbd> atau <kbd>R</kbd></li>
+              <li><strong>Fokus Kamera ke Target:</strong> Tahan <kbd>C</kbd></li>
+              <li><strong>Flare (Pengacak Rudal):</strong> <kbd>F</kbd></li>
+              <li><strong>Ganti Sudut Kamera:</strong> <kbd>V</kbd> (Chase / Cockpit / Far)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="settings-row">
+          <label class="toggle-label">
+            <input type="checkbox" id="chk-invert-pitch" checked />
+            <span>Invert Pitch (Standar Flight Sim: S/Bawah = Naik, W/Atas = Tukik)</span>
+          </label>
+          <label class="toggle-label">
+            <input type="checkbox" id="chk-mouse-aim" />
+            <span>Aktifkan Kemudi Mouse (Gerakkan kursor untuk bantu arah terbang)</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="btn-resume" class="pixel-btn">LANJUTKAN MISI [ESC]</button>
+        <button id="btn-restart-mission" class="pixel-btn secondary">ULANGI MISI</button>
+        <button id="btn-abort-hangar" class="pixel-btn danger">KEMBALI KE HANGAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MISSION DEBRIEFING (VICTORY / GAME OVER)                  -->
+  <!-- ========================================================= -->
+  <div id="debrief-modal" class="modal-backdrop hidden">
+    <div class="modal-card debrief-card">
+      <div class="debrief-status" id="debrief-status">MISSION ACCOMPLISHED</div>
+      <h2 id="debrief-title">OPERATION SHATTERED SKIES</h2>
+      <div class="rank-badge-wrap">
+        <div class="rank-label">TACTICAL RANK</div>
+        <div class="rank-letter" id="debrief-rank">S</div>
+      </div>
+      <div class="debrief-stats">
+        <div><span>TARGET DIHANCURKAN</span><strong id="debrief-kills">12</strong></div>
+        <div><span>WAKTU TEMPUR</span><strong id="debrief-time">02:14</strong></div>
+        <div><span>SISA INTEGRITAS HULL</span><strong id="debrief-hp">85%</strong></div>
+        <div><span>TOTAL SKOR</span><strong id="debrief-score" class="highlight-cyan">14,500 PTS</strong></div>
+      </div>
+      <div class="modal-actions">
+        <button id="btn-debrief-retry" class="pixel-btn">TERBANG LAGI</button>
+        <button id="btn-debrief-hangar" class="pixel-btn secondary">PILIH PESAWAT / MISI LAIN</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="models.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

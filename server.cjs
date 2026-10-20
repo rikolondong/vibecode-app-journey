@@ -31,7 +31,10 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/15_SUBSIM/') || decodedUrl.startsWith('/15_SUBSIM') || decodedUrl.startsWith('/15/') || decodedUrl === '/15') {
+  if (decodedUrl.startsWith('/16_FLIGHTSIM/') || decodedUrl.startsWith('/16_FLIGHTSIM') || decodedUrl.startsWith('/16/') || decodedUrl === '/16') {
+    projectDir = '16_FLIGHTSIM';
+    relativePath = decodedUrl.replace(/^\/(16_FLIGHTSIM|16)\/?/, '');
+  } else if (decodedUrl.startsWith('/15_SUBSIM/') || decodedUrl.startsWith('/15_SUBSIM') || decodedUrl.startsWith('/15/') || decodedUrl === '/15') {
     projectDir = path.join('15_SUBSIM', 'dist');
     relativePath = decodedUrl.replace(/^\/(15_SUBSIM|15)\/?/, '');
   } else if (decodedUrl.startsWith('/14_RESPONSIVE/') || decodedUrl.startsWith('/14_RESPONSIVE') || decodedUrl.startsWith('/14/') || decodedUrl === '/14') {
@@ -114,4 +117,6 @@ server.listen(PORT, () => {
   console.log(`- Project 12: http://localhost:${PORT}/12/`);
   console.log(`- Project 13: http://localhost:${PORT}/13/`);
   console.log(`- Project 14: http://localhost:${PORT}/14/`);
+  console.log(`- Project 15: http://localhost:${PORT}/15/`);
+  console.log(`- Project 16: http://localhost:${PORT}/16/`);
 });
