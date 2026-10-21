@@ -23,6 +23,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 14 | [**14_RESPONSIVE**](./14_RESPONSIVE) | ResponsiView Studio: Simulator & Emulator Multi-Perangkat (Smartphone, Tablet, Desktop) dengan Apple HIG, Deep Browser Spoofing, Status Bar & Safari/Chrome Bar Asli, Smart Proxy, dan Studio Screenshot Mockup. | ✅ Selesai |
 | 15 | [**15_SUBSIM**](./15_SUBSIM) | WWII U-Boat War Simulator: Game simulasi tempur kapal selam U-96 dengan instrumen kuningan gantung otentik, HUD taktis, periskop tempur, peta navigasi laut, hidrofom, dan Web Audio API. | ✅ Selesai |
 | 16 | [**16_FLIGHTSIM**](./16_FLIGHTSIM) | PROJECT SKYLINE: Game simulasi pertempuran udara arcade 3D ala Ace Combat bergaya modern indie pixel shader, avionik HUD taktis, radar sirkular, sistem lock-on rudal & lead-computing gun sight, dan Web Audio API. | ✅ Selesai |
+| 17 | [**17_PIRATE**](./17_PIRATE) | Lautan Tak Bertuan: Game Petualangan Bajak Laut 3D Indie ala *Sea of Thieves* dengan fisika ombak Gerstner, kemudi layar berangin, pertempuran meriam broadside kapal tengkorak, sistem tambal lambung bocor, dan perburuan harta karun pulau. | ✅ Selesai |
 
 
 ---
@@ -345,6 +346,37 @@ Game simulasi pertempuran udara arcade 3D bergaya **Ace Combat** dengan estetika
 
 👉 **[Buka Dokumentasi & Kode Proyek 16](./16_FLIGHTSIM)**
 
+
+---
+
+## 🏴‍☠️ Ringkasan Proyek 17: LAUTAN TAK BERTUAN (Sea of Thieves Indie 3D)
+
+Game petualangan bajak laut 3D indie bertemakan **Sea of Thieves** yang dibangun dengan Three.js WebGL dan Web Audio API prosedural:
+- **Fisika Berlayar & Ombak Dinamis**:
+  - Simulasi gelombang ombak Gerstner prosedural yang memiringkan (*pitch & roll*) badan kapal secara dinamis.
+  - Mekanik layar (*sails up/down*) dan arah angin (*wind direction*): kapal melaju kencang jika menangkap hembusan angin.
+  - Kemudi dan sistem jangkar (*anchor dropped/raised*) untuk berlabuh di kepulauan.
+- **Sistem Kerusakan & Menambal Lambung (Damage & Repair)**:
+  - Tembakan meriam atau tabrakan karang membuat lambung kapal berlubang.
+  - Air perlahan membanjiri palka kapal hingga tenggelam jika tidak ditambal.
+  - Tahan tombol [R] untuk menambal lubang menggunakan persediaan papan kayu.
+- **Perburuan Harta Karun (Voyages & X Marks the Spot)**:
+  - Peta perkamen besar [M] menampilkan pulau tujuan dengan tanda silang merah ✕.
+  - Turun dari kapal [E] menjelajahi pantai dan pulau, gunakan sekop [F] untuk menggali peti karun kuno.
+  - Angkut peti dan simpan ke dalam kargo kapal.
+- **Pertempuran Kapal Tengkorak (Skeleton Ships Broadside AI)**:
+  - Kapal hantu tengkorak berpatroli di laut lepas dan mengejar kapal pemain.
+  - Bidik dengan mouse dan tembakkan meriam lambung (*port & starboard broadside*) dengan [Klik Kiri].
+  - Tenggelamkan kapal musuh untuk mendapatkan peti jarahan terapung dan koin emas.
+- **Pelabuhan Sanggar (Outpost Trading Post)**:
+  - Jual peti-peti karun ke persekutuan pedagang [T] di dermaga pelabuhan.
+  - Beli amunisi peluru meriam [B] dan papan kayu tambal [N].
+  - Kumpulkan 5.000 Emas untuk dinobatkan sebagai Legenda Bajak Laut!
+- **Sintesis Audio Prosedural (Web Audio API)**:
+  - Dentuman meriam, pecahan kayu, deburan ombak, ayunan sekop pasir, dentang koin emas, hingga melodi akordeon Sea Shanty tanpa aset audio eksternal.
+- **Tech Stack**: Three.js (WebGL 3D, ShadowMap, Procedural Shaders), Vanilla HTML5/CSS3, ES6 Modules, Web Audio API, Node.js HTTP Server.
+
+👉 **[Buka Dokumentasi & Kode Proyek 17](./17_PIRATE)**
 
 ---
 

@@ -1,0 +1,13 @@
+{
+  "name": "lautan-tak-bertuan-pirate-game",
+  "version": "1.0.0",
+  "description": "Game Bajak Laut Indie bergaya Sea of Thieves menggunakan Three.js & Web Audio API",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -l 3000 .",
+    "dev": "npx serve -l 3000 ."
+  },
+  "keywords": ["pirate", "sea-of-thieves", "threejs", "game", "indie"],
+  "author": "Antigravity",
+  "license": "MIT"
+}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lautan Tak Bertuan — Game Bajak Laut Indie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- ================= HUD ================= -->
+  <div id="hud" class="hidden">
+    <div id="stats" class="panel">
+      <div class="stat" title="Emas"><span class="ico">💰</span><span id="gold">0</span></div>
+      <div class="stat" title="Peti harta di kapal"><span class="ico">📦</span><span id="hold">0</span></div>
+      <div class="stat" title="Peluru meriam"><span class="ico">⚫</span><span id="ammo">0</span></div>
+      <div class="stat" title="Papan kayu (untuk menambal)"><span class="ico">🪵</span><span id="planks">0</span></div>
+      <div class="stat" title="Kapal tengkorak ditenggelamkan"><span class="ico">☠️</span><span id="kills">0</span></div>
+      <div class="goal">
+        <div class="goal-label">Menuju Legenda: <span id="goalText">0 / 5000</span></div>
+        <div class="bar"><div id="goalBar"></div></div>
+      </div>
+    </div>
+
+    <div id="quest" class="panel"></div>
+
+    <div id="mapwrap">
+      <canvas id="minimap" width="220" height="220"></canvas>
+      <div id="windbox" class="panel">
+        <div id="windArrowWrap"><div id="windArrow">➤</div></div>
+        <span id="windText">Angin</span>
+      </div>
+    </div>
+
+    <div id="shipPanel" class="panel">
+      <div class="row"><span>⛵ Layar</span><div class="bar"><div id="sailBar"></div></div></div>
+      <div class="row"><span>🌊 Air</span><div class="bar water"><div id="waterBar"></div></div></div>
+      <div class="row"><span>🕳️ Lubang</span><span id="holes">0</span></div>
+      <div class="row"><span>🧭 Laju</span><span id="speed">0 knot</span></div>
+      <div class="row"><span>⚓ Jangkar</span><span id="anchor">Turun</span></div>
+    </div>
+
+    <div id="promptBox">
+      <div id="prompt"></div>
+      <div id="progress" class="bar hidden"><div id="progressBar"></div></div>
+    </div>
+
+    <div id="notifs"></div>
+    <div id="hitmarker">✕</div>
+    <div id="helpHint">[H] Bantuan · [M] Peta · [K] Musik</div>
+
+    <div id="help" class="panel hidden">
+      <h3>Kontrol</h3>
+      <table>
+        <tr><td colspan="2" class="sec">Di Kemudi Kapal</td></tr>
+        <tr><td><kbd>W</kbd>/<kbd>S</kbd></td><td>Naikkan / turunkan layar</td></tr>
+        <tr><td><kbd>A</kbd>/<kbd>D</kbd></td><td>Belok kiri / kanan</td></tr>
+        <tr><td><kbd>Mouse</kbd></td><td>Putar kamera &amp; bidik meriam</td></tr>
+        <tr><td><kbd>Klik Kiri</kbd></td><td>Tembak meriam (sisi yang dilihat kamera)</td></tr>
+        <tr><td><kbd>X</kbd></td><td>Angkat / turunkan jangkar</td></tr>
+        <tr><td><kbd>Tahan R</kbd></td><td>Tambal lubang kapal</td></tr>
+        <tr><td><kbd>E</kbd></td><td>Turun dari kapal</td></tr>
+        <tr><td colspan="2" class="sec">Berjalan Kaki</td></tr>
+        <tr><td><kbd>WASD</kbd></td><td>Jalan · <kbd>Shift</kbd> lari · <kbd>Spasi</kbd> lompat</td></tr>
+        <tr><td><kbd>Tahan F</kbd></td><td>Gali harta di tanda ✕</td></tr>
+        <tr><td><kbd>E</kbd></td><td>Naik ke kapal</td></tr>
+        <tr><td colspan="2" class="sec">Pelabuhan</td></tr>
+        <tr><td><kbd>T</kbd> <kbd>B</kbd> <kbd>N</kbd></td><td>Jual harta · beli peluru · beli papan</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="bigmap" class="hidden">
+    <div class="bigmap-paper">
+      <canvas id="bigmapCanvas" width="760" height="760"></canvas>
+      <div class="bigmap-title">Peta Lautan Tak Bertuan — tekan <kbd>M</kbd> untuk menutup</div>
+    </div>
+  </div>
+
+  <!-- ================= SCREENS ================= -->
+  <div id="loading" class="screen"><div class="menu-inner"><h2>Membangun lautan…</h2></div></div>
+
+  <div id="menu" class="screen hidden">
+    <div class="menu-inner">
+      <div class="skull">☠</div>
+      <h1>Lautan Tak Bertuan</h1>
+      <p class="tag">Petualangan bajak laut indie — kemudikan kapalmu, gali harta karun di pulau-pulau terpencil,
+        dan tenggelamkan kapal-kapal tengkorak yang memburumu!</p>
+      <div class="howto">
+        <div><b>1.</b> Lihat peta <kbd>M</kbd> — cari tanda <span class="red">✕</span> harta karun.</div>
+        <div><b>2.</b> Layari kapal ke pulau, turunkan jangkar, lalu turun <kbd>E</kbd>.</div>
+        <div><b>3.</b> Gali harta <kbd>F</kbd>, bawa kembali ke kapal.</div>
+        <div><b>4.</b> Jual di pelabuhan <kbd>T</kbd>. Kumpulkan <b>5000 emas</b> untuk menjadi Legenda!</div>
+      </div>
+      <button id="startBtn">⚓ Mulai Berlayar</button>
+      <p class="small">Klik layar untuk mengunci mouse · <kbd>Esc</kbd> untuk jeda · <kbd>H</kbd> untuk daftar kontrol</p>
+    </div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <div class="menu-inner">
+      <h2>Jeda</h2>
+      <p>Klik di mana saja untuk melanjutkan pelayaran</p>
+    </div>
+  </div>
+
+  <div id="dead" class="screen hidden">
+    <div class="menu-inner">
+      <h2>☠️ Kapalmu Tenggelam!</h2>
+      <p>Semua harta di dalam kapal hilang ke dasar laut…</p>
+      <p class="small">Kapal baru sedang disiapkan di pelabuhan.</p>
+    </div>
+  </div>
+
+  <div id="win" class="screen hidden">
+    <div class="menu-inner">
+      <div class="skull">🏴‍☠️</div>
+      <h1>Legenda Bajak Laut!</h1>
+      <p class="tag">Kamu mengumpulkan 5000 emas. Namamu kini ditakuti di seluruh Lautan Tak Bertuan!</p>
+      <button id="continueBtn">Lanjut Berlayar</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -31,7 +31,10 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/16_FLIGHTSIM/') || decodedUrl.startsWith('/16_FLIGHTSIM') || decodedUrl.startsWith('/16/') || decodedUrl === '/16') {
+  if (decodedUrl.startsWith('/17_PIRATE/') || decodedUrl.startsWith('/17_PIRATE') || decodedUrl.startsWith('/17/') || decodedUrl === '/17') {
+    projectDir = '17_PIRATE';
+    relativePath = decodedUrl.replace(/^\/(17_PIRATE|17)\/?/, '');
+  } else if (decodedUrl.startsWith('/16_FLIGHTSIM/') || decodedUrl.startsWith('/16_FLIGHTSIM') || decodedUrl.startsWith('/16/') || decodedUrl === '/16') {
     projectDir = '16_FLIGHTSIM';
     relativePath = decodedUrl.replace(/^\/(16_FLIGHTSIM|16)\/?/, '');
   } else if (decodedUrl.startsWith('/15_SUBSIM/') || decodedUrl.startsWith('/15_SUBSIM') || decodedUrl.startsWith('/15/') || decodedUrl === '/15') {
