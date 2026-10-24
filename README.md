@@ -24,6 +24,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 15 | [**15_SUBSIM**](./15_SUBSIM) | WWII U-Boat War Simulator: Game simulasi tempur kapal selam U-96 dengan instrumen kuningan gantung otentik, HUD taktis, periskop tempur, peta navigasi laut, hidrofom, dan Web Audio API. | ✅ Selesai |
 | 16 | [**16_FLIGHTSIM**](./16_FLIGHTSIM) | PROJECT SKYLINE: Game simulasi pertempuran udara arcade 3D ala Ace Combat bergaya modern indie pixel shader, avionik HUD taktis, radar sirkular, sistem lock-on rudal & lead-computing gun sight, dan Web Audio API. | ✅ Selesai |
 | 17 | [**17_PIRATE**](./17_PIRATE) | Lautan Tak Bertuan: Game Petualangan Bajak Laut 3D Indie ala *Sea of Thieves* dengan fisika ombak Gerstner, kemudi layar berangin, pertempuran meriam broadside kapal tengkorak, sistem tambal lambung bocor, dan perburuan harta karun pulau. | ✅ Selesai |
+| 18 | [**18_SPLINE WEB**](./18_SPLINE%20WEB) | BMW M4 Competition 3D Interactive Web Showcase: Showroom WebGL interaktif dengan model 3D nyata PBR Shader, Paint Configurator 6 warna resmi, sintesis suara mesin Web Audio API, Telemetry HUD, dan jembatan Spline 3D. | ✅ Selesai |
 
 
 ---

@@ -1,0 +1,568 @@
+/* ==========================================================================
+   BMW M Interactive 3D Showcase - Showroom & HUD UI
+   ========================================================================== */
+
+/* UI Layer Overlay */
+#ui-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+}
+
+#ui-overlay > * {
+  pointer-events: auto;
+}
+
+/* ---------------- Top Navigation ---------------- */
+.showroom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 18px;
+  border-radius: var(--radius-lg);
+}
+
+.bmw-roundel {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  box-shadow: 0 0 16px rgba(0, 102, 177, 0.4);
+}
+
+.brand-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.model-series {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.model-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.model-name .m-badge {
+  color: #fff;
+  font-weight: 900;
+  font-style: italic;
+  background: linear-gradient(135deg, var(--bmw-blue), var(--bmw-red));
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.85rem;
+}
+
+/* Header Action Controls */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.drive-modes {
+  display: flex;
+  padding: 4px;
+  border-radius: var(--radius-full);
+}
+
+.mode-btn {
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+  transition: var(--transition-fast);
+}
+
+.mode-btn.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mode-btn.active.sport-mode {
+  background: linear-gradient(135deg, rgba(224, 0, 27, 0.8), rgba(180, 0, 20, 0.9));
+  color: #fff;
+  box-shadow: 0 0 16px rgba(224, 0, 27, 0.5);
+}
+
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: var(--transition-fast);
+}
+
+.icon-btn:hover {
+  color: #fff;
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.icon-btn.active {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+}
+
+/* ---------------- Main Content Layout ---------------- */
+.showroom-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  pointer-events: none;
+}
+
+.showroom-body > * {
+  pointer-events: auto;
+}
+
+/* Left Telemetry HUD */
+.telemetry-hud {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 240px;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  transition: var(--transition-smooth);
+}
+
+.hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 8px;
+}
+
+.hud-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.stat-value small {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  margin-left: 2px;
+}
+
+/* Rev Throttle Gauge Bar */
+.rpm-container {
+  margin-top: 6px;
+}
+
+.rpm-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.rpm-bar-fill {
+  height: 100%;
+  width: 15%;
+  background: linear-gradient(90deg, var(--bmw-blue), var(--bmw-red));
+  border-radius: 3px;
+  transition: width 0.08s ease-out;
+}
+
+/* Right Configurator Palette */
+.configurator-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 260px;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+}
+
+.config-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.color-swatches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.color-swatch-btn {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: var(--transition-fast);
+}
+
+.color-swatch-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.color-swatch-btn.active {
+  border-color: #fff;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+.swatch-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Finishes (Gloss / Matte) Switch */
+.finish-toggle-group {
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  border-radius: var(--radius-md);
+}
+
+.finish-btn {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-align: center;
+  transition: var(--transition-fast);
+}
+
+.finish-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* Lighting and Environment Switches */
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.toggle-label {
+  font-size: 0.8rem;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: var(--transition-fast);
+}
+
+.toggle-switch.active {
+  background: var(--bmw-blue);
+  box-shadow: 0 0 10px rgba(0, 102, 177, 0.6);
+}
+
+.toggle-switch.active::after {
+  transform: translateX(20px);
+}
+
+/* ---------------- Bottom Control Bar ---------------- */
+.showroom-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+}
+
+.camera-presets-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+}
+
+.cam-btn {
+  padding: 8px 16px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  letter-spacing: 0.05em;
+  transition: var(--transition-fast);
+}
+
+.cam-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cam-btn.active {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Interactive Engine Rev Button */
+.engine-rev-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, rgba(224, 0, 27, 0.9), rgba(160, 0, 18, 0.95));
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(224, 0, 27, 0.4);
+  transition: var(--transition-fast);
+}
+
+.engine-rev-trigger:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 28px rgba(224, 0, 27, 0.7);
+}
+
+.engine-rev-trigger:active {
+  transform: scale(0.96);
+  background: linear-gradient(135deg, #ff1a35, #cc0017);
+}
+
+/* Hints & 3D Navigation Guide */
+.interaction-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+}
+
+/* ---------------- Loading Indicator ---------------- */
+#loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-dark);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  transition: opacity 0.6s ease-out, visibility 0.6s ease-out;
+}
+
+#loader-overlay.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader-spinner {
+  width: 56px;
+  height: 56px;
+  border: 3px solid rgba(255, 255, 255, 0.08);
+  border-top-color: var(--bmw-blue);
+  border-right-color: var(--bmw-red);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loader-text {
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* ---------------- Spline 3D Modal Overlay ---------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(16px);
+  z-index: 90;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-container {
+  width: 100%;
+  max-width: 900px;
+  height: 80vh;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-body {
+  flex: 1;
+  position: relative;
+  background: #000;
+  overflow: hidden;
+}
+
+.spline-frame-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------------- Responsive Rules ---------------- */
+@media (max-width: 960px) {
+  #ui-overlay {
+    padding: 16px;
+  }
+
+  .telemetry-hud {
+    display: none; /* Hide on smaller screens to maximize 3D view */
+  }
+
+  .configurator-panel {
+    width: 220px;
+    padding: 14px;
+  }
+
+  .showroom-footer {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+
+  .interaction-hint {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .brand-titles .model-series {
+    display: none;
+  }
+  
+  .configurator-panel {
+    position: absolute;
+    bottom: 80px;
+    right: 16px;
+    width: calc(100% - 32px);
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  .showroom-body {
+    align-items: flex-end;
+  }
+
+  .cam-btn {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+  }
+}

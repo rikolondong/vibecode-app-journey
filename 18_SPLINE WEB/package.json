@@ -1,0 +1,9 @@
+{
+  "name": "bmw-3d-spline-web",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "BMW M4 Interactive 3D Web Showcase with Spline 3D Integration",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

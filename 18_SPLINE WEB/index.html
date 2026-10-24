@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMW M4 Coupé | Interactive 3D Web Showcase</title>
+  <meta name="description" content="Experience the BMW M4 Competition Coupé in high-fidelity 3D with interactive WebGL showroom, paint configurator, engine sound synthesis, and Spline 3D bridge.">
+
+  <!-- Inter Web Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/showroom.css">
+
+  <!-- ES Module Import Map for Three.js & Addons -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Loading State Overlay -->
+  <div id="loader-overlay">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">Loading 3D Showroom...</div>
+  </div>
+
+  <!-- 3D WebGL Canvas Viewport -->
+  <div id="viewport-container">
+    <!-- WebGL Canvas appended dynamically by ShowroomScene -->
+  </div>
+
+  <!-- UI Overlay Layer -->
+  <div id="ui-overlay">
+
+    <!-- Top Navigation Header -->
+    <header class="showroom-header">
+      <div class="brand-section glass-panel">
+        <!-- BMW Roundel Logo (Vector SVG) -->
+        <svg class="bmw-roundel" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="48" fill="#000" stroke="#fff" stroke-width="2"/>
+          <circle cx="50" cy="50" r="46" fill="#06090e"/>
+          <circle cx="50" cy="50" r="32" fill="#fff"/>
+          <!-- Quarters -->
+          <path d="M50,18 A32,32 0 0,1 82,50 L50,50 Z" fill="#0066b1"/>
+          <path d="M50,82 A32,32 0 0,1 18,50 L50,50 Z" fill="#0066b1"/>
+          <path d="M18,50 A32,32 0 0,1 50,18 L50,50 Z" fill="#ffffff"/>
+          <path d="M82,50 A32,32 0 0,1 50,82 L50,50 Z" fill="#ffffff"/>
+          <!-- Inner divider ring -->
+          <circle cx="50" cy="50" r="32" fill="none" stroke="#222" stroke-width="1.5"/>
+          <circle cx="50" cy="50" r="47" fill="none" stroke="#666" stroke-width="0.8"/>
+        </svg>
+
+        <div class="brand-titles">
+          <span class="model-series">M Performance</span>
+          <h1 class="model-name">
+            BMW M4 <span class="m-badge">///M</span> Competition
+          </h1>
+        </div>
+
+        <div class="m-stripe">
+          <span class="s-blue"></span>
+          <span class="s-dark-blue"></span>
+          <span class="s-red"></span>
+        </div>
+      </div>
+
+      <!-- Header Action Controls -->
+      <div class="header-actions">
+        <!-- Drive Mode Switcher -->
+        <div class="drive-modes glass-panel">
+          <button class="mode-btn active" data-mode="comfort">COMFORT</button>
+          <button class="mode-btn" data-mode="sport">SPORT</button>
+          <button class="mode-btn" data-mode="sportPlus">SPORT+</button>
+        </div>
+
+        <!-- Audio Mute / Unmute -->
+        <button id="btn-sound-toggle" class="icon-btn glass-panel" title="Toggle Engine Audio" aria-label="Toggle Engine Audio">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
+
+        <!-- Auto-Rotate Toggle -->
+        <button id="btn-autorotate" class="icon-btn glass-panel active" title="Toggle Auto-Rotation" aria-label="Toggle Auto-Rotation">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+        </button>
+
+        <!-- Spline 3D Viewer Modal Trigger -->
+        <button id="btn-open-spline" class="icon-btn glass-panel" title="Spline 3D Integration" aria-label="Spline 3D Integration">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Middle Area (Telemetry HUD on left, Configurator on right) -->
+    <div class="showroom-body">
+
+      <!-- Left Telemetry HUD -->
+      <aside class="telemetry-hud glass-panel">
+        <div class="hud-header">
+          <span class="hud-title">Telemetry & Specs</span>
+          <span id="hud-drive-mode" class="badge badge-tech">COMFORT</span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-label">Power Output</span>
+          <span class="stat-value">503 <small>HP</small></span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-label">Max Torque</span>
+          <span class="stat-value">650 <small>Nm</small></span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-label">0 - 100 km/h</span>
+          <span class="stat-value">3.4 <small>sec</small></span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-label">Top Speed</span>
+          <span class="stat-value">290 <small>km/h</small></span>
+        </div>
+
+        <!-- RPM Gauge Indicator -->
+        <div class="rpm-container">
+          <div class="stat-row">
+            <span class="stat-label">Engine Tachometer</span>
+            <span class="stat-value"><span id="rpm-number">850</span> <small>RPM</small></span>
+          </div>
+          <div class="rpm-bar-bg">
+            <div id="rpm-fill" class="rpm-bar-fill"></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Configurator Panel -->
+      <aside class="configurator-panel glass-panel">
+        <div>
+          <div class="config-section-title">
+            <span>BMW Individual Paint</span>
+          </div>
+          <div id="swatches-grid" class="color-swatches">
+            <!-- Dynamically populated from SHOWROOM_CONFIG.paints -->
+          </div>
+        </div>
+
+        <div>
+          <div class="config-section-title">
+            <span>Exterior Lighting & Studio</span>
+          </div>
+
+          <div class="toggle-row">
+            <span class="toggle-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              </svg>
+              Laserlight Headlights
+            </span>
+            <div id="toggle-headlights" class="toggle-switch active"></div>
+          </div>
+
+          <div class="toggle-row">
+            <span class="toggle-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              Neon Track Studio
+            </span>
+            <div id="toggle-neon" class="toggle-switch"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Bottom Footer Navigation & Controls -->
+    <footer class="showroom-footer">
+      <!-- Camera Angle Presets -->
+      <nav class="camera-presets-bar glass-panel" aria-label="Camera Presets">
+        <button class="cam-btn active" data-preset="hero">Hero 3/4</button>
+        <button class="cam-btn" data-preset="side">Side</button>
+        <button class="cam-btn" data-preset="rear">Rear</button>
+        <button class="cam-btn" data-preset="top">Top Aero</button>
+        <button class="cam-btn" data-preset="wheel">M Rims</button>
+      </nav>
+
+      <!-- Rev Engine Trigger -->
+      <button id="btn-rev-engine" class="engine-rev-trigger" title="Rev TwinPower Turbo Engine">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        Rev Engine
+      </button>
+
+      <!-- Interaction Hint -->
+      <div class="interaction-hint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span>Drag to orbit • Scroll to zoom</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Spline 3D Integration Modal -->
+  <div id="spline-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-container glass-panel">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <h2 id="modal-title" style="font-size:1.1rem; font-weight:700;">Spline 3D Live Scene Viewer</h2>
+          <span class="badge badge-tech">Interactive Embed</span>
+        </div>
+        <button id="btn-close-spline" class="icon-btn" title="Close Modal" aria-label="Close Modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Optional URL input for custom Spline scenes -->
+      <div style="padding: 12px 24px; display:flex; gap:10px; border-bottom:1px solid var(--border-subtle); background:rgba(0,0,0,0.3);">
+        <input id="spline-url-input" type="text" placeholder="Paste custom Spline .splinecode URL..." 
+          style="flex:1; background:rgba(255,255,255,0.06); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); color:#fff; padding:8px 12px; font-size:0.85rem;" />
+        <button id="btn-load-spline-url" style="background:var(--bmw-blue); color:#fff; padding:8px 16px; border-radius:var(--radius-sm); font-weight:700; font-size:0.85rem;">
+          Load Scene
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div id="spline-viewport-container" class="spline-frame-container">
+          <!-- Dynamic Spline Viewer will be mounted here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
