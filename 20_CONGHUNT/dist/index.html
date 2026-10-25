@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>POCONG HUNT - Retro Arcade 8-Bit</title>
+  <script type="module" crossorigin src="/assets/index-CYoy85wO.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-1ew9MJaO.css">
+</head>
+<body>
+  <div id="game-container">
+    <div class="crt-overlay"></div>
+    <button id="fullscreen-btn" title="Toggle Fullscreen (F)">⛶ FULLSCREEN [F]</button>
+  </div>
+  <script>
+    const fsBtn = document.getElementById('fullscreen-btn');
+    const container = document.getElementById('game-container');
+
+    function toggleFS() {
+      if (!document.fullscreenElement) {
+        if (container.requestFullscreen) {
+          container.requestFullscreen();
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    fsBtn.addEventListener('click', toggleFS);
+
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        fsBtn.innerText = '✕ KELUAR [F]';
+      } else {
+        fsBtn.innerText = '⛶ FULLSCREEN [F]';
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'f' || e.key === 'F') {
+        toggleFS();
+      }
+    });
+  </script>
+</body>
+</html>
