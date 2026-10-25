@@ -25,6 +25,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 16 | [**16_FLIGHTSIM**](./16_FLIGHTSIM) | PROJECT SKYLINE: Game simulasi pertempuran udara arcade 3D ala Ace Combat bergaya modern indie pixel shader, avionik HUD taktis, radar sirkular, sistem lock-on rudal & lead-computing gun sight, dan Web Audio API. | ✅ Selesai |
 | 17 | [**17_PIRATE**](./17_PIRATE) | Lautan Tak Bertuan: Game Petualangan Bajak Laut 3D Indie ala *Sea of Thieves* dengan fisika ombak Gerstner, kemudi layar berangin, pertempuran meriam broadside kapal tengkorak, sistem tambal lambung bocor, dan perburuan harta karun pulau. | ✅ Selesai |
 | 18 | [**18_SPLINE WEB**](./18_SPLINE%20WEB) | BMW M4 Competition 3D Interactive Web Showcase: Showroom WebGL interaktif dengan model 3D nyata PBR Shader, Paint Configurator 6 warna resmi, sintesis suara mesin Web Audio API, Telemetry HUD, dan jembatan Spline 3D. | ✅ Selesai |
+| 19 | [**19_PANTURAS**](./19_PANTURAS) | PANTURA: Mudik Odyssey — Game Simulasi Mudik Jalur Pantura 3D Stylized Low-Poly (Skala 1:1 Jalan Raya 4 Lajur, Jembatan Baja, SPBU, Rest Area, Manajemen Resource, Roofbox Oleh-Oleh & Event Interaktif). | ✅ Selesai |
 
 
 ---
@@ -378,6 +379,27 @@ Game petualangan bajak laut 3D indie bertemakan **Sea of Thieves** yang dibangun
 - **Tech Stack**: Three.js (WebGL 3D, ShadowMap, Procedural Shaders), Vanilla HTML5/CSS3, ES6 Modules, Web Audio API, Node.js HTTP Server.
 
 👉 **[Buka Dokumentasi & Kode Proyek 17](./17_PIRATE)**
+
+
+---
+
+## 🚙 Ringkasan Proyek 19: PANTURA: MUDIK ODYSSEY (Indie 3D Road Trip & Event Simulator)
+
+Game simulasi perjalanan mudik Lebaran melintasi **Jalur Pantura (Bekasi/Karawang ➔ Subang ➔ Cirebon ➔ Brebes ➔ Alas Roban ➔ Semarang ➔ Tuban ➔ Surabaya — 780 KM)** dengan grafik **3D Stylized Low-Poly (Three.js)** berskala dunia nyata (1:1 meter) serta mekanik **Road Trip Management & Interactive Event**:
+- **Skala Jalan Raya Arteri 4 Lajur Terbagi (1:1 Real-World Scale)**:
+  - Koridor jalan raya selebar 22 meter dengan Lajur Kiri Lambat, Lajur Kanan Cepat/Salip, bahu jalan, median beton *New Jersey Barrier*, tanaman perdu bougenville, dan tiang lampu PJU lengan ganda setinggi 10,5 meter.
+  - Infrastruktur ikonik berskala penuh: **Jembatan Rangka Baja Callender-Hamilton** (bentang 56m × tinggi 9,4m di atas sungai), **Kompleks SPBU Pantura** (kanopi merah-putih 6,4m, totem harga BBM 10m, 3 pulau pompa, minimarket & mushola), **Rest Area Terpadu & Masjid Agung** (menara 16,5m & deretan warung tenda Pecel Lele/Empal Gentong), serta **Portal Papan Nama Jalan Nasional (Overhead Gantry)** selebar 25,4m yang berubah dinamis mengikuti kota tujuan.
+- **3 Pilihan Mobil Keluarga MPV & Roofbox 3D Dinamis**:
+  - Pilihan **Avanza "Sejuta Umat"**, **Kijang Kapsul LGX "Warisan Bapak"**, dan **Innova Diesel "Torsi Badak"**.
+  - Muatan di atas atap mobil (kardus sarung, kaleng biskuit merah Khong Guan, koper, dan terpal biru) tampil secara langsung di model 3D mobil.
+- **Manajemen Resource, Oleh-Oleh Daerah & Event Interaktif**:
+  - Kelola **⛽ Bensin (BBM)**, **☕ Fokus Bapak**, **🔧 Kondisi MPV**, **😊 Mood Keluarga**, dan **💸 Dompet THR**.
+  - Beli oleh-oleh khas tiap kota Pantura (*Nanas Madu Subang*, *Empal Gentong Cirebon*, *Telur Asin Brebes*, *Batik Pekalongan*, *Lumpia Semarang*, *Siwalan Tuban*) dan hadapi berbagai event naratif khas mudik.
+- **Sintesis Audio Prosedural (Web Audio API)**:
+  - Deru mesin MPV dinamis, klakson **Telolet Basuri**, dan **Radio Pantura FM** (*Koplo FM*, *Indie Senja*, *Gema Lebaran*).
+- **Tech Stack**: Three.js (WebGL 3D, ACES Filmic Tone Mapping, High-DPI Procedural Canvas Textures), Vanilla HTML5/CSS3, ES6 Modules, Web Audio API, Node.js HTTP Server.
+
+👉 **[Buka Dokumentasi & Kode Proyek 19](./19_PANTURAS)**
 
 ---
 

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PANTURA: Mudik Odyssey — Indie 3D Road Trip Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Three.js 3D Stylized World Canvas -->
+  <div id="canvas-container" aria-label="Layar 3D Jalur Pantura"></div>
+
+  <!-- Vignette & Weather Overlay Effects -->
+  <div id="weather-overlay" class="weather-overlay"></div>
+
+  <!-- Main HUD Overlay -->
+  <div id="hud-layer" class="hud-layer">
+
+    <!-- TOP BAR: Route Map Progress (Jakarta -> Surabaya) & Environment Info -->
+    <header class="top-bar">
+      <!-- Current Region & Time Card -->
+      <div class="region-badge">
+        <div class="route-code">JALUR PANTURA • RUTE NASIONAL 1</div>
+        <div class="region-title-row">
+          <h1 id="current-city-name">BEKASI — KARAWANG</h1>
+          <span id="weather-badge" class="pill-tag tag-sunset">🌅 Senja Cerah</span>
+        </div>
+        <p id="current-city-desc" class="region-subtitle">Gerbang awal perantauan menuju timur. Truk dan pemudik mulai memadati jalan.</p>
+      </div>
+
+      <!-- Interactive Route Timeline (Jakarta -> Surabaya 780 KM) -->
+      <div class="route-progress-card" role="region" aria-label="Peta Progres Mudik Pantura">
+        <div class="route-header-row">
+          <span class="route-origin">📍 JAKARTA (KM 0)</span>
+          <span id="km-counter" class="km-counter">KM 0 / 780 KM</span>
+          <span class="route-dest">🏡 SURABAYA (KM 780)</span>
+        </div>
+        <div class="route-track-wrapper">
+          <div class="route-track-bg">
+            <div id="route-track-fill" class="route-track-fill" style="width: 0%"></div>
+          </div>
+          <div id="route-nodes" class="route-nodes">
+            <!-- Populated dynamically by JS -->
+          </div>
+          <div id="route-car-marker" class="route-car-marker" style="left: 0%" title="Posisi Mobil Keluarga">🚙</div>
+        </div>
+        <div class="next-stop-row">
+          <span id="next-checkpoint-label">Kota Berikutnya: <strong>Cikampek - Subang (110 KM lagi)</strong></span>
+          <span id="clock-display" class="clock-pill">🕒 H-3 Lebaran • 16:30 WIB</span>
+        </div>
+      </div>
+
+      <!-- Wallet THR & Score Summary -->
+      <div class="wallet-card">
+        <div class="wallet-item">
+          <span class="wallet-label">DOMPET THR BAPAK</span>
+          <span id="thr-value" class="wallet-amount">Rp 1.500.000</span>
+        </div>
+        <div class="wallet-divider"></div>
+        <div class="wallet-item">
+          <span class="wallet-label">OLEH-OLEH UTUH</span>
+          <span id="souvenir-count" class="souvenir-amount">3 / 6 Paket</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- LEFT SIDEBAR: Family Status, Chatter & Driving Mode -->
+    <aside class="left-panel">
+      <!-- 4 Vital Bars Card -->
+      <section class="status-panel" aria-label="Kondisi Kendaraan dan Keluarga">
+        <div class="panel-header">
+          <span class="panel-title">STATUS PERJALANAN</span>
+          <span id="mpv-model-badge" class="small-badge">MPV Keluarga</span>
+        </div>
+
+        <div class="vital-list">
+          <!-- Fuel / BBM -->
+          <div class="vital-row" id="vital-fuel-row">
+            <div class="vital-label-row">
+              <span class="vital-name">⛽ Bensin (BBM)</span>
+              <span class="vital-num" id="fuel-text">100%</span>
+            </div>
+            <div class="vital-bar-bg">
+              <div id="fuel-bar" class="vital-bar-fill fill-amber" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <!-- Stamina / Focus Bapak -->
+          <div class="vital-row" id="vital-stamina-row">
+            <div class="vital-label-row">
+              <span class="vital-name">☕ Fokus Bapak</span>
+              <span class="vital-num" id="stamina-text">100%</span>
+            </div>
+            <div class="vital-bar-bg">
+              <div id="stamina-bar" class="vital-bar-fill fill-teal" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <!-- Kondisi Mesin & Mobil -->
+          <div class="vital-row" id="vital-condition-row">
+            <div class="vital-label-row">
+              <span class="vital-name">🔧 Kondisi MPV & Mesin</span>
+              <span class="vital-num" id="condition-text">100%</span>
+            </div>
+            <div class="vital-bar-bg">
+              <div id="condition-bar" class="vital-bar-fill fill-sage" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <!-- Mood Keluarga -->
+          <div class="vital-row" id="vital-mood-row">
+            <div class="vital-label-row">
+              <span class="vital-name">😊 Mood Keluarga</span>
+              <span class="vital-num" id="mood-text">100%</span>
+            </div>
+            <div class="vital-bar-bg">
+              <div id="mood-bar" class="vital-bar-fill fill-coral" style="width: 100%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Roof Rack Tarp Status -->
+        <div class="tarp-status-row">
+          <div class="tarp-info">
+            <span id="tarp-icon">🛡️</span>
+            <div>
+              <div class="tarp-title">Terpal Biru Roofbox</div>
+              <div id="tarp-status-text" class="tarp-sub">Terpasang Rapi (Aman dari Hujan)</div>
+            </div>
+          </div>
+          <button id="btn-toggle-tarp" class="mini-action-btn" title="Pasang/Kencangkan Terpal Atap">Cek Ikatan</button>
+        </div>
+      </section>
+
+      <!-- Family Cabin Dialogue Box -->
+      <section class="family-chatter-card" aria-live="polite">
+        <div class="chatter-header">
+          <span id="chatter-avatar" class="chatter-avatar">👩</span>
+          <div>
+            <div id="chatter-speaker" class="chatter-speaker">Ibu di Kursi Depan</div>
+            <div class="chatter-role">Kabin MPV Keluarga</div>
+          </div>
+        </div>
+        <p id="chatter-text" class="chatter-quote">"Bismillah ya Pak, nyetirnya santai aja jangan ikut-ikutan bus malam ngebut. Kardus rengginang di atap sudah diikat kencang kan?"</p>
+      </section>
+    </aside>
+
+    <!-- RIGHT SIDEBAR: Roofbox & Bagasi Oleh-Oleh Inventory -->
+    <aside class="right-panel">
+      <section class="inventory-panel" aria-label="Bagasi dan Roofbox Oleh-Oleh">
+        <div class="panel-header">
+          <span class="panel-title">📦 BAGASI & ROOFBOX ATAP</span>
+          <span id="cargo-capacity-text" class="small-badge">4 / 6 Slot</span>
+        </div>
+        <p class="inventory-hint">Klik bekal untuk dipakai di jalan, atau simpan oleh-oleh utuh sampai kampung halaman!</p>
+
+        <div id="inventory-grid" class="inventory-grid">
+          <!-- Populated dynamically by JS -->
+        </div>
+
+        <!-- Quick Stopover Trigger when Rest Area / Warung is nearby -->
+        <div class="stopover-box">
+          <div class="stopover-info">
+            <span class="stopover-title" id="nearby-stop-title">🕌 Posko / Warung Pantura</span>
+            <span class="stopover-sub" id="nearby-stop-sub">Bisa menepi kapan saja untuk istirahat & isi bensin</span>
+          </div>
+          <button id="btn-pull-over" class="btn-stopover">
+            🛑 Menepi ke Posko / Warung (R)
+          </button>
+        </div>
+      </section>
+    </aside>
+
+    <!-- CENTER FLOATING TOAST & EVENT ALERT BANNER -->
+    <div id="toast-notification" class="toast-notification" role="status" aria-live="polite"></div>
+
+    <!-- BOTTOM DASHBOARD: Speedometer, Cruise Strategy, Camera & Radio -->
+    <footer class="bottom-bar">
+      <!-- Speed & Driving Strategy Selector -->
+      <div class="driving-deck">
+        <div class="speed-cluster">
+          <div class="speed-num-wrap">
+            <span id="speed-display" class="speed-num">65</span>
+            <span class="speed-unit">KM/J</span>
+          </div>
+          <div class="drive-mode-tags">
+            <span id="gear-badge" class="gear-badge">GIGI 4</span>
+            <span id="steer-mode-badge" class="steer-badge active">🤖 AUTO-STIR</span>
+          </div>
+        </div>
+
+        <div class="pace-selector" role="group" aria-label="Gaya Kecepatan Mengemudi">
+          <span class="deck-label">GAYA NYETIR BAPAK:</span>
+          <div class="pace-buttons">
+            <button class="pace-btn" data-pace="slow" id="pace-slow" title="Santai (50 km/j) - Irit BBM & Aman dari Lubang">
+              🐢 Santai <small>Irit BBM</small>
+            </button>
+            <button class="pace-btn active" data-pace="normal" id="pace-normal" title="Normal (80 km/j) - Kecepatan Ideal Mudik">
+              🚙 Normal <small>Seimbang</small>
+            </button>
+            <button class="pace-btn" data-pace="fast" id="pace-fast" title="Salip Kanan (115 km/j) - Cepat Sampai tapi Boros & Rawan">
+              ⚡ Ngebut <small>Cepat/Rawan</small>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tactile Utility & Atmosphere Controls -->
+      <div class="utility-deck">
+        <button class="util-btn" id="btn-steer-mode" title="Ganti Setir Otomatis / Setir Manual (A/D atau Panah)">
+          <span class="util-icon">🛞</span>
+          <span class="util-text" id="steer-btn-label">Setir: Auto</span>
+        </button>
+
+        <button class="util-btn" id="btn-camera" title="Ganti Sudut Kamera 3D (Tombol C)">
+          <span class="util-icon">🎥</span>
+          <span class="util-text" id="camera-btn-label">Kamera: Indie</span>
+        </button>
+
+        <button class="util-btn" id="btn-lights" title="Lampu Utama & Dimmer (Tombol L)">
+          <span class="util-icon">💡</span>
+          <span class="util-text" id="light-btn-label">Lampu: Nyala</span>
+        </button>
+
+        <button class="util-btn" id="btn-horn" title="Klakson / Telolet Pantura (Tombol H)">
+          <span class="util-icon">📯</span>
+          <span class="util-text">Klakson (H)</span>
+        </button>
+
+        <button class="util-btn" id="btn-radio" title="Ganti Saluran Radio Pantura FM (Tombol M)">
+          <span class="util-icon">📻</span>
+          <span class="util-text" id="radio-btn-label">Radio: Koplo FM</span>
+        </button>
+
+        <button class="util-btn" id="btn-time-weather" title="Ganti Suasana Waktu/Cuaca (Tombol T)">
+          <span class="util-icon">🌤️</span>
+          <span class="util-text">Cuaca (T)</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MOBILE / TOUCH CONTROLS -->
+  <div id="touch-controls" class="touch-controls">
+    <div class="touch-group">
+      <button class="touch-btn" id="touch-left" aria-label="Belok Kiri">◀</button>
+      <button class="touch-btn" id="touch-right" aria-label="Belok Kanan">▶</button>
+    </div>
+    <div class="touch-group">
+      <button class="touch-btn" id="touch-brake" aria-label="Rem">REM</button>
+      <button class="touch-btn" id="touch-gas" aria-label="Gas">GAS</button>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 1: START SCREEN & MPV SELECTION (MODERN INDIE ROAD TRIP MENU)   -->
+  <!-- ===================================================================== -->
+  <div id="start-modal" class="modal-backdrop active" role="dialog" aria-modal="true" aria-labelledby="start-title">
+    <div class="modal-card start-card">
+      <div class="start-badge-row">
+        <span class="indie-tag">INDIE 3D ROAD TRIP & EVENT SIMULATOR</span>
+        <span class="route-tag">JAKARTA ➔ CIREBON ➔ ALAS ROBAN ➔ SURABAYA (780 KM)</span>
+      </div>
+
+      <h2 id="start-title" class="start-main-title">PANTURA: MUDIK ODYSSEY</h2>
+      <p class="start-lead">
+        Kardus oleh-oleh dan kaleng biskuit merah sudah diikat di atas atap. Keluarga sudah duduk manis di dalam kabin.
+        Kelola bensin, stamina Bapak, mood keluarga, serta hadapi berbagai cerita khas jalur Pantura demi tiba di rumah Ibu sebelum malam Takbiran!
+      </p>
+
+      <!-- Vehicle Selection Grid -->
+      <div class="section-label">PILIH MOBIL KELUARGA MPV ANDA:</div>
+      <div id="mpv-selection-grid" class="mpv-selection-grid">
+        <!-- Populated dynamically from data.js -->
+      </div>
+
+      <!-- How to Play Summary -->
+      <div class="howto-strip">
+        <div class="howto-item">
+          <strong>🛣️ Simulasi Perjalanan & Event</strong>
+          <span>Hadapi pilihan interaktif: Pasar Tumpah Brebes, kabut Alas Roban, bus malam ugal-ugalan, hingga anak rewel minta jajan.</span>
+        </div>
+        <div class="howto-item">
+          <strong>🎁 Jaga Oleh-Oleh di Roofbox</strong>
+          <span>Bawa Kaleng Biskuit & beli oleh-oleh khas daerah (Empal Gentong, Telur Asin, Lumpia). Jangan sampai rusak kena lubang atau hujan!</span>
+        </div>
+        <div class="howto-item">
+          <strong>🛞 Auto-Stir atau Manual (A/D)</strong>
+          <span>Bisa bersantai mengatur strategi perjalanan dengan <em>Auto-Stir</em>, atau ambil alih kemudi langsung dengan tombol <code>W/A/S/D</code>.</span>
+        </div>
+      </div>
+
+      <div class="start-actions">
+        <button id="btn-start-journey" class="btn-primary-large">
+          🚗 BISMILLAH, BERANGKAT MUDIK!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 2: INTERACTIVE ROAD EVENT CARD (OREGON TRAIL / KEEP DRIVING)    -->
+  <!-- ===================================================================== -->
+  <div id="event-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="event-title">
+    <div class="modal-card event-card">
+      <div class="event-header-banner" id="event-banner">
+        <span id="event-category-tag" class="event-cat-tag">PERISTIWA JALUR PANTURA</span>
+        <span id="event-km-tag" class="event-km-tag">KM 140</span>
+      </div>
+
+      <div class="event-body">
+        <div class="event-illustration-box">
+          <div id="event-icon-large" class="event-icon-large">🚌</div>
+          <div id="event-location-pill" class="event-location-pill">Jalur Utama Pantura</div>
+        </div>
+
+        <div class="event-content">
+          <h3 id="event-title" class="event-title">Bus Malam "Raja Pantura" Minta Jalan!</h3>
+          <p id="event-description" class="event-description">
+            Dari kaca spion, sebuah bus malam berlampu strobo warna-warni melaju kencang di lajur kanan sambil membunyikan klakson Telolet Basuri. Anak-anak di kursi belakang langsung heboh!
+          </p>
+
+          <!-- Outcome feedback box (shown after picking an option) -->
+          <div id="event-outcome-box" class="event-outcome-box hidden">
+            <div id="event-outcome-title" class="outcome-title">Hasil Keputusan:</div>
+            <p id="event-outcome-text" class="outcome-text"></p>
+            <div id="event-outcome-deltas" class="outcome-deltas"></div>
+          </div>
+
+          <!-- Choices Container -->
+          <div id="event-choices" class="event-choices">
+            <!-- Populated dynamically by JS -->
+          </div>
+
+          <button id="btn-event-continue" class="btn-primary-large hidden">
+            Lanjutkan Perjalanan ➔
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 3: REST AREA / WARUNG PECEL LELE / SPBU / KOTA STOPOVER         -->
+  <!-- ===================================================================== -->
+  <div id="stopover-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="stopover-title">
+    <div class="modal-card stopover-card">
+      <div class="stopover-header">
+        <div>
+          <span class="event-cat-tag" id="stopover-type-tag">POSKO MUDIK & WARUNG PANTURA</span>
+          <h3 id="stopover-title" class="stopover-main-title">Singgah di Cirebon — Kota Udang</h3>
+          <p id="stopover-subtitle" class="stopover-desc">Istirahatkan mesin MPV, isi bensin, seduh kopi Bapak, atau beli oleh-oleh khas daerah untuk dibawa pulang.</p>
+        </div>
+        <div class="stopover-wallet-box">
+          <span>Sisa Uang THR:</span>
+          <strong id="stopover-wallet-amount">Rp 1.500.000</strong>
+        </div>
+      </div>
+
+      <div class="stopover-columns">
+        <!-- Left Column: Essential Services (SPBU, Kopi, Bengkel, Masjid) -->
+        <div class="stopover-col">
+          <h4 class="col-heading">⛽ LAYANAN ISTIRAHAT & SERVIS MPV</h4>
+          <div id="service-list" class="shop-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Right Column: Bekal & Oleh-Oleh Khas Daerah -->
+        <div class="stopover-col">
+          <h4 class="col-heading">🎁 BELI BEKAL & OLEH-OLEH KHAS</h4>
+          <div id="souvenir-shop-list" class="shop-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div id="stopover-feedback" class="stopover-feedback">
+        💡 Tips Bapak: Pastikan bensin dan fokus Bapak cukup sebelum masuk jalur panjang berikutnya.
+      </div>
+
+      <div class="stopover-footer">
+        <button id="btn-resume-driving" class="btn-primary-large">
+          🚗 Masuk Mobil & Lanjut Jalan!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL 4: END OF JOURNEY / ARRIVAL IN SURABAYA OR BREAKDOWN            -->
+  <!-- ===================================================================== -->
+  <div id="ending-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="ending-title">
+    <div class="modal-card ending-card">
+      <div id="ending-badge" class="indie-tag">AKHIR PERJALANAN MUDIK</div>
+      <div id="ending-icon" class="ending-icon">🏡</div>
+      <h2 id="ending-title" class="start-main-title">ALHAMDULILLAH, TIBA DI KAMPUNG HALAMAN!</h2>
+      <p id="ending-description" class="start-lead"></p>
+
+      <div id="ending-stats-grid" class="ending-stats-grid">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div class="ending-souvenir-showcase">
+        <h4>📦 ISI ROOFBOX & OLEH-OLEH YANG DIBAWA PULANG:</h4>
+        <div id="ending-souvenirs-list" class="ending-souvenirs-list"></div>
+      </div>
+
+      <div class="start-actions">
+        <button id="btn-play-again" class="btn-primary-large">
+          🔄 Mudik Lagi (Mulai Perjalanan Baru)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "pantura-mudik-odyssey",
+  "version": "1.0.0",
+  "description": "Simulasi Mudik Jalur Pantura 3D Stylized Low-Poly Road Trip & Event Game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "pantura",
+    "mudik",
+    "threejs",
+    "indie-game",
+    "road-trip",
+    "indonesia"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}

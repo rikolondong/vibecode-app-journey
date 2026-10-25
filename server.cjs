@@ -8,6 +8,7 @@ const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
+  '.mjs': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
@@ -31,7 +32,13 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/17_PIRATE/') || decodedUrl.startsWith('/17_PIRATE') || decodedUrl.startsWith('/17/') || decodedUrl === '/17') {
+  if (decodedUrl.startsWith('/19_PANTURAS/') || decodedUrl.startsWith('/19_PANTURAS') || decodedUrl.startsWith('/19/') || decodedUrl === '/19') {
+    projectDir = '19_PANTURAS';
+    relativePath = decodedUrl.replace(/^\/(19_PANTURAS|19)\/?/, '');
+  } else if (decodedUrl.startsWith('/18_SPLINE WEB/') || decodedUrl.startsWith('/18_SPLINE_WEB/') || decodedUrl.startsWith('/18/') || decodedUrl === '/18') {
+    projectDir = '18_SPLINE WEB';
+    relativePath = decodedUrl.replace(/^\/(18_SPLINE WEB|18_SPLINE_WEB|18)\/?/, '');
+  } else if (decodedUrl.startsWith('/17_PIRATE/') || decodedUrl.startsWith('/17_PIRATE') || decodedUrl.startsWith('/17/') || decodedUrl === '/17') {
     projectDir = '17_PIRATE';
     relativePath = decodedUrl.replace(/^\/(17_PIRATE|17)\/?/, '');
   } else if (decodedUrl.startsWith('/16_FLIGHTSIM/') || decodedUrl.startsWith('/16_FLIGHTSIM') || decodedUrl.startsWith('/16/') || decodedUrl === '/16') {
@@ -122,4 +129,7 @@ server.listen(PORT, () => {
   console.log(`- Project 14: http://localhost:${PORT}/14/`);
   console.log(`- Project 15: http://localhost:${PORT}/15/`);
   console.log(`- Project 16: http://localhost:${PORT}/16/`);
+  console.log(`- Project 17: http://localhost:${PORT}/17/`);
+  console.log(`- Project 18: http://localhost:${PORT}/18/`);
+  console.log(`- Project 19: http://localhost:${PORT}/19/`);
 });
