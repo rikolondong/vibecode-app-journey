@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Missile Simulator: Mountain Strike</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- 3D WebGL Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- FLIR / Night Vision Overlay -->
+  <div id="flir-overlay">
+    <div class="scanlines"></div>
+  </div>
+
+  <!-- Impact Static Glitch -->
+  <div id="static-glitch"></div>
+
+  <!-- 3D Projected Target Markers Layer -->
+  <div id="target-markers-layer"></div>
+
+  <!-- Master Tactical HUD Layer -->
+  <div id="hud-layer">
+    
+    <!-- Top Bar Navigation & Quick Controls -->
+    <div class="top-bar">
+      <div class="branding-box">
+        <div class="branding-title">
+          <span class="blink-dot"></span>
+          MISSILE SIMULATOR : MOUNTAIN STRIKE
+        </div>
+        <div class="branding-sub">TACTICAL WEAPONS ENGAGEMENT RANGE // OP: MOUNTAIN HAMMER</div>
+      </div>
+
+      <!-- Quick Controls Toolbar -->
+      <div class="quick-toolbar hud-interactive">
+        <button class="btn-tactical btn-cam active" data-cam="chase" title="Kamera Mengekor Rudal [1]">CAM: CHASE [1]</button>
+        <button class="btn-tactical btn-cam" data-cam="seeker" title="Kamera Hidung Rudal / Seeker [2]">CAM: SEEKER [2]</button>
+        <button class="btn-tactical btn-cam" data-cam="launcher" title="Teropong Stasiun Peluncur [3]">CAM: LAUNCHER [3]</button>
+        <button class="btn-tactical btn-cam" data-cam="target" title="Kamera Sinematik Sasaran [4]">CAM: TARGET [4]</button>
+        <button id="btn-flir" class="btn-tactical amber" title="Mode Termal / Night Vision [T]">FLIR [T]</button>
+        <button id="btn-threat" class="btn-tactical" title="Aktifkan SAM & CIWS Musuh">THREAT: SAFE [OFF]</button>
+        <button id="btn-sound" class="btn-tactical active" title="Audio Suara Sintesis">AUDIO: ON</button>
+        <button id="btn-specs" class="btn-tactical" title="Spesifikasi & Cara Kendali">DOSSIER SPECS</button>
+      </div>
+    </div>
+
+    <!-- Center Reticle for Seeker / SACLOS Guidance -->
+    <div class="crosshair-center">
+      <div id="reticle-box" class="reticle-box"></div>
+      <div id="reticle-text" class="reticle-text">SEEKER ACTIVE // TARGET TRACKING</div>
+    </div>
+
+    <!-- SACLOS Guidance Helper Notification -->
+    <div id="saclos-hint">
+      [SACLOS BEAM-RIDER] Gunakan tombol W/A/S/D atau Panah (atau tahan Klik Kiri Mouse) di udara untuk mengarahkan rudal!
+    </div>
+
+    <!-- Left Flight Telemetry Sidebar -->
+    <div class="flight-data-sidebar">
+      <div class="data-panel">
+        <div class="data-panel-header">
+          <span>FLIGHT TELEMETRY</span>
+          <span style="font-size: 10px; color: #8b949e;">LIVE SENSOR</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">VELOCITY:</span>
+          <span id="telemetry-speed" class="data-value highlight-green">0 km/h</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">MACH NUMBER:</span>
+          <span id="telemetry-mach" class="data-value highlight-cyan">M 0.00</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">ALTITUDE AGL:</span>
+          <span id="telemetry-alt" class="data-value">0 m AGL</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">G-FORCE LOAD:</span>
+          <span id="telemetry-gforce" class="data-value">1.0 G</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">RANGE TO TARGET:</span>
+          <span id="telemetry-dist" class="data-value highlight-amber">0.00 km</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">FLIGHT TIME:</span>
+          <span id="telemetry-time" class="data-value">0.0 s</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">STATUS:</span>
+          <span id="telemetry-state" class="data-value">STANDBY</span>
+        </div>
+      </div>
+
+      <!-- Active Missile Briefing Info -->
+      <div class="data-panel">
+        <div class="data-panel-header">
+          <span>ACTIVE ORDNANCE</span>
+          <span style="font-size: 10px; color: var(--hud-green);">READY</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">MISSILE:</span>
+          <span id="hud-missile-name" class="data-value highlight-green">FGM-148 Javelin</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">GUIDANCE:</span>
+          <span id="hud-guidance-type" class="data-value">Top-Attack</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">MAX SPEED:</span>
+          <span id="hud-max-speed" class="data-value highlight-cyan">Mach 0.85</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">WARHEAD:</span>
+          <span id="hud-warhead" class="data-value highlight-amber">8.4 kg Tandem HEAT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Target Selection & Threat Sidebar -->
+    <div class="target-data-sidebar">
+      <div class="data-panel hud-interactive">
+        <div class="data-panel-header">
+          <span>TARGET SELECTION</span>
+          <span style="font-size: 10px; color: var(--hud-amber);">OPTICAL LOCK</span>
+        </div>
+        <div style="margin: 8px 0;">
+          <select id="target-select" style="width: 100%; background: #0c151c; border: 1px solid var(--border-tactical); color: #fff; font-family: 'Share Tech Mono', monospace; padding: 6px; border-radius: 2px;">
+            <option value="bunker_alpha">1. Bunker Komando Alpha (Puncak Tebing)</option>
+            <option value="radar_bravo">2. Kubah Radar Bravo (Puncak Salju)</option>
+            <option value="ammo_charlie">3. Depot Amunisi Charlie (Plato Lembah)</option>
+            <option value="convoy_delta">4. Konvoi Tank Delta (Jalan Lereng)</option>
+          </select>
+        </div>
+        <div class="data-row">
+          <span class="data-label">TARGET:</span>
+          <span id="hud-target-name" class="data-value highlight-amber">Bunker Alpha</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">DISTANCE:</span>
+          <span id="hud-target-distance" class="data-value highlight-cyan">6.2 km</span>
+        </div>
+        <div class="data-row">
+          <span class="data-label">HEALTH / INTEGRITY:</span>
+          <span id="hud-target-hp" class="data-value highlight-green">2000 / 2000 HP</span>
+        </div>
+      </div>
+
+      <!-- Mountain Threat Warning Box -->
+      <div id="threat-status-box" class="threat-box">
+        <div class="threat-title">AIR DEFENSE STANDBY</div>
+        <div class="threat-desc">NO THREAT ENGAGED (PEACEFUL TEST)</div>
+      </div>
+    </div>
+
+    <!-- Bottom Command & Launch Bar -->
+    <div class="bottom-bar">
+      <!-- Missile Selector Array -->
+      <div class="missile-selector-bar hud-interactive">
+        <div class="missile-chip selected" data-missile="javelin">
+          <span class="m-name">FGM-148 JAVELIN</span>
+          <span class="m-type">TOP-ATTACK // ATGM</span>
+        </div>
+        <div class="missile-chip" data-missile="tow">
+          <span class="m-name">BGM-71 TOW / KORNET</span>
+          <span class="m-type">SACLOS BEAM-RIDER</span>
+        </div>
+        <div class="missile-chip" data-missile="tomahawk">
+          <span class="m-name">BGM-109 TOMAHAWK</span>
+          <span class="m-type">CRUISE TERRAIN-HUG</span>
+        </div>
+        <div class="missile-chip" data-missile="iskander">
+          <span class="m-name">9K720 ISKANDER-M</span>
+          <span class="m-type">QUASI-BALLISTIC ARC</span>
+        </div>
+        <div class="missile-chip" data-missile="kinzhal">
+          <span class="m-name">Kh-47M2 KINZHAL</span>
+          <span class="m-type">MACH 10 HYPERSONIC</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="launch-action-box hud-interactive">
+        <button id="btn-reset" class="btn-tactical" style="padding: 12px 18px;" title="Reset target dan pangkalan">RESET RANGE</button>
+        <button id="btn-launch" class="btn-launch" title="Tembakkan Rudal [Space]">LAUNCH MISSILE [SPACE]</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Technical Dossier Specs Modal -->
+  <div id="modal-specs" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div id="modal-specs-title" class="modal-title">TECHNICAL DOSSIER</div>
+        <button id="modal-specs-close" class="modal-close">&times;</button>
+      </div>
+      <div id="modal-specs-body" class="modal-body">
+        <!-- Content injected dynamically by main.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Kill Assessment Report Modal -->
+  <div id="modal-result" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title">MISSION ENGAGEMENT REPORT</div>
+        <button id="modal-result-close" class="modal-close">&times;</button>
+      </div>
+      <div class="kill-assessment-card">
+        <div id="kill-title" class="kill-result-title hit">TARGET DESTROYED</div>
+        <div id="kill-details" style="text-align: left; max-width: 420px; margin: 15px auto;">
+          <!-- Injected dynamically -->
+        </div>
+        <button onclick="document.getElementById('modal-result').classList.remove('active')" class="btn-tactical active" style="margin: 15px auto 0; padding: 10px 25px;">CONTINUE OPERATIONS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Game Modules -->
+  <script src="js/audio.js"></script>
+  <script src="js/terrain.js"></script>
+  <script src="js/targets.js"></script>
+  <script src="js/missiles.js"></script>
+  <script src="js/guidance.js"></script>
+  <script src="js/defenses.js"></script>
+  <script src="js/vfx.js"></script>
+  <script src="js/cameras.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>

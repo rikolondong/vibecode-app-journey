@@ -32,7 +32,10 @@ const server = http.createServer((req, res) => {
   let projectDir = '1_MY PROFILE PAGE';
   let relativePath = decodedUrl;
 
-  if (decodedUrl.startsWith('/20_CONGHUNT/') || decodedUrl.startsWith('/20_CONGHUNT') || decodedUrl.startsWith('/20/') || decodedUrl === '/20') {
+  if (decodedUrl.startsWith('/21_MISSILE SIM/') || decodedUrl.startsWith('/21_MISSILE_SIM/') || decodedUrl.startsWith('/21/') || decodedUrl === '/21') {
+    projectDir = '21_MISSILE SIM';
+    relativePath = decodedUrl.replace(/^\/(21_MISSILE SIM|21_MISSILE_SIM|21)\/?/, '');
+  } else if (decodedUrl.startsWith('/20_CONGHUNT/') || decodedUrl.startsWith('/20_CONGHUNT') || decodedUrl.startsWith('/20/') || decodedUrl === '/20') {
     projectDir = path.join('20_CONGHUNT', 'dist');
     relativePath = decodedUrl.replace(/^\/(20_CONGHUNT|20)\/?/, '');
   } else if (decodedUrl.startsWith('/19_PANTURAS/') || decodedUrl.startsWith('/19_PANTURAS') || decodedUrl.startsWith('/19/') || decodedUrl === '/19') {

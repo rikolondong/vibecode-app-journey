@@ -1,4 +1,4 @@
-﻿# 🚀 VibeCode App Journey
+# 🚀 VibeCode App Journey
 
 Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** oleh **Riko Londong**.
 
@@ -27,6 +27,7 @@ Dokumentasi dan repositori proyek perjalanan **100 Days of Code / App Journey** 
 | 18 | [**18_SPLINE WEB**](./18_SPLINE%20WEB) | BMW M4 Competition 3D Interactive Web Showcase: Showroom WebGL interaktif dengan model 3D nyata PBR Shader, Paint Configurator 6 warna resmi, sintesis suara mesin Web Audio API, Telemetry HUD, dan jembatan Spline 3D. | ✅ Selesai |
 | 19 | [**19_PANTURAS**](./19_PANTURAS) | PANTURA: Mudik Odyssey — Game Simulasi Mudik Jalur Pantura 3D Stylized Low-Poly (Skala 1:1 Jalan Raya 4 Lajur, Jembatan Baja, SPBU, Rest Area, Manajemen Resource, Roofbox Oleh-Oleh & Event Interaktif). | ✅ Selesai |
 | 20 | [**20_CONGHUNT**](./20_CONGHUNT) | POCONG HUNT: Game Web Retro Arcade 16:9 Widescreen ala Duck Hunt NES dengan tema Horor-Komedi Indonesia (Phaser 3, Web Audio 8-Bit Chiptune Synth, 3 Peluru/Wave, Pocong Putih & Merah, Kuntilanak Mocking Entity). | ✅ Selesai |
+| 21 | [**21_MISSILE SIM**](./21_MISSILE%20SIM) | Missile Simulator: Mountain Strike — Game Simulasi 3D Penembakan 5 Rudal Dunia Nyata (Javelin, TOW, Tomahawk, Iskander-M, Kinzhal) ke Pangkalan Pegunungan dengan Panduan Autentik, Pertahanan Udara CIWS/SAM, Kamera FLIR & Web Audio API. | ✅ Selesai |
 
 
 ---
